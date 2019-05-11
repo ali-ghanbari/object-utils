@@ -8,7 +8,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class WrapperTest {
-
     @Test
     public void wrapBoolean() throws Exception {
         Wrapped wrapped = Wrapper.wrapBoolean(true);
@@ -266,4 +265,15 @@ public class WrapperTest {
         assertEquals(w1, w2);
     }
 
+    @Test
+    public void wrapObject2() throws Exception {
+        final Record r1 = new Record(null, "30");
+        final Record r2 = new Record("r2", null);
+        final Student s1 = new Student("Ali", 28, r1, r2);
+        final Student s2 = new Student("Ali", 28, r1, r2);
+        assertNotEquals(s1, s2);
+        final Wrapped w1 = Wrapper.wrapObject(s1);
+        final Wrapped w2 = Wrapper.wrapObject(s2);
+        assertEquals(w1, w2);
+    }
 }

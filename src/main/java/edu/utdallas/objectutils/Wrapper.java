@@ -1,6 +1,7 @@
 package edu.utdallas.objectutils;
 
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -53,6 +54,7 @@ public final class Wrapper {
     }
 
     public static Wrapped wrapObject(final Object object) throws Exception {
+        Validate.notNull(object);
         final Class<?> clazz = object.getClass();
         if (clazz == Boolean.class) {
             return new WrappedBoolean((Boolean) object);
@@ -73,26 +75,24 @@ public final class Wrapper {
         } else if (clazz == String.class) {
             return new WrappedString((String) object);
         } else { // wrapping a general object
-            final ObjectField[] fields = constructFieldsRecursively(clazz, object);
-            return new WrappedObject(clazz, fields);
+            final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object);
+            return new WrappedObject(clazz, wrappedFieldValues);
         }
     }
 
-    private static ObjectField[] constructFieldsRecursively(final Class<?> clazz, final Object object)
+    private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz, final Object object)
             throws Exception {
-        ObjectField[] objectFields = new ObjectField[0];
+        Wrapped[] wrappedFieldValues = new Wrapped[0];
         final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
             }
             final Object fieldValue = FieldUtils.readField(field, object, true);
-            final Wrapped wrappedFieldValue = wrapObject(fieldValue);
-            final String fieldName = field.getName();
-            final ObjectField objectField = new ObjectField(fieldName, wrappedFieldValue);
-            objectFields = Arrays.copyOf(objectFields, 1 + objectFields.length);
-            objectFields[objectFields.length - 1] = objectField;
+            final Wrapped wrappedFieldValue = fieldValue == null ? null : wrapObject(fieldValue);
+            wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
+            wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;//objectField;
         }
-        return objectFields;
+        return wrappedFieldValues;
     }
 }

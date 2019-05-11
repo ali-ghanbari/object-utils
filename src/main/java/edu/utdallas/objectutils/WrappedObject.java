@@ -23,11 +23,11 @@ public class WrappedObject implements Wrapped {
 
     private final Class<?> clazz;
 
-    private final ObjectField[] fields;
+    private final Wrapped[] wrappedFieldValues;
 
-    public WrappedObject(Class<?> clazz, ObjectField[] fields) {
+    public WrappedObject(Class<?> clazz, Wrapped[] wrappedFieldValues) {
         this.clazz = clazz;
-        this.fields = fields;
+        this.wrappedFieldValues = wrappedFieldValues;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class WrappedObject implements Wrapped {
             return false;
         }
         WrappedObject that = (WrappedObject) o;
-        return clazz == that.clazz && Arrays.equals(fields, that.fields);
+        return clazz == that.clazz && Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
     }
 
     @Override
@@ -56,13 +56,13 @@ public class WrappedObject implements Wrapped {
     public Object reconstruct(boolean updateStaticFields) throws Exception {
         final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
         final Iterator<Field> fieldsIterator = FieldUtils.getAllFieldsList(this.clazz).iterator();
-        for (final ObjectField objectField : this.fields) {
+        for (final Wrapped wrappedFieldValue : this.wrappedFieldValues) {
             Field field = fieldsIterator.next();
             while (strictlyImmutable(field)) {
                 field = fieldsIterator.next();
             }
             if (!Modifier.isStatic(field.getModifiers()) || updateStaticFields) {
-                final Object value = objectField.getValue().reconstruct();
+                final Object value = wrappedFieldValue == null ? null : wrappedFieldValue.reconstruct();
                 FieldUtils.writeField(field, rawObject, value, true);
             }
         }
