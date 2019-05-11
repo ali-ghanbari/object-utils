@@ -75,26 +75,26 @@ public final class Wrapper {
 
     public static Wrapped wrapObject(final Object object) throws Exception {
         Validate.notNull(object);
-        final Class<?> clazz = object.getClass();
-        if (clazz == Boolean.class) {
+        if (object instanceof Boolean) {
             return new WrappedBoolean((Boolean) object);
-        } else if (clazz == Byte.class) {
+        } else if (object instanceof Byte) {
             return new WrappedByte((Byte) object);
-        } else if (clazz == Character.class) {
+        } else if (object instanceof Character) {
             return new WrappedChar((Character) object);
-        } else if (clazz == Short.class) {
+        } else if (object instanceof Short) {
             return new WrappedShort((Short) object);
-        } else if (clazz == Integer.class) {
+        } else if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
-        } else if (clazz == Float.class) {
+        } else if (object instanceof Float) {
             return new WrappedFloat((Float) object);
-        } else if (clazz == Double.class) {
+        } else if (object instanceof Double) {
             return new WrappedDouble((Double) object);
-        } else if (clazz == Long.class) {
+        } else if (object instanceof Long) {
             return new WrappedLong((Long) object);
-        } else if (clazz == String.class) {
+        } else if (object instanceof String) {
             return new WrappedString((String) object);
         } else { // wrapping a general object
+            final Class<?> clazz = object.getClass();
             final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object);
             return new WrappedObject(clazz, wrappedFieldValues);
         }
