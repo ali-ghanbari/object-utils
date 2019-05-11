@@ -10,6 +10,11 @@
     <inceptionYear>2019</inceptionYear>
     <description>A library containing utilities for serialization, storage, and retrieval of arbitrary objects</description>
 
+    <organization>
+        <name>The University of Texas at Dallas</name>
+        <url>http://www.utdallas.edu/</url>
+    </organization>
+
     <developers>
         <developer>
             <name>Ali Ghanbari</name>
@@ -17,6 +22,19 @@
             <organization>The University of Texas at Dallas</organization>
         </developer>
     </developers>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>https://github.com/ali-ghanbari/object-utils.git</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <license.licenseName>apache_v2</license.licenseName>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -35,7 +53,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -54,6 +71,34 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.6</version>
+
+                    <configuration>
+                        <verbose>false</verbose>
+                        <includes>
+                            <includes>**/*.java</includes>
+                        </includes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>generate-license-headers</id>
+                            <goals>
+                                <goal>update-file-header</goal>
+                            </goals>
+                            <phase>process-sources</phase>
+                            <configuration>
+                                <licenseName>Apache 2.0</licenseName>
+                                <roots>
+                                    <root>src/main/java</root>
+                                    <root>src/test/java</root>
+                                </roots>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -1,5 +1,25 @@
 package edu.utdallas.objectutils;
 
+/*
+ * #%L
+ * object-utils
+ * %%
+ * Copyright (C) 2019 The University of Texas at Dallas
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -7,6 +27,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Ali Ghanbari
+ */
 public class WrapperTest {
     @Test
     public void wrapBoolean() throws Exception {
@@ -275,5 +298,75 @@ public class WrapperTest {
         final Wrapped w1 = Wrapper.wrapObject(s1);
         final Wrapped w2 = Wrapper.wrapObject(s2);
         assertEquals(w1, w2);
+    }
+
+    private static class ListNode {
+        final int value;
+        final ListNode next;
+
+        public ListNode(int value, ListNode next) {
+            this.value = value;
+            this.next = next;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    private static class IntLinkedList {
+        private ListNode head;
+
+        public IntLinkedList() {
+            this.head = null;
+        }
+
+        public void add(int value) {
+            this.head = new ListNode(value, this.head);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            ListNode cursor = this.head;
+            while (cursor != null) {
+                sb.append(cursor.value);
+                cursor = cursor.next;
+                if (cursor != null) {
+                    sb.append(',');
+                }
+            }
+            sb.append(']');
+            return sb.toString();
+        }
+    }
+
+    @Test
+    public void wrapObject3() throws Exception {
+        final IntLinkedList ill = new IntLinkedList();
+        ill.add(1);
+        ill.add(0);
+        ill.add(-1);
+        assertEquals("[-1,0,1]", ill.toString());
+        Wrapped wrapped = Wrapper.wrapObject(ill);
+        IntLinkedList ill2 = wrapped.reconstruct();
+        assertEquals("[-1,0,1]", ill2.toString());
+        IntLinkedList ill3 = wrapped.reconstruct(true);
+        assertEquals("[-1,0,1]", ill3.toString());
+    }
+
+    private static class Bad1 {
+        private final Bad2 evil = new Bad2();
+    }
+
+    private static class Bad2 {
+        private final Bad1 evil = new Bad1();
+    }
+
+    @Test
+    public void wrapObject4() throws Exception {
+        final Bad1 bad = new Bad1();
+        Wrapped wrapped = Wrapper.wrapObject(bad);
     }
 }
