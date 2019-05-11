@@ -9,6 +9,12 @@ import java.util.List;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
+/**
+ * The factory method for wrapped objects.
+ * Using the provided static method one can create wrapped objects.
+ *
+ * @author Ali Ghanbari
+ */
 public final class Wrapper {
     public static WrappedBoolean wrapBoolean(final boolean value) {
         return new WrappedBoolean(value);

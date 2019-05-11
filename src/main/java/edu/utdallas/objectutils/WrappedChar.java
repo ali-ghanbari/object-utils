@@ -2,6 +2,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Objects;
 
+/**
+ * A wrapped <code>char</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedChar implements Wrapped {
     private static final long serialVersionUID = 1L;
 

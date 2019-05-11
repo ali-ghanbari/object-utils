@@ -2,6 +2,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Objects;
 
+/**
+ * A wrapped <code>boolean</code> value which is <code>Serializable</code>,mvn
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedBoolean implements Wrapped {
     private static final long serialVersionUID = 1L;
 

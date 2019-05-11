@@ -2,6 +2,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Objects;
 
+/**
+ * A wrapped <code>double</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedDouble implements Wrapped {
     private static final long serialVersionUID = 1L;
 

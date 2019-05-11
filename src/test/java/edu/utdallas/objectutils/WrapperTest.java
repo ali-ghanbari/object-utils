@@ -12,9 +12,9 @@ public class WrapperTest {
     @Test
     public void wrapBoolean() throws Exception {
         Wrapped wrapped = Wrapper.wrapBoolean(true);
-        assertTrue(wrapped.reconstruct());
+        assertTrue((Boolean) wrapped.reconstruct());
         wrapped = Wrapper.wrapBoolean(false);
-        assertFalse(wrapped.reconstruct(true));
+        assertFalse((Boolean) wrapped.reconstruct(true));
     }
 
     @Test
@@ -36,17 +36,17 @@ public class WrapperTest {
     @Test
     public void wrapDouble() throws Exception {
         Wrapped wrapped = Wrapper.wrapDouble(10.D);
-        assertEquals(10.D, wrapped.reconstruct(), 0.0001D);
+        assertEquals(10.D, (Double) wrapped.reconstruct(), 0.0001D);
         wrapped = Wrapper.wrapDouble(11.D);
-        assertEquals(11.D, wrapped.reconstruct(true), 0.0001D);
+        assertEquals(11.D, (Double) wrapped.reconstruct(true), 0.0001D);
     }
 
     @Test
     public void wrapFloat() throws Exception {
         Wrapped wrapped = Wrapper.wrapFloat(10.F);
-        assertEquals(10.F, wrapped.reconstruct(), 0.0001F);
+        assertEquals(10.F, (Float) wrapped.reconstruct(), 0.0001F);
         wrapped = Wrapper.wrapFloat(11.F);
-        assertEquals(11.F, wrapped.reconstruct(true), 0.0001F);
+        assertEquals(11.F, (Float) wrapped.reconstruct(true), 0.0001F);
     }
 
     @Test

@@ -12,6 +12,7 @@ public class ObjectField implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String name;
+
     private final Wrapped value;
 
     public ObjectField(String name, Wrapped value) {

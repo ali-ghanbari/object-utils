@@ -11,6 +11,13 @@ import java.util.Objects;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
+/**
+ * Wraps an arbitrary object by recursively storing all of its field values.
+ * This class is is <code>Serializable</code> and also implements <code>hashCode</code>
+ * and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedObject implements Wrapped {
     private static final long serialVersionUID = 1L;
 
