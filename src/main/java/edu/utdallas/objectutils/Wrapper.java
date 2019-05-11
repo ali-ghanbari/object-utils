@@ -14,15 +14,7 @@ public final class Wrapper {
         return new WrappedBoolean(value);
     }
 
-    public static WrappedBoolean wrapBoolean(final Boolean value) {
-        return new WrappedBoolean(value);
-    }
-
     public static WrappedByte wrapByte(final byte value) {
-        return new WrappedByte(value);
-    }
-
-    public static WrappedByte wrapByte(final Byte value) {
         return new WrappedByte(value);
     }
 
@@ -30,15 +22,7 @@ public final class Wrapper {
         return new WrappedChar(value);
     }
 
-    public static WrappedChar wrapChar(final Character value) {
-        return new WrappedChar(value);
-    }
-
     public static WrappedDouble wrapDouble(final double value) {
-        return new WrappedDouble(value);
-    }
-
-    public static WrappedDouble wrapDouble(final Double value) {
         return new WrappedDouble(value);
     }
 
@@ -46,15 +30,7 @@ public final class Wrapper {
         return new WrappedFloat(value);
     }
 
-    public static WrappedFloat wrapFloat(final Float value) {
-        return new WrappedFloat(value);
-    }
-
     public static WrappedInt wrapInt(final int value) {
-        return new WrappedInt(value);
-    }
-
-    public static WrappedInt wrapInt(final Integer value) {
         return new WrappedInt(value);
     }
 
@@ -62,15 +38,7 @@ public final class Wrapper {
         return new WrappedLong(value);
     }
 
-    public static WrappedLong wrapLong(final Long value) {
-        return new WrappedLong(value);
-    }
-
     public static WrappedShort wrapShort(final short value) {
-        return new WrappedShort(value);
-    }
-
-    public static WrappedShort wrapShort(final Short value) {
         return new WrappedShort(value);
     }
 
@@ -80,21 +48,21 @@ public final class Wrapper {
 
     public static Wrapped wrapObject(final Object object) throws Exception {
         final Class<?> clazz = object.getClass();
-        if (clazz == boolean.class || clazz == Boolean.class) {
+        if (clazz == Boolean.class) {
             return new WrappedBoolean((Boolean) object);
-        } else if (clazz == byte.class || clazz == Byte.class) {
+        } else if (clazz == Byte.class) {
             return new WrappedByte((Byte) object);
-        } else if (clazz == char.class || clazz == Character.class) {
+        } else if (clazz == Character.class) {
             return new WrappedChar((Character) object);
-        } else if (clazz == short.class || clazz == Short.class) {
+        } else if (clazz == Short.class) {
             return new WrappedShort((Short) object);
-        } else if (clazz == int.class || clazz == Integer.class) {
+        } else if (clazz == Integer.class) {
             return new WrappedInt((Integer) object);
-        } else if (clazz == float.class || clazz == Float.class) {
+        } else if (clazz == Float.class) {
             return new WrappedFloat((Float) object);
-        } else if (clazz == double.class || clazz == Double.class) {
+        } else if (clazz == Double.class) {
             return new WrappedDouble((Double) object);
-        } else if (clazz == long.class || clazz == Long.class) {
+        } else if (clazz == Long.class) {
             return new WrappedLong((Long) object);
         } else if (clazz == String.class) {
             return new WrappedString((String) object);

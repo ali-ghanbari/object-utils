@@ -2,6 +2,9 @@ package edu.utdallas.objectutils;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class WrapperTest {
@@ -108,6 +111,8 @@ public class WrapperTest {
         }
     }
 
+    private String myExternalField = "HELLO!";
+
     private class B extends A {
         public final String name = "BX";
         private final int value;
@@ -125,6 +130,10 @@ public class WrapperTest {
 
         public R getR() {
             return r;
+        }
+
+        public String getExternalField() {
+            return myExternalField;
         }
     }
 
@@ -149,10 +158,19 @@ public class WrapperTest {
     @Test
     public void wrapObject() throws Exception {
         final B b = new B(30);
-        final Wrapped wrapped = Wrapper.wrapObject(b);
+        checkRep(b);
+        Wrapped wrapped = Wrapper.wrapObject(b);
         final B bPrime = wrapped.reconstruct();
         checkRep(b);
         checkRep(bPrime);
+        assertEquals("HELLO!", bPrime.getExternalField());
+        this.myExternalField = "WORLD!";
+        wrapped = Wrapper.wrapObject(b);
+        final B bDoublePrime = wrapped.reconstruct(true);
+        checkRep(b);
+        checkRep(bPrime);
+        checkRep(bDoublePrime);
+        assertEquals("WORLD!", bDoublePrime.getExternalField());
     }
 
     private void checkRep(final B b) {
@@ -181,4 +199,71 @@ public class WrapperTest {
             throw new IllegalStateException("bad r");
         }
     }
+
+    private static class Record {
+        private final String recordId;
+        private String recordValue;
+
+        public Record(String recordId, String recordValue) {
+            this.recordId = recordId;
+            this.recordValue = recordValue;
+        }
+
+        public String getRecordId() {
+            return recordId;
+        }
+
+        public String getRecordValue() {
+            return recordValue;
+        }
+
+        public void setRecordValue(String recordValue) {
+            this.recordValue = recordValue;
+        }
+    }
+
+    private static class Records {
+        private final List<Record> records;
+
+        public Records(final Record... records) {
+            this.records = Arrays.asList(records);
+        }
+    }
+
+    private static class Student {
+        private final String name;
+        private final int age;
+        private final Records records;
+
+        public Student(String name, int age, final Record... records) {
+            this.name = name;
+            this.age = age;
+            this.records = new Records(records);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public Records getRecords() {
+            return records;
+        }
+    }
+
+    @Test
+    public void wrapObject1() throws Exception {
+        final Record r1 = new Record("r1", "30");
+        final Record r2 = new Record("r2", "40");
+        final Student s1 = new Student("Ali", 28, r1, r2);
+        final Student s2 = new Student("Ali", 28, r1, r2);
+        assertNotEquals(s1, s2);
+        final Wrapped w1 = Wrapper.wrapObject(s1);
+        final Wrapped w2 = Wrapper.wrapObject(s2);
+        assertEquals(w1, w2);
+    }
+
 }
