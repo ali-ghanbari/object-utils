@@ -25,18 +25,27 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
+import static edu.utdallas.objectutils.Commons.getObjectId;
 
 /**
- * The factory method for wrapped objects.
- * Using the provided static method one can create wrapped objects.
+ * A set of factory methods for wrapped objects.
+ * Using the provided static methods, one can create wrapped objects.
  *
  * @author Ali Ghanbari
  */
 public final class Wrapper {
+    /* we are using this to resolve cyclic pointers between objects */
+    /* is to be reset before each wrapping operation */
+    private static Map<String, List<WrappedObjectPlaceholder>> todos;
+
+    /* we are using this to avoid re-wrapping already wrapped objects.
+    please note that this is an important requirement for correctness of reified objects. */
+    /* is to be reset before each wrapping operation */
+    private static Map<String, Wrapped> cache;
+
     public static WrappedBoolean wrapBoolean(final boolean value) {
         return new WrappedBoolean(value);
     }
@@ -73,8 +82,15 @@ public final class Wrapper {
         return new WrappedString(value);
     }
 
-    public static Wrapped wrapObject(final Object object) throws Exception {
+    public synchronized static Wrapped wrapObject(final Object object) throws Exception {
         Validate.notNull(object);
+        todos = new HashMap<>();
+        cache = new HashMap<>();
+        final String id = getObjectId(object);
+        return wrapObject0(id, object);
+    }
+
+    private static Wrapped wrapObject0(final String objectId, final Object object) throws Exception {
         if (object instanceof Boolean) {
             return new WrappedBoolean((Boolean) object);
         } else if (object instanceof Byte) {
@@ -94,24 +110,56 @@ public final class Wrapper {
         } else if (object instanceof String) {
             return new WrappedString((String) object);
         } else { // wrapping a general object
+            final List<WrappedObjectPlaceholder> todoList = new LinkedList<>();
+            todos.put(objectId, todoList);
+            final WrappedObject wrappedObject = new WrappedObject();
             final Class<?> clazz = object.getClass();
-            final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object);
-            return new WrappedObject(clazz, wrappedFieldValues);
+            final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(wrappedObject, clazz, object);
+            wrappedObject.setClazz(clazz);
+            wrappedObject.setWrappedFieldValues(wrappedFieldValues);
+            for (final WrappedObjectPlaceholder placeholder : todoList) {
+                placeholder.substitute(wrappedObject);
+            }
+            cache.put(objectId, wrappedObject);
+            return wrappedObject;
         }
     }
 
-    private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz, final Object object)
-            throws Exception {
+    private static Wrapped[] wrapFieldValuesRecursively(final WrappedObject currentWrappedObject,
+                                                        final Class<?> clazz,
+                                                        final Object object) throws Exception {
         Wrapped[] wrappedFieldValues = new Wrapped[0];
+        int fieldIndexCounter = 0;
         final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
             }
             final Object fieldValue = FieldUtils.readField(field, object, true);
-            final Wrapped wrappedFieldValue = fieldValue == null ? null : wrapObject(fieldValue);
+            final Wrapped wrappedFieldValue;
+            if (fieldValue == null) {
+                wrappedFieldValue = null;
+            } else {
+                final String id = getObjectId(fieldValue);
+                final List<WrappedObjectPlaceholder> todoList = todos.get(id);
+                if (todoList != null) {
+                    wrappedFieldValue = null;
+                    final WrappedObjectPlaceholder todoTask =
+                            currentWrappedObject.createPlaceholder(fieldIndexCounter);
+                    todoList.add(todoTask);
+                } else {
+                    /* recompute the wrapped object only once we have not already computed it */
+                    final Wrapped wrappedObject = cache.get(id);
+                    if (wrappedObject == null) {
+                        wrappedFieldValue = wrapObject0(id, fieldValue);
+                    } else {
+                        wrappedFieldValue = wrappedObject;
+                    }
+                }
+            }
             wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
-            wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;//objectField;
+            wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;
+            fieldIndexCounter++;
         }
         return wrappedFieldValues;
     }

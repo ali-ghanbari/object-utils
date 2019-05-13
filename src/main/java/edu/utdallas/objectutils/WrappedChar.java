@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedChar implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final char value;
+    protected final char value;
 
     public WrappedChar(char value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public Character reconstruct() {
+    public Character reify() {
         return this.value;
     }
 
     @Override
-    public Character reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Character reify(boolean updateStaticFields) {
+        return reify();
     }
 }

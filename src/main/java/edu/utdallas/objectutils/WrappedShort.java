@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedShort implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final short value;
+    protected final short value;
 
     public WrappedShort(short value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public Short reconstruct() {
+    public Short reify() {
         return this.value;
     }
 
     @Override
-    public Short reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Short reify(boolean updateStaticFields) {
+        return reify();
     }
 }

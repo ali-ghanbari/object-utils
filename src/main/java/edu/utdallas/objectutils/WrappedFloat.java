@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedFloat implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final float value;
+    protected final float value;
 
     public WrappedFloat(float value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public Float reconstruct() {
+    public Float reify() {
         return this.value;
     }
 
     @Override
-    public Float reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Float reify(boolean updateStaticFields) {
+        return reify();
     }
 }

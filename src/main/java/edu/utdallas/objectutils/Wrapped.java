@@ -29,7 +29,7 @@ import java.io.Serializable;
  * @author Ali Ghanbari
  */
 public interface Wrapped extends Serializable {
-    <T> T reconstruct() throws Exception;
+    <T> T reify() throws Exception;
 
-    <T> T reconstruct(boolean updateStaticFields) throws Exception;
+    <T> T reify(boolean updateStaticFields) throws Exception;
 }

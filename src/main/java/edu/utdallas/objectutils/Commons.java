@@ -33,4 +33,10 @@ public final class Commons {
         final int modifiers = field.getModifiers();
         return Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
     }
+
+    public static String getObjectId(final Object object) {
+        final String className = object.getClass().getName();
+        final int identityHashCode = System.identityHashCode(object);
+        return className + "@" + identityHashCode;
+    }
 }

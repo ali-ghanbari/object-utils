@@ -41,9 +41,13 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public class WrappedObject implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final Class<?> clazz;
+    protected Class<?> clazz;
 
-    private final Wrapped[] wrappedFieldValues;
+    protected Wrapped[] wrappedFieldValues;
+
+    public WrappedObject() {
+
+    }
 
     public WrappedObject(Class<?> clazz, Wrapped[] wrappedFieldValues) {
         this.clazz = clazz;
@@ -67,13 +71,29 @@ public class WrappedObject implements Wrapped {
         return Objects.hash(clazz);
     }
 
-    @Override
-    public Object reconstruct() throws Exception {
-        return reconstruct(false);
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class<?> clazz) {
+        this.clazz = clazz;
+    }
+
+    public Wrapped[] getWrappedFieldValues() {
+        return wrappedFieldValues;
+    }
+
+    public void setWrappedFieldValues(Wrapped[] wrappedFieldValues) {
+        this.wrappedFieldValues = wrappedFieldValues;
     }
 
     @Override
-    public Object reconstruct(boolean updateStaticFields) throws Exception {
+    public Object reify() throws Exception {
+        return reify(false);
+    }
+
+    @Override
+    public Object reify(boolean updateStaticFields) throws Exception {
         final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
         final Iterator<Field> fieldsIterator = FieldUtils.getAllFieldsList(this.clazz).iterator();
         for (final Wrapped wrappedFieldValue : this.wrappedFieldValues) {
@@ -82,11 +102,27 @@ public class WrappedObject implements Wrapped {
                 field = fieldsIterator.next();
             }
             if (!Modifier.isStatic(field.getModifiers()) || updateStaticFields) {
-                final Object value = wrappedFieldValue == null ? null : wrappedFieldValue.reconstruct();
+                final Object value = wrappedFieldValue == null ? null : wrappedFieldValue.reify();
                 FieldUtils.writeField(field, rawObject, value, true);
             }
         }
         return rawObject;
     }
 
+    WrappedObjectPlaceholder createPlaceholder(final int fieldIndex) {
+        return new WrappedObjectPlaceholderImp(fieldIndex);
+    }
+
+    protected class WrappedObjectPlaceholderImp implements WrappedObjectPlaceholder {
+        final int fieldIndex;
+
+        public WrappedObjectPlaceholderImp(final int fieldIndex) {
+            this.fieldIndex = fieldIndex;
+        }
+
+        @Override
+        public void substitute(Wrapped wrappedObject) {
+            WrappedObject.this.wrappedFieldValues[this.fieldIndex] = wrappedObject;
+        }
+    }
 }

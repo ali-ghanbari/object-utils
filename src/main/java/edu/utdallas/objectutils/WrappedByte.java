@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedByte implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final byte value;
+    protected final byte value;
 
     public WrappedByte(byte value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public Byte reconstruct() {
+    public Byte reify() {
         return this.value;
     }
 
     @Override
-    public Byte reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Byte reify(boolean updateStaticFields) {
+        return reify();
     }
 }

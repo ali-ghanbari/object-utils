@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,73 +35,73 @@ public class WrapperTest {
     @Test
     public void wrapBoolean() throws Exception {
         Wrapped wrapped = Wrapper.wrapBoolean(true);
-        assertTrue((Boolean) wrapped.reconstruct());
+        assertTrue((Boolean) wrapped.reify());
         wrapped = Wrapper.wrapBoolean(false);
-        assertFalse((Boolean) wrapped.reconstruct(true));
+        assertFalse((Boolean) wrapped.reify(true));
     }
 
     @Test
     public void wrapByte() throws Exception {
         Wrapped wrapped = Wrapper.wrapByte((byte) 10);
-        assertEquals(10, ((Byte) wrapped.reconstruct()).intValue());
+        assertEquals(10, ((Byte) wrapped.reify()).intValue());
         wrapped = Wrapper.wrapByte((byte) 20);
-        assertEquals(20, ((Byte) wrapped.reconstruct(true)).intValue());
+        assertEquals(20, ((Byte) wrapped.reify(true)).intValue());
     }
 
     @Test
     public void wrapChar() throws Exception {
         Wrapped wrapped = Wrapper.wrapChar('a');
-        assertEquals((int) 'a', ((Character) wrapped.reconstruct()).charValue());
+        assertEquals((int) 'a', ((Character) wrapped.reify()).charValue());
         wrapped = Wrapper.wrapChar('b');
-        assertEquals((int) 'b', ((Character) wrapped.reconstruct(true)).charValue());
+        assertEquals((int) 'b', ((Character) wrapped.reify(true)).charValue());
     }
 
     @Test
     public void wrapDouble() throws Exception {
         Wrapped wrapped = Wrapper.wrapDouble(10.D);
-        assertEquals(10.D, (Double) wrapped.reconstruct(), 0.0001D);
+        assertEquals(10.D, (Double) wrapped.reify(), 0.0001D);
         wrapped = Wrapper.wrapDouble(11.D);
-        assertEquals(11.D, (Double) wrapped.reconstruct(true), 0.0001D);
+        assertEquals(11.D, (Double) wrapped.reify(true), 0.0001D);
     }
 
     @Test
     public void wrapFloat() throws Exception {
         Wrapped wrapped = Wrapper.wrapFloat(10.F);
-        assertEquals(10.F, (Float) wrapped.reconstruct(), 0.0001F);
+        assertEquals(10.F, (Float) wrapped.reify(), 0.0001F);
         wrapped = Wrapper.wrapFloat(11.F);
-        assertEquals(11.F, (Float) wrapped.reconstruct(true), 0.0001F);
+        assertEquals(11.F, (Float) wrapped.reify(true), 0.0001F);
     }
 
     @Test
     public void wrapInt() throws Exception {
         Wrapped wrapped = Wrapper.wrapInt(10);
-        assertEquals(10, ((Integer) wrapped.reconstruct()).intValue());
+        assertEquals(10, ((Integer) wrapped.reify()).intValue());
         wrapped = Wrapper.wrapInt(20);
-        assertEquals(20, ((Integer) wrapped.reconstruct(true)).intValue());
+        assertEquals(20, ((Integer) wrapped.reify(true)).intValue());
     }
 
     @Test
     public void wrapLong() throws Exception {
         Wrapped wrapped = Wrapper.wrapLong(10L);
-        assertEquals(10L, ((Long) wrapped.reconstruct()).longValue());
+        assertEquals(10L, ((Long) wrapped.reify()).longValue());
         wrapped = Wrapper.wrapLong(20L);
-        assertEquals(20L, ((Long) wrapped.reconstruct(true)).longValue());
+        assertEquals(20L, ((Long) wrapped.reify(true)).longValue());
     }
 
     @Test
     public void wrapShort() throws Exception {
         Wrapped wrapped = Wrapper.wrapShort((short) 10);
-        assertEquals(10, ((Short) wrapped.reconstruct()).shortValue());
+        assertEquals(10, ((Short) wrapped.reify()).shortValue());
         wrapped = Wrapper.wrapShort((short) 20);
-        assertEquals(20, ((Short) wrapped.reconstruct(true)).shortValue());
+        assertEquals(20, ((Short) wrapped.reify(true)).shortValue());
     }
 
     @Test
     public void wrapString() throws Exception {
         Wrapped wrapped = Wrapper.wrapString("hello");
-        assertEquals("hello", wrapped.reconstruct());
+        assertEquals("hello", wrapped.reify());
         wrapped = Wrapper.wrapString("world");
-        assertEquals("world", wrapped.reconstruct(true));
+        assertEquals("world", wrapped.reify(true));
     }
 
     private static class A {
@@ -182,13 +183,13 @@ public class WrapperTest {
         final B b = new B(30);
         checkRep(b);
         Wrapped wrapped = Wrapper.wrapObject(b);
-        final B bPrime = wrapped.reconstruct();
+        final B bPrime = wrapped.reify();
         checkRep(b);
         checkRep(bPrime);
         assertEquals("HELLO!", bPrime.getExternalField());
         this.myExternalField = "WORLD!";
         wrapped = Wrapper.wrapObject(b);
-        final B bDoublePrime = wrapped.reconstruct(true);
+        final B bDoublePrime = wrapped.reify(true);
         checkRep(b);
         checkRep(bPrime);
         checkRep(bDoublePrime);
@@ -350,9 +351,9 @@ public class WrapperTest {
         ill.add(-1);
         assertEquals("[-1,0,1]", ill.toString());
         Wrapped wrapped = Wrapper.wrapObject(ill);
-        IntLinkedList ill2 = wrapped.reconstruct();
+        IntLinkedList ill2 = wrapped.reify();
         assertEquals("[-1,0,1]", ill2.toString());
-        IntLinkedList ill3 = wrapped.reconstruct(true);
+        IntLinkedList ill3 = wrapped.reify(true);
         assertEquals("[-1,0,1]", ill3.toString());
     }
 

@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedLong implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final long value;
+    protected final long value;
 
     public WrappedLong(long value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long reconstruct() {
+    public Long reify() {
         return this.value;
     }
 
     @Override
-    public Long reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Long reify(boolean updateStaticFields) {
+        return reify();
     }
 }

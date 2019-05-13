@@ -31,7 +31,7 @@ import java.util.Objects;
 public class WrappedBoolean implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final boolean value;
+    protected final boolean value;
 
     public WrappedBoolean(boolean value) {
         this.value = value;
@@ -55,12 +55,12 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public Boolean reconstruct() {
+    public Boolean reify() {
         return this.value;
     }
 
     @Override
-    public Boolean reconstruct(boolean updateStaticFields) {
-        return reconstruct();
+    public Boolean reify(boolean updateStaticFields) {
+        return reify();
     }
 }
