@@ -60,7 +60,7 @@ public class WrappedInt implements Wrapped {
     }
 
     @Override
-    public Integer reify(boolean updateStaticFields) {
-        return reify();
+    public Integer reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }

@@ -26,10 +26,15 @@ import org.objenesis.ObjenesisHelper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
+import static edu.utdallas.objectutils.Commons.getObjectId;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.
@@ -40,6 +45,17 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
  */
 public class WrappedObject implements Wrapped {
     private static final long serialVersionUID = 1L;
+
+    private static final ModificationPredicate NO = new ModificationPredicate() {
+        @Override
+        public boolean shouldModifyStaticFields(Class<?> clazz) {
+            return false;
+        }
+    };
+
+    private static Map<String, List<ReifiedObjectPlaceholder>> todos;
+
+    private static Map<String, Object> cache;
 
     protected Class<?> clazz;
 
@@ -87,13 +103,59 @@ public class WrappedObject implements Wrapped {
         this.wrappedFieldValues = wrappedFieldValues;
     }
 
-    @Override
-    public Object reify() throws Exception {
-        return reify(false);
+    private static Object getCache(final Wrapped wrappedObject) {
+        final String key = getObjectId(wrappedObject);
+        return cache.get(key);
+    }
+
+    private static void putCache(final Wrapped wrappedObject, final Object reifiedObject) {
+        final String key = getObjectId(wrappedObject);
+        cache.put(key, reifiedObject);
+    }
+
+    private static List<ReifiedObjectPlaceholder> getToDo(final Wrapped wrappedObject) {
+        final String key = getObjectId(wrappedObject);
+        return todos.get(key);
+    }
+
+    private static List<ReifiedObjectPlaceholder> createToDo(final Wrapped wrappedObject) {
+        final String key = getObjectId(wrappedObject);
+        final List<ReifiedObjectPlaceholder> todoList = new LinkedList<>();
+        todos.put(key, todoList);
+        return todoList;
+    }
+
+    private static void deleteToDo(final Wrapped wrappedObject) {
+        final String key = getObjectId(wrappedObject);
+        todos.remove(key);
     }
 
     @Override
-    public Object reify(boolean updateStaticFields) throws Exception {
+    public Object reify() throws Exception {
+        return reify(NO);
+    }
+
+    @Override
+    public Object reify(final ModificationPredicate predicate) throws Exception {
+        synchronized (WrappedObject.class) {
+            todos = new HashMap<>();
+            cache = new HashMap<>();
+            return reify0(predicate);
+        }
+    }
+
+    /* this method intended to avoid lock re-entrance */
+    private static Object reifyMux(final Wrapped wrappedObject,
+                                   final ModificationPredicate predicate) throws Exception {
+        if (wrappedObject instanceof WrappedObject) {
+            return ((WrappedObject) wrappedObject).reify0(predicate);
+        }
+        return wrappedObject.reify(predicate);
+    }
+
+    private Object reify0(final ModificationPredicate predicate) throws Exception {
+        final List<ReifiedObjectPlaceholder> todoList = createToDo(this);
+        final boolean shouldModifyStatics = predicate.shouldModifyStaticFields(this.clazz);
         final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
         final Iterator<Field> fieldsIterator = FieldUtils.getAllFieldsList(this.clazz).iterator();
         for (final Wrapped wrappedFieldValue : this.wrappedFieldValues) {
@@ -101,10 +163,29 @@ public class WrappedObject implements Wrapped {
             while (strictlyImmutable(field)) {
                 field = fieldsIterator.next();
             }
-            if (!Modifier.isStatic(field.getModifiers()) || updateStaticFields) {
-                final Object value = wrappedFieldValue == null ? null : wrappedFieldValue.reify();
+            if (!Modifier.isStatic(field.getModifiers()) || shouldModifyStatics) {
+                Object value = null;
+                if (wrappedFieldValue != null) {
+                    final List<ReifiedObjectPlaceholder> targetObjectToDoList =
+                            getToDo(wrappedFieldValue);
+                    if (targetObjectToDoList != null) { // cycle?
+                        final ReifiedObjectPlaceholder placeholder =
+                                new ReifiedObjectPlaceholder(rawObject, field);
+                        targetObjectToDoList.add(placeholder);
+                    } else {
+                        value = getCache(wrappedFieldValue);
+                        if (value == null) {
+                            value = reifyMux(wrappedFieldValue, predicate);
+                        }
+                    }
+                }
                 FieldUtils.writeField(field, rawObject, value, true);
             }
+        }
+        putCache(this, rawObject);
+        deleteToDo(this);
+        for (final ReifiedObjectPlaceholder placeholder : todoList) {
+            placeholder.substitute(rawObject);
         }
         return rawObject;
     }

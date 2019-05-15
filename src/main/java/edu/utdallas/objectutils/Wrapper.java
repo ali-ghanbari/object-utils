@@ -87,10 +87,10 @@ public final class Wrapper {
         todos = new HashMap<>();
         cache = new HashMap<>();
         final String id = getObjectId(object);
-        return wrapObject0(id, object);
+        return wrap0(id, object);
     }
 
-    private static Wrapped wrapObject0(final String objectId, final Object object) throws Exception {
+    private static Wrapped wrap0(final String objectId, final Object object) throws Exception {
         if (object instanceof Boolean) {
             return new WrappedBoolean((Boolean) object);
         } else if (object instanceof Byte) {
@@ -114,12 +114,14 @@ public final class Wrapper {
             todos.put(objectId, todoList);
             final WrappedObject wrappedObject = new WrappedObject();
             final Class<?> clazz = object.getClass();
-            final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(wrappedObject, clazz, object);
+            final Wrapped[] wrappedFieldValues =
+                    wrapFieldValuesRecursively(wrappedObject, clazz, object);
             wrappedObject.setClazz(clazz);
             wrappedObject.setWrappedFieldValues(wrappedFieldValues);
             for (final WrappedObjectPlaceholder placeholder : todoList) {
                 placeholder.substitute(wrappedObject);
             }
+            todos.remove(objectId);
             cache.put(objectId, wrappedObject);
             return wrappedObject;
         }
@@ -142,7 +144,7 @@ public final class Wrapper {
             } else {
                 final String id = getObjectId(fieldValue);
                 final List<WrappedObjectPlaceholder> todoList = todos.get(id);
-                if (todoList != null) {
+                if (todoList != null) { // cycle?
                     wrappedFieldValue = null;
                     final WrappedObjectPlaceholder todoTask =
                             currentWrappedObject.createPlaceholder(fieldIndexCounter);
@@ -151,7 +153,7 @@ public final class Wrapper {
                     /* recompute the wrapped object only once we have not already computed it */
                     final Wrapped wrappedObject = cache.get(id);
                     if (wrappedObject == null) {
-                        wrappedFieldValue = wrapObject0(id, fieldValue);
+                        wrappedFieldValue = wrap0(id, fieldValue);
                     } else {
                         wrappedFieldValue = wrappedObject;
                     }

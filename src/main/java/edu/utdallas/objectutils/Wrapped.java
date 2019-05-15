@@ -29,7 +29,14 @@ import java.io.Serializable;
  * @author Ali Ghanbari
  */
 public interface Wrapped extends Serializable {
+    /**
+     * Reifies wrapped object without altering any static fields
+     * <b>Note:</b> <code>static final</code> fields are ignored anyway
+     * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
+     * @return Reified object
+     * @throws Exception Any Java reflection-related exception
+     */
     <T> T reify() throws Exception;
 
-    <T> T reify(boolean updateStaticFields) throws Exception;
+    <T> T reify(ModificationPredicate predicate) throws Exception;
 }

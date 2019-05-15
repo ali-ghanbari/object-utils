@@ -60,7 +60,7 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long reify(boolean updateStaticFields) {
-        return reify();
+    public Long reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }

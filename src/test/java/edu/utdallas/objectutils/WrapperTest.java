@@ -20,7 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,12 +31,19 @@ import static org.junit.Assert.*;
  * @author Ali Ghanbari
  */
 public class WrapperTest {
+    private static final ModificationPredicate YES = new ModificationPredicate() {
+        @Override
+        public boolean shouldModifyStaticFields(Class<?> clazz) {
+            return true;
+        }
+    };
+
     @Test
     public void wrapBoolean() throws Exception {
         Wrapped wrapped = Wrapper.wrapBoolean(true);
         assertTrue((Boolean) wrapped.reify());
         wrapped = Wrapper.wrapBoolean(false);
-        assertFalse((Boolean) wrapped.reify(true));
+        assertFalse((Boolean) wrapped.reify(YES));
     }
 
     @Test
@@ -45,7 +51,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapByte((byte) 10);
         assertEquals(10, ((Byte) wrapped.reify()).intValue());
         wrapped = Wrapper.wrapByte((byte) 20);
-        assertEquals(20, ((Byte) wrapped.reify(true)).intValue());
+        assertEquals(20, ((Byte) wrapped.reify(YES)).intValue());
     }
 
     @Test
@@ -53,7 +59,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapChar('a');
         assertEquals((int) 'a', ((Character) wrapped.reify()).charValue());
         wrapped = Wrapper.wrapChar('b');
-        assertEquals((int) 'b', ((Character) wrapped.reify(true)).charValue());
+        assertEquals((int) 'b', ((Character) wrapped.reify(YES)).charValue());
     }
 
     @Test
@@ -61,7 +67,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapDouble(10.D);
         assertEquals(10.D, (Double) wrapped.reify(), 0.0001D);
         wrapped = Wrapper.wrapDouble(11.D);
-        assertEquals(11.D, (Double) wrapped.reify(true), 0.0001D);
+        assertEquals(11.D, (Double) wrapped.reify(YES), 0.0001D);
     }
 
     @Test
@@ -69,7 +75,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapFloat(10.F);
         assertEquals(10.F, (Float) wrapped.reify(), 0.0001F);
         wrapped = Wrapper.wrapFloat(11.F);
-        assertEquals(11.F, (Float) wrapped.reify(true), 0.0001F);
+        assertEquals(11.F, (Float) wrapped.reify(YES), 0.0001F);
     }
 
     @Test
@@ -77,7 +83,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapInt(10);
         assertEquals(10, ((Integer) wrapped.reify()).intValue());
         wrapped = Wrapper.wrapInt(20);
-        assertEquals(20, ((Integer) wrapped.reify(true)).intValue());
+        assertEquals(20, ((Integer) wrapped.reify(YES)).intValue());
     }
 
     @Test
@@ -85,7 +91,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapLong(10L);
         assertEquals(10L, ((Long) wrapped.reify()).longValue());
         wrapped = Wrapper.wrapLong(20L);
-        assertEquals(20L, ((Long) wrapped.reify(true)).longValue());
+        assertEquals(20L, ((Long) wrapped.reify(YES)).longValue());
     }
 
     @Test
@@ -93,7 +99,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapShort((short) 10);
         assertEquals(10, ((Short) wrapped.reify()).shortValue());
         wrapped = Wrapper.wrapShort((short) 20);
-        assertEquals(20, ((Short) wrapped.reify(true)).shortValue());
+        assertEquals(20, ((Short) wrapped.reify(YES)).shortValue());
     }
 
     @Test
@@ -101,7 +107,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapString("hello");
         assertEquals("hello", wrapped.reify());
         wrapped = Wrapper.wrapString("world");
-        assertEquals("world", wrapped.reify(true));
+        assertEquals("world", wrapped.reify(YES));
     }
 
     private static class A {
@@ -189,7 +195,7 @@ public class WrapperTest {
         assertEquals("HELLO!", bPrime.getExternalField());
         this.myExternalField = "WORLD!";
         wrapped = Wrapper.wrapObject(b);
-        final B bDoublePrime = wrapped.reify(true);
+        final B bDoublePrime = wrapped.reify(YES);
         checkRep(b);
         checkRep(bPrime);
         checkRep(bDoublePrime);
@@ -227,7 +233,7 @@ public class WrapperTest {
         private final String recordId;
         private String recordValue;
 
-        public Record(String recordId, String recordValue) {
+        Record(String recordId, String recordValue) {
             this.recordId = recordId;
             this.recordValue = recordValue;
         }
@@ -248,7 +254,7 @@ public class WrapperTest {
     private static class Records {
         private final List<Record> records;
 
-        public Records(final Record... records) {
+        Records(final Record... records) {
             this.records = Arrays.asList(records);
         }
     }
@@ -258,7 +264,7 @@ public class WrapperTest {
         private final int age;
         private final Records records;
 
-        public Student(String name, int age, final Record... records) {
+        Student(String name, int age, final Record... records) {
             this.name = name;
             this.age = age;
             this.records = new Records(records);
@@ -305,7 +311,7 @@ public class WrapperTest {
         final int value;
         final ListNode next;
 
-        public ListNode(int value, ListNode next) {
+        ListNode(int value, ListNode next) {
             this.value = value;
             this.next = next;
         }
@@ -318,11 +324,11 @@ public class WrapperTest {
     private static class IntLinkedList {
         private ListNode head;
 
-        public IntLinkedList() {
+        IntLinkedList() {
             this.head = null;
         }
 
-        public void add(int value) {
+        void add(int value) {
             this.head = new ListNode(value, this.head);
         }
 
@@ -353,21 +359,62 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapObject(ill);
         IntLinkedList ill2 = wrapped.reify();
         assertEquals("[-1,0,1]", ill2.toString());
-        IntLinkedList ill3 = wrapped.reify(true);
+        IntLinkedList ill3 = wrapped.reify(YES);
         assertEquals("[-1,0,1]", ill3.toString());
     }
 
     private static class Bad1 {
-        private final Bad2 evil = new Bad2();
+        private static Bad2 evil = new Bad2();
     }
 
     private static class Bad2 {
-        private final Bad1 evil = new Bad1();
+        private static Bad1 evil = new Bad1();
     }
 
     @Test
     public void wrapObject4() throws Exception {
         final Bad1 bad = new Bad1();
         Wrapped wrapped = Wrapper.wrapObject(bad);
+    }
+
+    private static class Cyclic {
+        static class Node {
+            Node next;
+            final int value;
+
+            Node(Node next, int value) {
+                this.next = next;
+                this.value = value;
+            }
+        }
+
+        final Node head;
+
+        Cyclic() {
+            final Node next = new Node(null, 10);
+            this.head = new Node(next, 11);
+            next.next = this.head;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d,%d,%d",
+                    this.head.value,
+                    this.head.next.value,
+                    this.head.next.next.value);
+        }
+    }
+
+    @Test
+    public void wrapObject5() throws Exception {
+        final Cyclic cyclic = new Cyclic();
+        assertEquals("11,10,11", cyclic.toString());
+        final Wrapped wrapped = Wrapper.wrapObject(cyclic);
+        Cyclic cyclic2 = wrapped.reify();
+        assertEquals(cyclic.toString(), cyclic2.toString());
+        assertEquals("11,10,11", cyclic2.toString());
+        cyclic2 = wrapped.reify(YES);
+        assertEquals(cyclic.toString(), cyclic2.toString());
+        assertEquals("11,10,11", cyclic2.toString());
     }
 }

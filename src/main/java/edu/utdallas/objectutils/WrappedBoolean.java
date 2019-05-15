@@ -60,7 +60,7 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public Boolean reify(boolean updateStaticFields) {
-        return reify();
+    public Boolean reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }

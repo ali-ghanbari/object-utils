@@ -60,7 +60,7 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public Character reify(boolean updateStaticFields) {
-        return reify();
+    public Character reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }

@@ -60,7 +60,7 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public Short reify(boolean updateStaticFields) {
-        return reify();
+    public Short reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }

@@ -60,7 +60,7 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public Byte reify(boolean updateStaticFields) {
-        return reify();
+    public Byte reify(final ModificationPredicate predicate) {
+        return this.value;
     }
 }
