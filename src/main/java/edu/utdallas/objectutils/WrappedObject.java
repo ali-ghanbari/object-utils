@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.getObjectId;
+import static edu.utdallas.objectutils.ModificationPredicate.NO;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.
@@ -45,13 +46,6 @@ import static edu.utdallas.objectutils.Commons.getObjectId;
  */
 public class WrappedObject implements Wrapped {
     private static final long serialVersionUID = 1L;
-
-    private static final ModificationPredicate NO = new ModificationPredicate() {
-        @Override
-        public boolean shouldModifyStaticFields(Class<?> clazz) {
-            return false;
-        }
-    };
 
     private static Map<String, List<ReifiedObjectPlaceholder>> todos;
 
@@ -136,11 +130,11 @@ public class WrappedObject implements Wrapped {
     }
 
     @Override
-    public Object reify(final ModificationPredicate predicate) throws Exception {
+    public Object reify(ModificationPredicate mutateStatics) throws Exception {
         synchronized (WrappedObject.class) {
             todos = new HashMap<>();
             cache = new HashMap<>();
-            return reify0(predicate);
+            return reify0(mutateStatics);
         }
     }
 
@@ -153,9 +147,9 @@ public class WrappedObject implements Wrapped {
         return wrappedObject.reify(predicate);
     }
 
-    private Object reify0(final ModificationPredicate predicate) throws Exception {
+    private Object reify0(final ModificationPredicate mutateStatics) throws Exception {
         final List<ReifiedObjectPlaceholder> todoList = createToDo(this);
-        final boolean shouldModifyStatics = predicate.shouldModifyStaticFields(this.clazz);
+        final boolean shouldModifyStatics = mutateStatics.test(this.clazz);
         final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
         final Iterator<Field> fieldsIterator = FieldUtils.getAllFieldsList(this.clazz).iterator();
         for (final Wrapped wrappedFieldValue : this.wrappedFieldValues) {
@@ -175,7 +169,7 @@ public class WrappedObject implements Wrapped {
                     } else {
                         value = getCache(wrappedFieldValue);
                         if (value == null) {
-                            value = reifyMux(wrappedFieldValue, predicate);
+                            value = reifyMux(wrappedFieldValue, mutateStatics);
                         }
                     }
                 }

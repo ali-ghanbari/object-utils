@@ -38,5 +38,5 @@ public interface Wrapped extends Serializable {
      */
     <T> T reify() throws Exception;
 
-    <T> T reify(ModificationPredicate predicate) throws Exception;
+    <T> T reify(ModificationPredicate mutateStatics) throws Exception;
 }

@@ -60,7 +60,7 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public Float reify(final ModificationPredicate predicate) {
+    public Float reify(final ModificationPredicate mutateStatics) {
         return this.value;
     }
 }

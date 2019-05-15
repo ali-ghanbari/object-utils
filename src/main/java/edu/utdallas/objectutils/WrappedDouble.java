@@ -60,7 +60,7 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
-    public Double reify(final ModificationPredicate predicate) {
+    public Double reify(final ModificationPredicate mutateStatics) {
         return this.value;
     }
 }

@@ -8,7 +8,10 @@
     <artifactId>object-utils</artifactId>
     <version>1.0-SNAPSHOT</version>
     <inceptionYear>2019</inceptionYear>
-    <description>A library containing utilities for serialization, storage, and retrieval of arbitrary objects</description>
+    <description>
+        A library of utilities for serialization and wrapping of arbitrary objects to have
+        correctly implemented "equals" and "hashCode" methods.
+    </description>
 
     <organization>
         <name>The University of Texas at Dallas</name>

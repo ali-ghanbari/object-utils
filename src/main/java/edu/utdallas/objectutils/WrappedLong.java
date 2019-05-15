@@ -60,7 +60,7 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long reify(final ModificationPredicate predicate) {
+    public Long reify(final ModificationPredicate mutateStatics) {
         return this.value;
     }
 }

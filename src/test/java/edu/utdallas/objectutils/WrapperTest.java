@@ -27,17 +27,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+import static edu.utdallas.objectutils.ModificationPredicate.YES;
+
 /**
  * @author Ali Ghanbari
  */
 public class WrapperTest {
-    private static final ModificationPredicate YES = new ModificationPredicate() {
-        @Override
-        public boolean shouldModifyStaticFields(Class<?> clazz) {
-            return true;
-        }
-    };
-
     @Test
     public void wrapBoolean() throws Exception {
         Wrapped wrapped = Wrapper.wrapBoolean(true);

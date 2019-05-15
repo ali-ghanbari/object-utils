@@ -60,7 +60,7 @@ public class WrappedString implements Wrapped {
     }
 
     @Override
-    public String reify(final ModificationPredicate predicate) {
+    public String reify(final ModificationPredicate mutateStatics) {
         return this.value;
     }
 }
