@@ -93,22 +93,40 @@ public final class Wrapper {
     private static Wrapped wrap0(final String objectId, final Object object) throws Exception {
         if (object instanceof Boolean) {
             return new WrappedBoolean((Boolean) object);
+        } else if (object instanceof boolean[]) {
+            return new WrappedBooleanArray((boolean[]) object);
         } else if (object instanceof Byte) {
             return new WrappedByte((Byte) object);
+        } else if (object instanceof byte[]) {
+            return new WrappedByteArray((byte[]) object);
         } else if (object instanceof Character) {
             return new WrappedChar((Character) object);
+        } else if (object instanceof char[]) {
+            return new WrappedCharArray((char[]) object);
         } else if (object instanceof Short) {
             return new WrappedShort((Short) object);
+        } else if (object instanceof short[]) {
+            return new WrappedShortArray((short[]) object);
         } else if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
+        } else if (object instanceof int[]) {
+            return new WrappedIntArray((int[]) object);
         } else if (object instanceof Float) {
             return new WrappedFloat((Float) object);
+        } else if (object instanceof float[]) {
+            return new WrappedFloatArray((float[]) object);
         } else if (object instanceof Double) {
             return new WrappedDouble((Double) object);
+        } else if (object instanceof double[]) {
+            return new WrappedDoubleArray((double[]) object);
         } else if (object instanceof Long) {
             return new WrappedLong((Long) object);
+        } else if (object instanceof long[]) {
+            return new WrappedLongArray((long[]) object);
         } else if (object instanceof String) {
             return new WrappedString((String) object);
+        } else if (object instanceof String[]) {
+            return new WrappedStringArray((String[]) object);
         } else { // wrapping a general object
             final List<WrappedObjectPlaceholder> todoList = new LinkedList<>();
             todos.put(objectId, todoList);

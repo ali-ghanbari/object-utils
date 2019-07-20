@@ -58,48 +58,67 @@ public class WrappedObject implements Wrapped {
         this.wrappedFieldValues = wrappedFieldValues;
     }
 
-    private List<Wrapped> visited = null;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
-            this.visited = null;
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
-            this.visited = null;
             return false;
         }
         WrappedObject that = (WrappedObject) o;
-        if (this.clazz == that.clazz) {
-//            Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
-            final int len = this.wrappedFieldValues.length;
-            /* the field wrappedFieldValues is always non-null */
-            if (len == that.wrappedFieldValues.length) {
-                if (this.visited == null) {
-                    this.visited = new ArrayList<>();
-                }
-                for (int i = 0; i < len; i++) {
-                    Wrapped item = this.wrappedFieldValues[i];
-                    for (final Wrapped visitedItem : this.visited) {
-                        if (visitedItem == item) {
-                            this.visited = null;
-                            return false;
-                        }
-                    }
-                    this.visited.add(item);
-
-                }
-            }
-        }
-        this.visited = null;
-        return false;
+        return this.clazz == that.clazz && Arrays.equals(this.wrappedFieldValues, that.wrappedFieldValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clazz);
+        return Objects.hash(this.clazz);
     }
+
+//    private Set<W> thisVisited = new HashSet<>();
+//    private Set<W> thatVisited = new HashSet<>();
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            this.thisVisited.clear();
+//            this.thatVisited.clear();
+//            return false;
+//        }
+//        WrappedObject that = (WrappedObject) o;
+//        if (this.clazz == that.clazz) {
+////            Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
+//            final int len = this.wrappedFieldValues.length;
+//            /* the field wrappedFieldValues is always non-null */
+//            if (len == that.wrappedFieldValues.length) {
+//                if (this.visited == null) {
+//                    this.visited = new ArrayList<>();
+//                }
+//                for (int i = 0; i < len; i++) {
+//                    Wrapped item = this.wrappedFieldValues[i];
+//                    for (final Wrapped visitedItem : this.visited) {
+//                        if (visitedItem == item) {
+//                            this.visited = null;
+//                            return false;
+//                        }
+//                    }
+//                    this.visited.add(item);
+//
+//                }
+//            }
+//        }
+//        this.thisVisited.clear();
+//        this.thatVisited.clear();
+//        return false;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(clazz);
+//    }
 
     public Class<?> getClazz() {
         return clazz;
