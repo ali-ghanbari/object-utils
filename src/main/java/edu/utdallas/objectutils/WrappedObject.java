@@ -25,13 +25,7 @@ import org.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.getObjectId;
@@ -64,16 +58,42 @@ public class WrappedObject implements Wrapped {
         this.wrappedFieldValues = wrappedFieldValues;
     }
 
+    private List<Wrapped> visited = null;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
+            this.visited = null;
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
+            this.visited = null;
             return false;
         }
         WrappedObject that = (WrappedObject) o;
-        return clazz == that.clazz && Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
+        if (this.clazz == that.clazz) {
+//            Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
+            final int len = this.wrappedFieldValues.length;
+            /* the field wrappedFieldValues is always non-null */
+            if (len == that.wrappedFieldValues.length) {
+                if (this.visited == null) {
+                    this.visited = new ArrayList<>();
+                }
+                for (int i = 0; i < len; i++) {
+                    Wrapped item = this.wrappedFieldValues[i];
+                    for (final Wrapped visitedItem : this.visited) {
+                        if (visitedItem == item) {
+                            this.visited = null;
+                            return false;
+                        }
+                    }
+                    this.visited.add(item);
+
+                }
+            }
+        }
+        this.visited = null;
+        return false;
     }
 
     @Override

@@ -22,7 +22,9 @@ package edu.utdallas.objectutils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -411,5 +413,36 @@ public class WrapperTest {
         cyclic2 = wrapped.reify(YES);
         assertEquals(cyclic.toString(), cyclic2.toString());
         assertEquals("11,10,11", cyclic2.toString());
+    }
+
+    @Test
+    public void wrappedObjectEqualsTest1() throws Exception {
+        IntLinkedList ill1 = new IntLinkedList();
+        ill1.add(0);
+        ill1.add(1);
+        Wrapped w1 = Wrapper.wrapObject(ill1);
+        IntLinkedList ill2 = new IntLinkedList();
+        ill2.add(0);
+        ill2.add(1);
+        Wrapped w2 = Wrapper.wrapObject(ill2);
+        assertEquals(w1, w2);
+    }
+
+    private static class SelfList {
+        SelfList sl;
+
+        SelfList() {
+            sl = this;
+        }
+    }
+
+    @Test
+    public void wrappedObjectEqualsTest2() throws Exception {
+        SelfList sl1 = new SelfList();
+        Wrapped w1 = Wrapper.wrapObject(sl1);
+        assertEquals(w1, ((WrappedObject) w1).getWrappedFieldValues()[0]);
+//        SelfList sl2 = new SelfList();
+//        Wrapped w2 = Wrapper.wrapObject(sl2);
+//        assertEquals(w1, w2);
     }
 }
