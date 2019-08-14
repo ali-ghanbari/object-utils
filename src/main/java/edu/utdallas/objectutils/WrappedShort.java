@@ -55,12 +55,22 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public Short reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Short unwrap() {
         return this.value;
     }
 
     @Override
-    public Short reify(final ModificationPredicate mutateStatics) {
+    public Short unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

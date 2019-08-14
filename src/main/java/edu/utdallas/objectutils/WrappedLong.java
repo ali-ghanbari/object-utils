@@ -55,12 +55,22 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Long unwrap() {
         return this.value;
     }
 
     @Override
-    public Long reify(final ModificationPredicate mutateStatics) {
+    public Long unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

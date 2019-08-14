@@ -39,4 +39,14 @@ public final class Commons {
         final int identityHashCode = System.identityHashCode(object);
         return className + "@" + identityHashCode;
     }
+
+    private static int addressCounter = 0;
+
+    public static int newAddress() {
+        return addressCounter++;
+    }
+
+    public static void resetAddressCounter() {
+        addressCounter = 0;
+    }
 }

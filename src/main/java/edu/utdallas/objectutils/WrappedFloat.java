@@ -55,12 +55,22 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public Float reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Float unwrap() {
         return this.value;
     }
 
     @Override
-    public Float reify(final ModificationPredicate mutateStatics) {
+    public Float unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

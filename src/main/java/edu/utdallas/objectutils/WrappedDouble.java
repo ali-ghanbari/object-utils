@@ -55,12 +55,22 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
-    public Double reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Double unwrap() {
         return this.value;
     }
 
     @Override
-    public Double reify(final ModificationPredicate mutateStatics) {
+    public Double unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

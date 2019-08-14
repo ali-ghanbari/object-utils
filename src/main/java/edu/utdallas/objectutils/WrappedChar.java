@@ -55,12 +55,22 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public Character reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Character unwrap() {
         return this.value;
     }
 
     @Override
-    public Character reify(final ModificationPredicate mutateStatics) {
+    public Character unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

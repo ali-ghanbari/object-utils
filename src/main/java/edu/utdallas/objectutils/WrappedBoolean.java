@@ -55,12 +55,22 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public Boolean reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Boolean unwrap() {
         return this.value;
     }
 
     @Override
-    public Boolean reify(final ModificationPredicate mutateStatics) {
+    public Boolean unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -55,12 +55,22 @@ public class WrappedInt implements Wrapped {
     }
 
     @Override
-    public Integer reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Integer unwrap() {
         return this.value;
     }
 
     @Override
-    public Integer reify(final ModificationPredicate mutateStatics) {
+    public Integer unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

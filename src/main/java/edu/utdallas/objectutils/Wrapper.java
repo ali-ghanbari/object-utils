@@ -24,6 +24,7 @@ package edu.utdallas.objectutils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -82,7 +83,12 @@ public final class Wrapper {
         return new WrappedString(value);
     }
 
-    public synchronized static Wrapped wrapObject(final Object object) throws Exception {
+    public static Wrapped wrapObject(final Object object) throws Exception {
+        Commons.resetAddressCounter();
+        return _wrapObject(object);
+    }
+
+    public synchronized static Wrapped _wrapObject(final Object object) throws Exception {
         Validate.notNull(object);
         todos = new HashMap<>();
         cache = new HashMap<>();
@@ -95,43 +101,69 @@ public final class Wrapper {
             return new WrappedBoolean((Boolean) object);
         } else if (object instanceof boolean[]) {
             return new WrappedBooleanArray((boolean[]) object);
+        } else if (object instanceof Boolean[]) {
+            return new WrappedBooleanArray((Boolean[]) object);
         } else if (object instanceof Byte) {
             return new WrappedByte((Byte) object);
         } else if (object instanceof byte[]) {
             return new WrappedByteArray((byte[]) object);
+        } else if (object instanceof Byte[]) {
+            return new WrappedByteArray((Byte[]) object);
         } else if (object instanceof Character) {
             return new WrappedChar((Character) object);
         } else if (object instanceof char[]) {
             return new WrappedCharArray((char[]) object);
+        } else if (object instanceof Character[]) {
+            return new WrappedCharArray((Character[]) object);
         } else if (object instanceof Short) {
             return new WrappedShort((Short) object);
         } else if (object instanceof short[]) {
             return new WrappedShortArray((short[]) object);
+        } else if (object instanceof Short[]) {
+            return new WrappedShortArray((Short[]) object);
         } else if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
         } else if (object instanceof int[]) {
             return new WrappedIntArray((int[]) object);
+        } else if (object instanceof Integer[]) {
+            return new WrappedIntArray((Integer[]) object);
         } else if (object instanceof Float) {
             return new WrappedFloat((Float) object);
         } else if (object instanceof float[]) {
             return new WrappedFloatArray((float[]) object);
+        } else if (object instanceof Float[]) {
+            return new WrappedFloatArray((Float[]) object);
         } else if (object instanceof Double) {
             return new WrappedDouble((Double) object);
         } else if (object instanceof double[]) {
             return new WrappedDoubleArray((double[]) object);
+        } else if (object instanceof Double[]) {
+            return new WrappedDoubleArray((Double[]) object);
         } else if (object instanceof Long) {
             return new WrappedLong((Long) object);
         } else if (object instanceof long[]) {
             return new WrappedLongArray((long[]) object);
+        } else if (object instanceof Long[]) {
+            return new WrappedLongArray((Long[]) object);
         } else if (object instanceof String) {
             return new WrappedString((String) object);
         } else if (object instanceof String[]) {
             return new WrappedStringArray((String[]) object);
+        }
+        final Class<?> clazz = object.getClass();
+        if (clazz.isArray()) {
+            final Class<?> componentType = clazz.getComponentType();
+            final int len = Array.getLength(object);
+            final Wrapped[] elements = new Wrapped[len];
+            for (int i = 0; i < len; i++) {
+                final Object e = Array.get(object, i);
+                elements[i] = e == null ? null : wrapObject(e);
+            }
+            return new WrappedObjectArray(componentType, elements);
         } else { // wrapping a general object
             final List<WrappedObjectPlaceholder> todoList = new LinkedList<>();
             todos.put(objectId, todoList);
             final WrappedObject wrappedObject = new WrappedObject();
-            final Class<?> clazz = object.getClass();
             final Wrapped[] wrappedFieldValues =
                     wrapFieldValuesRecursively(wrappedObject, clazz, object);
             wrappedObject.setClazz(clazz);

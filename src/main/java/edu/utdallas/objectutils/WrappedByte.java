@@ -55,12 +55,22 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public Byte reify() {
+    public String toString() {
+        return String.valueOf(this.value);
+    }
+
+    @Override
+    public Byte unwrap() {
         return this.value;
     }
 
     @Override
-    public Byte reify(final ModificationPredicate mutateStatics) {
+    public Byte unwrap(final ModificationPredicate mutateStatics) {
         return this.value;
+    }
+
+    @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
     }
 }

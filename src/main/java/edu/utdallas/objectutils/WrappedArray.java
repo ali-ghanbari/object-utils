@@ -20,25 +20,11 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.io.Serializable;
-
 /**
- * Represents a wrapped object which is <code>Serializable</code> and implements
- * <code>equals</code> and <code>hashCode</code> methods appropriately.
+ * The base class for all wrapped arrays
  *
  * @author Ali Ghanbari
  */
-public interface Wrapped extends Serializable {
-    /**
-     * Reifies wrapped object without altering any static fields
-     * <b>Note:</b> <code>static final</code> fields are ignored anyway
-     * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
-     * @return Reified object
-     * @throws Exception Any Java reflection-related exception
-     */
-    <T> T unwrap() throws Exception;
+public interface WrappedArray extends Wrapped {
 
-    <T> T unwrap(ModificationPredicate mutateStatics) throws Exception;
-
-    int getAddress();
 }

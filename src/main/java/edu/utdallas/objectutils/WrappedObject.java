@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.objenesis.ObjenesisHelper;
 
@@ -49,13 +50,16 @@ public class WrappedObject implements Wrapped {
 
     protected Wrapped[] wrappedFieldValues;
 
-    public WrappedObject() {
+    protected final int address;
 
+    public WrappedObject() {
+        this.address = Commons.newAddress();
     }
 
     public WrappedObject(Class<?> clazz, Wrapped[] wrappedFieldValues) {
         this.clazz = clazz;
         this.wrappedFieldValues = wrappedFieldValues;
+        this.address = Commons.newAddress();
     }
 
     @Override
@@ -67,7 +71,10 @@ public class WrappedObject implements Wrapped {
             return false;
         }
         WrappedObject that = (WrappedObject) o;
-        return this.clazz == that.clazz && Arrays.equals(this.wrappedFieldValues, that.wrappedFieldValues);
+        /* I work around the problem of graph isomorphism by converting the object graphs
+        * into strings and the comparing the strings. This is not a true isomorphism
+        * checking algorithm as depending on the head node, the result will be different */
+        return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
     }
 
     @Override
@@ -75,53 +82,8 @@ public class WrappedObject implements Wrapped {
         return Objects.hash(this.clazz);
     }
 
-//    private Set<W> thisVisited = new HashSet<>();
-//    private Set<W> thatVisited = new HashSet<>();
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || getClass() != o.getClass()) {
-//            this.thisVisited.clear();
-//            this.thatVisited.clear();
-//            return false;
-//        }
-//        WrappedObject that = (WrappedObject) o;
-//        if (this.clazz == that.clazz) {
-////            Arrays.equals(wrappedFieldValues, that.wrappedFieldValues);
-//            final int len = this.wrappedFieldValues.length;
-//            /* the field wrappedFieldValues is always non-null */
-//            if (len == that.wrappedFieldValues.length) {
-//                if (this.visited == null) {
-//                    this.visited = new ArrayList<>();
-//                }
-//                for (int i = 0; i < len; i++) {
-//                    Wrapped item = this.wrappedFieldValues[i];
-//                    for (final Wrapped visitedItem : this.visited) {
-//                        if (visitedItem == item) {
-//                            this.visited = null;
-//                            return false;
-//                        }
-//                    }
-//                    this.visited.add(item);
-//
-//                }
-//            }
-//        }
-//        this.thisVisited.clear();
-//        this.thatVisited.clear();
-//        return false;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(clazz);
-//    }
-
     public Class<?> getClazz() {
-        return clazz;
+        return this.clazz;
     }
 
     public void setClazz(Class<?> clazz) {
@@ -129,7 +91,7 @@ public class WrappedObject implements Wrapped {
     }
 
     public Wrapped[] getWrappedFieldValues() {
-        return wrappedFieldValues;
+        return this.wrappedFieldValues;
     }
 
     public void setWrappedFieldValues(Wrapped[] wrappedFieldValues) {
@@ -164,29 +126,29 @@ public class WrappedObject implements Wrapped {
     }
 
     @Override
-    public Object reify() throws Exception {
-        return reify(NO);
+    public Object unwrap() throws Exception {
+        return unwrap(NO);
     }
 
     @Override
-    public Object reify(ModificationPredicate mutateStatics) throws Exception {
+    public Object unwrap(ModificationPredicate mutateStatics) throws Exception {
         synchronized (WrappedObject.class) {
             todos = new HashMap<>();
             cache = new HashMap<>();
-            return reify0(mutateStatics);
+            return unwrap0(mutateStatics);
         }
     }
 
     /* this method intended to avoid lock re-entrance */
-    private static Object reifyMux(final Wrapped wrappedObject,
-                                   final ModificationPredicate predicate) throws Exception {
+    private static Object unwrapMux(final Wrapped wrappedObject,
+                                    final ModificationPredicate predicate) throws Exception {
         if (wrappedObject instanceof WrappedObject) {
-            return ((WrappedObject) wrappedObject).reify0(predicate);
+            return ((WrappedObject) wrappedObject).unwrap0(predicate);
         }
-        return wrappedObject.reify(predicate);
+        return wrappedObject.unwrap(predicate);
     }
 
-    private Object reify0(final ModificationPredicate mutateStatics) throws Exception {
+    private Object unwrap0(final ModificationPredicate mutateStatics) throws Exception {
         final List<ReifiedObjectPlaceholder> todoList = createToDo(this);
         final boolean shouldModifyStatics = mutateStatics.test(this.clazz);
         final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
@@ -208,7 +170,7 @@ public class WrappedObject implements Wrapped {
                     } else {
                         value = getCache(wrappedFieldValue);
                         if (value == null) {
-                            value = reifyMux(wrappedFieldValue, mutateStatics);
+                            value = unwrapMux(wrappedFieldValue, mutateStatics);
                         }
                     }
                 }
@@ -238,5 +200,10 @@ public class WrappedObject implements Wrapped {
         public void substitute(Wrapped wrappedObject) {
             WrappedObject.this.wrappedFieldValues[this.fieldIndex] = wrappedObject;
         }
+    }
+
+    @Override
+    public int getAddress() {
+        return this.address;
     }
 }
