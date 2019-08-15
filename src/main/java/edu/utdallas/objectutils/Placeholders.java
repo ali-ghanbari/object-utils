@@ -28,13 +28,13 @@ interface WrappedObjectPlaceholder {
     void substitute(final Wrapped wrappedObject);
 }
 
-class ReifiedObjectPlaceholder {
-    /* this is the object whose field is going to be replaced by some reified object */
+class UnwrappedObjectPlaceholder {
+    /* this is the object whose field is going to be replaced by some unwrapped object */
     final Object sourceObject;
 
     final Field field;
 
-    public ReifiedObjectPlaceholder(final Object sourceObject, final Field field) {
+    public UnwrappedObjectPlaceholder(final Object sourceObject, final Field field) {
         this.sourceObject = sourceObject;
         this.field = field;
     }

@@ -34,12 +34,6 @@ public final class Commons {
         return Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
     }
 
-    public static String getObjectId(final Object object) {
-        final String className = object.getClass().getName();
-        final int identityHashCode = System.identityHashCode(object);
-        return className + "@" + identityHashCode;
-    }
-
     private static int addressCounter = 0;
 
     public static int newAddress() {
