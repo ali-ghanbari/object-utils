@@ -21,9 +21,10 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.ObjectPrinter;
+import edu.utdallas.objectutils.utils.W;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.*;
 
 import static edu.utdallas.objectutils.ModificationPredicate.NO;
 
@@ -41,6 +42,10 @@ public class WrappedObjectArray implements WrappedArray {
     protected final Class<?> componentType;
 
     protected final Wrapped[] value;
+
+    private static Map<W, List<UnwrappedObjectArrayPlaceholder>> todos;
+
+    private static Map<W, Object> cache;
 
     public WrappedObjectArray(Class<?> componentType, Wrapped[] value) {
         this.value = value;
@@ -76,6 +81,28 @@ public class WrappedObjectArray implements WrappedArray {
         return value;
     }
 
+    private static Object getCache(final Wrapped wrapped) {
+        return cache.get(W.of(wrapped));
+    }
+
+    private static void putCache(final Wrapped wrapped, final Object unwrapped) {
+        cache.put(W.of(wrapped), unwrapped);
+    }
+
+    private static List<UnwrappedObjectArrayPlaceholder> getToDo(final Wrapped wrapped) {
+        return todos.get(W.of(wrapped));
+    }
+
+    private static List<UnwrappedObjectArrayPlaceholder> createToDo(final Wrapped wrapped) {
+        final List<UnwrappedObjectArrayPlaceholder> todoList = new LinkedList<>();
+        todos.put(W.of(wrapped), todoList);
+        return todoList;
+    }
+
+    private static void deleteToDo(final Wrapped wrapped) {
+        todos.remove(W.of(wrapped));
+    }
+
     @Override
     public Object unwrap() throws Exception {
         return unwrap(NO);
@@ -83,13 +110,58 @@ public class WrappedObjectArray implements WrappedArray {
 
     @Override
     public Object unwrap(ModificationPredicate mutateStatics) throws Exception {
+//        final int len = this.value.length;
+//        final Object array = Array.newInstance(this.componentType, len);
+//        for (int i = 0; i < len; i++) {
+//            final Wrapped we = this.value[i];
+//            Array.set(array, i, we == null ? null : we.unwrap(mutateStatics));
+//        }
+//        return array;
+        todos = new HashMap<>();
+        cache = new HashMap<>();
+
+        return unwrap0(mutateStatics);
+    }
+
+    public Object unwrap0(ModificationPredicate mutateStatics) throws Exception {
+        final List<UnwrappedObjectArrayPlaceholder> todoList = createToDo(this);
         final int len = this.value.length;
         final Object array = Array.newInstance(this.componentType, len);
-        for (int i = 0; i < len; i++) {
-            final Wrapped we = this.value[i];
-            Array.set(array, i, we == null ? null : we.unwrap(mutateStatics));
+
+    }
+
+    WrappedPlaceholder createPlaceholder(final int elementIndex) {
+        return new WrappedObjectArrayPlaceholder(elementIndex);
+    }
+
+    protected class WrappedObjectArrayPlaceholder implements WrappedPlaceholder {
+        final int elementIndex;
+
+        public WrappedObjectArrayPlaceholder(final int elementIndex) {
+            this.elementIndex = elementIndex;
         }
-        return array;
+
+        @Override
+        public void substitute(Wrapped wrappedObjectArray) {
+            WrappedObjectArray.this.value[this.elementIndex] = wrappedObjectArray;
+        }
+    }
+
+    protected static class UnwrappedObjectArrayPlaceholder implements UnwrappedPlaceholder {
+        /* this is the array whose index'th index is going to be replaced by some unwrapped object */
+        final Object[] sourceArray;
+
+        final int index;
+
+        public UnwrappedObjectArrayPlaceholder(final Object[] sourceArray, final int index) {
+            this.sourceArray = sourceArray;
+            this.index = index;
+        }
+
+        @Override
+        public void substitute(final Object unwrappedTargetObject) throws Exception {
+            this.sourceArray[this.index] = unwrappedTargetObject;
+        }
     }
 
     @Override

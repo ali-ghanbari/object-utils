@@ -506,4 +506,14 @@ public class WrapperTest {
         final Wrapped wa2 = Wrapper.wrapObject(arr2);
         assertEquals(wa1.toString(), wa2.toString());
     }
+
+    @Test
+    public void wrappedArrayTest6() throws Exception {
+        final Object[] objectArray = new Object[1];
+        objectArray[0] = objectArray;
+        final Wrapped wrapped = Wrapper.wrapObject(objectArray);
+        final Object[] uw = (Object[]) wrapped.unwrap();
+        System.out.println(uw[0].getClass().getName());
+        assertTrue(uw[0] == uw);
+    }
 }

@@ -98,26 +98,26 @@ public class WrappedObject implements Wrapped {
         this.wrappedFieldValues = wrappedFieldValues;
     }
 
-    private static Object getCache(final Wrapped wrappedObject) {
-        return cache.get(W.of(wrappedObject));
+    private static Object getCache(final Wrapped wrapped) {
+        return cache.get(W.of(wrapped));
     }
 
-    private static void putCache(final Wrapped wrappedObject, final Object reifiedObject) {
-        cache.put(W.of(wrappedObject), reifiedObject);
+    private static void putCache(final Wrapped wrapped, final Object unwrapped) {
+        cache.put(W.of(wrapped), unwrapped);
     }
 
-    private static List<UnwrappedObjectPlaceholder> getToDo(final Wrapped wrappedObject) {
-        return todos.get(W.of(wrappedObject));
+    private static List<UnwrappedObjectPlaceholder> getToDo(final Wrapped wrapped) {
+        return todos.get(W.of(wrapped));
     }
 
-    private static List<UnwrappedObjectPlaceholder> createToDo(final Wrapped wrappedObject) {
+    private static List<UnwrappedObjectPlaceholder> createToDo(final Wrapped wrapped) {
         final List<UnwrappedObjectPlaceholder> todoList = new LinkedList<>();
-        todos.put(W.of(wrappedObject), todoList);
+        todos.put(W.of(wrapped), todoList);
         return todoList;
     }
 
-    private static void deleteToDo(final Wrapped wrappedObject) {
-        todos.remove(W.of(wrappedObject));
+    private static void deleteToDo(final Wrapped wrapped) {
+        todos.remove(W.of(wrapped));
     }
 
     @Override
@@ -127,21 +127,19 @@ public class WrappedObject implements Wrapped {
 
     @Override
     public Object unwrap(ModificationPredicate mutateStatics) throws Exception {
-        synchronized (WrappedObject.class) {
-            todos = new HashMap<>();
-            cache = new HashMap<>();
-            return unwrap0(mutateStatics);
-        }
+        todos = new HashMap<>();
+        cache = new HashMap<>();
+        return unwrap0(mutateStatics);
     }
 
-    /* this method intended to avoid lock re-entrance */
-    private static Object unwrapMux(final Wrapped wrappedObject,
-                                    final ModificationPredicate predicate) throws Exception {
-        if (wrappedObject instanceof WrappedObject) {
-            return ((WrappedObject) wrappedObject).unwrap0(predicate);
-        }
-        return wrappedObject.unwrap(predicate);
-    }
+//    /* this method intended to avoid lock re-entrance */
+//    private static Object unwrapMux(final Wrapped wrappedObject,
+//                                    final ModificationPredicate predicate) throws Exception {
+//        if (wrappedObject instanceof WrappedObject) {
+//            return ((WrappedObject) wrappedObject).unwrap0(predicate);
+//        }
+//        return wrappedObject.unwrap(predicate);
+//    }
 
     private Object unwrap0(final ModificationPredicate mutateStatics) throws Exception {
         final List<UnwrappedObjectPlaceholder> todoList = createToDo(this);
@@ -165,7 +163,8 @@ public class WrappedObject implements Wrapped {
                     } else {
                         value = getCache(wrappedFieldValue);
                         if (value == null) {
-                            value = unwrapMux(wrappedFieldValue, mutateStatics);
+                            value = wrappedFieldValue.unwrap(mutateStatics);
+                            //unwrapMux(wrappedFieldValue, mutateStatics);
                         }
                     }
                 }
@@ -180,20 +179,37 @@ public class WrappedObject implements Wrapped {
         return rawObject;
     }
 
-    WrappedObjectPlaceholder createPlaceholder(final int fieldIndex) {
-        return new WrappedObjectPlaceholderImp(fieldIndex);
+    WrappedPlaceholder createPlaceholder(final int fieldIndex) {
+        return new WrappedObjectPlaceholder(fieldIndex);
     }
 
-    protected class WrappedObjectPlaceholderImp implements WrappedObjectPlaceholder {
+    protected class WrappedObjectPlaceholder implements WrappedPlaceholder {
         final int fieldIndex;
 
-        public WrappedObjectPlaceholderImp(final int fieldIndex) {
+        public WrappedObjectPlaceholder(final int fieldIndex) {
             this.fieldIndex = fieldIndex;
         }
 
         @Override
-        public void substitute(Wrapped wrappedObject) {
-            WrappedObject.this.wrappedFieldValues[this.fieldIndex] = wrappedObject;
+        public void substitute(Wrapped wrapped) {
+            WrappedObject.this.wrappedFieldValues[this.fieldIndex] = wrapped;
+        }
+    }
+
+    protected static class UnwrappedObjectPlaceholder implements UnwrappedPlaceholder {
+        /* this is the object whose field is going to be replaced by some unwrapped object */
+        final Object sourceObject;
+
+        final Field field;
+
+        public UnwrappedObjectPlaceholder(final Object sourceObject, final Field field) {
+            this.sourceObject = sourceObject;
+            this.field = field;
+        }
+
+        @Override
+        public void substitute(final Object unwrappedTargetObject) throws Exception {
+            FieldUtils.writeField(this.field, this.sourceObject, unwrappedTargetObject, true);
         }
     }
 

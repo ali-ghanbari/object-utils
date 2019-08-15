@@ -40,7 +40,7 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public final class Wrapper {
     /* we are using this to resolve cyclic pointers between objects */
     /* is to be reset before each wrapping operation */
-    private static Map<W, List<WrappedObjectPlaceholder>> todos;
+    private static Map<W, List<WrappedPlaceholder>> todos;
 
     /* we are using this to avoid re-wrapping already wrapped objects.
     please note that this is an important requirement for correctness of reified objects. */
@@ -152,30 +152,51 @@ public final class Wrapper {
             return new WrappedStringArray((String[]) object);
         }
         final Class<?> clazz = object.getClass();
+        final List<WrappedPlaceholder> todoList = new LinkedList<>();
+        todos.put(coveredObject, todoList);
+        final Wrapped wrappedObject;
         if (clazz.isArray()) {
             final Class<?> componentType = clazz.getComponentType();
             final int len = Array.getLength(object);
             final Wrapped[] elements = new Wrapped[len];
+            final WrappedObjectArray woa = new WrappedObjectArray(componentType, elements);
             for (int i = 0; i < len; i++) {
                 final Object e = Array.get(object, i);
-                elements[i] = e == null ? null : wrap0(W.of(e), e);
+                final W coveredElement = W.of(e);
+                final List<WrappedPlaceholder> tdl = todos.get(coveredElement);
+                if (tdl != null) { // cycle?
+                    elements[i] = null;
+                    tdl.add(woa.createPlaceholder(i));
+                } else {
+                    if (e == null) {
+                        elements[i] = null;
+                    } else {
+                        Wrapped we = cache.get(coveredElement);
+                        if (we == null) {
+                            we = wrap0(W.of(e), e);
+                        }
+                        elements[i] = we;
+                    }
+                }
             }
-            return new WrappedObjectArray(componentType, elements);
+            for (final WrappedPlaceholder placeholder : todoList) {
+                placeholder.substitute(woa);
+            }
+            wrappedObject = woa;
         } else { // wrapping a general object
-            final List<WrappedObjectPlaceholder> todoList = new LinkedList<>();
-            todos.put(coveredObject, todoList);
-            final WrappedObject wrappedObject = new WrappedObject();
+            final WrappedObject temp = new WrappedObject();
             final Wrapped[] wrappedFieldValues =
-                    wrapFieldValuesRecursively(wrappedObject, clazz, object);
-            wrappedObject.setClazz(clazz);
-            wrappedObject.setWrappedFieldValues(wrappedFieldValues);
-            for (final WrappedObjectPlaceholder placeholder : todoList) {
-                placeholder.substitute(wrappedObject);
+                    wrapFieldValuesRecursively(temp, clazz, object);
+            temp.setClazz(clazz);
+            temp.setWrappedFieldValues(wrappedFieldValues);
+            for (final WrappedPlaceholder placeholder : todoList) {
+                placeholder.substitute(temp);
             }
-            todos.remove(coveredObject);
-            cache.put(coveredObject, wrappedObject);
-            return wrappedObject;
+            wrappedObject = temp;
         }
+        todos.remove(coveredObject);
+        cache.put(coveredObject, wrappedObject);
+        return wrappedObject;
     }
 
     private static Wrapped[] wrapFieldValuesRecursively(final WrappedObject currentWrappedObject,
@@ -194,10 +215,10 @@ public final class Wrapper {
                 wrappedFieldValue = null;
             } else {
                 final W coveredFieldValue = W.of(fieldValue);
-                final List<WrappedObjectPlaceholder> todoList = todos.get(coveredFieldValue);
+                final List<WrappedPlaceholder> todoList = todos.get(coveredFieldValue);
                 if (todoList != null) { // cycle?
                     wrappedFieldValue = null;
-                    final WrappedObjectPlaceholder todoTask =
+                    final WrappedPlaceholder todoTask =
                             currentWrappedObject.createPlaceholder(fieldIndexCounter);
                     todoList.add(todoTask);
                 } else {

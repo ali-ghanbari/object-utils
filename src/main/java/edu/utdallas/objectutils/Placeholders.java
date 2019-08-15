@@ -20,26 +20,10 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-
-import java.lang.reflect.Field;
-
-interface WrappedObjectPlaceholder {
-    void substitute(final Wrapped wrappedObject);
+interface WrappedPlaceholder {
+    void substitute(final Wrapped wrapped);
 }
 
-class UnwrappedObjectPlaceholder {
-    /* this is the object whose field is going to be replaced by some unwrapped object */
-    final Object sourceObject;
-
-    final Field field;
-
-    public UnwrappedObjectPlaceholder(final Object sourceObject, final Field field) {
-        this.sourceObject = sourceObject;
-        this.field = field;
-    }
-
-    public void substitute(final Object reifiedTargetObject) throws Exception {
-        FieldUtils.writeField(this.field, this.sourceObject, reifiedTargetObject, true);
-    }
+interface UnwrappedPlaceholder {
+    void substitute(final Object unwrappedTargetObject) throws Exception;
 }
