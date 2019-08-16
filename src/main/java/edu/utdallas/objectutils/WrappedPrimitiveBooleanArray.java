@@ -22,12 +22,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
-public class WrappedStringArray implements WrappedArray {
+public class WrappedPrimitiveBooleanArray implements WrappedArray {
     private static final long serialVersionUID = 1L;
 
-    private final String[] value;
+    private boolean[] value;
 
-    public WrappedStringArray(String[] value) {
+    public WrappedPrimitiveBooleanArray(boolean[] value) {
         this.value = Arrays.copyOf(value, value.length);
     }
 
@@ -39,7 +39,7 @@ public class WrappedStringArray implements WrappedArray {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        WrappedStringArray that = (WrappedStringArray) o;
+        WrappedPrimitiveBooleanArray that = (WrappedPrimitiveBooleanArray) o;
         return Arrays.equals(this.value, that.value);
     }
 
@@ -54,12 +54,12 @@ public class WrappedStringArray implements WrappedArray {
     }
 
     @Override
-    public String[] unwrap() {
+    public boolean[] unwrap() {
         return this.value;
     }
 
     @Override
-    public String[] unwrap(ModificationPredicate shouldMutate) {
+    public boolean[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

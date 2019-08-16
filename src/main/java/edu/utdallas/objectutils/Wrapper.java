@@ -91,77 +91,74 @@ public final class Wrapper {
         if (object == null) {
             return WrappedNull.INSTANCE;
         }
-        Commons.resetAddressCounter();
-        return wrap1(object);
-    }
-
-    private static Wrapped wrap1(final Object object) throws Exception {
         todos.clear();
         cache.clear();
+        Commons.resetAddressCounter();
         final W coveredObject = W.of(object);
         return wrap0(coveredObject);
     }
 
     private static Wrapped wrap0(final W coveredObject) throws Exception {
         final Object object = coveredObject.getCore();
-        if (object instanceof Boolean) {
-            return new WrappedBoolean((Boolean) object);
-        } else if (object instanceof boolean[]) {
-            return new WrappedBooleanArray((boolean[]) object);
-        } else if (object instanceof Boolean[]) {
-            return new WrappedBooleanArray((Boolean[]) object);
-        } else if (object instanceof Byte) {
-            return new WrappedByte((Byte) object);
-        } else if (object instanceof byte[]) {
-            return new WrappedByteArray((byte[]) object);
-        } else if (object instanceof Byte[]) {
-            return new WrappedByteArray((Byte[]) object);
-        } else if (object instanceof Character) {
-            return new WrappedChar((Character) object);
-        } else if (object instanceof char[]) {
-            return new WrappedCharArray((char[]) object);
-        } else if (object instanceof Character[]) {
-            return new WrappedCharArray((Character[]) object);
-        } else if (object instanceof Short) {
-            return new WrappedShort((Short) object);
-        } else if (object instanceof short[]) {
-            return new WrappedShortArray((short[]) object);
-        } else if (object instanceof Short[]) {
-            return new WrappedShortArray((Short[]) object);
-        } else if (object instanceof Integer) {
+        if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
-        } else if (object instanceof int[]) {
-            return new WrappedIntArray((int[]) object);
-        } else if (object instanceof Integer[]) {
-            return new WrappedIntArray((Integer[]) object);
-        } else if (object instanceof Float) {
-            return new WrappedFloat((Float) object);
-        } else if (object instanceof float[]) {
-            return new WrappedFloatArray((float[]) object);
-        } else if (object instanceof Float[]) {
-            return new WrappedFloatArray((Float[]) object);
-        } else if (object instanceof Double) {
-            return new WrappedDouble((Double) object);
-        } else if (object instanceof double[]) {
-            return new WrappedDoubleArray((double[]) object);
-        } else if (object instanceof Double[]) {
-            return new WrappedDoubleArray((Double[]) object);
-        } else if (object instanceof Long) {
-            return new WrappedLong((Long) object);
-        } else if (object instanceof long[]) {
-            return new WrappedLongArray((long[]) object);
-        } else if (object instanceof Long[]) {
-            return new WrappedLongArray((Long[]) object);
         } else if (object instanceof String) {
             return new WrappedString((String) object);
-        } else if (object instanceof String[]) {
-            return new WrappedStringArray((String[]) object);
+        } else if (object instanceof Float) {
+            return new WrappedFloat((Float) object);
+        } else if (object instanceof Double) {
+            return new WrappedDouble((Double) object);
+        } else if (object instanceof Long) {
+            return new WrappedLong((Long) object);
+        } else if (object instanceof Boolean) {
+            return new WrappedBoolean((Boolean) object);
+        } else if (object instanceof Byte) {
+            return new WrappedByte((Byte) object);
+        } else if (object instanceof Character) {
+            return new WrappedChar((Character) object);
+        } else if (object instanceof Short) {
+            return new WrappedShort((Short) object);
         }
         final Class<?> clazz = object.getClass();
         final List<WrappedPlaceholder> todoList = new LinkedList<>();
         todos.put(coveredObject, todoList);
         final Wrapped wrappedObject;
         if (clazz.isArray()) {
+            if (object instanceof int[]) {
+                return new WrappedPrimitiveIntArray((int[]) object);
+            } else if (object instanceof boolean[]) {
+                return new WrappedPrimitiveBooleanArray((boolean[]) object);
+            } else if (object instanceof byte[]) {
+                return new WrappedPrimitiveByteArray((byte[]) object);
+            } else if (object instanceof char[]) {
+                return new WrappedPrimitiveCharArray((char[]) object);
+            } else if (object instanceof short[]) {
+                return new WrappedPrimitiveShortArray((short[]) object);
+            } else if (object instanceof float[]) {
+                return new WrappedPrimitiveFloatArray((float[]) object);
+            } else if (object instanceof double[]) {
+                return new WrappedPrimitiveDoubleArray((double[]) object);
+            } else if (object instanceof long[]) {
+                return new WrappedPrimitiveLongArray((long[]) object);
+            } else if (object instanceof String[]) {
+                return new WrappedStringArray((String[]) object);
+            } else if (object instanceof Boolean[]) {
+                return new WrappedBooleanArray((Boolean[]) object);
+            } else  if (object instanceof Byte[]) {
+                return new WrappedByteArray((Byte[]) object);
+            } else if (object instanceof Character[]) {
+                return new WrappedCharArray((Character[]) object);
+            } else if (object instanceof Short[]) {
+                return new WrappedShortArray((Short[]) object);
+            } else if (object instanceof Integer[]) {
+                return new WrappedIntArray((Integer[]) object);
+            } else if (object instanceof Float[]) {
+                return new WrappedFloatArray((Float[]) object);
+            } else if (object instanceof Double[]) {
+                return new WrappedDoubleArray((Double[]) object);
+            } else if (object instanceof Long[]) {
+                return new WrappedLongArray((Long[]) object);
+            }
             final Class<?> componentType = clazz.getComponentType();
             final int len = Array.getLength(object);
             final Wrapped[] elements = new Wrapped[len];

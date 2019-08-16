@@ -1,6 +1,5 @@
 package edu.utdallas.objectutils;
 
-import edu.utdallas.objectutils.utils.ObjectPrinter;
 import edu.utdallas.objectutils.utils.W;
 
 import java.util.HashMap;

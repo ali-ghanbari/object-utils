@@ -9,9 +9,9 @@ package edu.utdallas.objectutils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,21 +20,15 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.Arrays;
 
 public class WrappedLongArray implements WrappedArray {
     private static final long serialVersionUID = 1L;
 
-    private final long[] value;
-
-    public WrappedLongArray(long[] value) {
-        this.value = value;
-    }
+    private final Long[] value;
 
     public WrappedLongArray(Long[] value) {
-        this.value = ArrayUtils.toPrimitive(value);
+        this.value = Arrays.copyOf(value, value.length);
     }
 
     @Override
@@ -60,12 +54,12 @@ public class WrappedLongArray implements WrappedArray {
     }
 
     @Override
-    public long[] unwrap() {
+    public Long[] unwrap() {
         return this.value;
     }
 
     @Override
-    public long[] unwrap(ModificationPredicate shouldMutate) {
+    public Long[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

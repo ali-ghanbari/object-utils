@@ -517,4 +517,24 @@ public class WrapperTest {
         System.out.println(uw[0].getClass().getName());
         assertTrue(uw[0] == uw);
     }
+
+    private static class TC {
+        private final int[] f1 = {0, 1, 2};
+        private final Integer[] f2 = {1, 2, 3};
+
+        @Override
+        public String toString() {
+            return "TC{" +
+                    "f1=" + Arrays.toString(f1) +
+                    ", f2=" + Arrays.toString(f2) +
+                    '}';
+        }
+    }
+
+    @Test
+    public void wrappedArrayTest7() throws Exception {
+        final TC tc = new TC();
+        final Wrapped wrapped = Wrapper.wrapObject(tc);
+        assertEquals(tc.toString(), wrapped.unwrap().toString());
+    }
 }

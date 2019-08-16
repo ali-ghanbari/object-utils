@@ -9,9 +9,9 @@ package edu.utdallas.objectutils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,22 +20,17 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.Arrays;
 
 public class WrappedBooleanArray implements WrappedArray {
     private static final long serialVersionUID = 1L;
 
-    private boolean[] value;
-
-    public WrappedBooleanArray(boolean[] value) {
-        this.value = value;
-    }
+    private Boolean[] value;
 
     public WrappedBooleanArray(Boolean[] value) {
-        this.value = ArrayUtils.toPrimitive(value);
+        this.value = Arrays.copyOf(value, value.length);
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -59,12 +54,12 @@ public class WrappedBooleanArray implements WrappedArray {
     }
 
     @Override
-    public boolean[] unwrap() {
+    public Boolean[] unwrap() {
         return this.value;
     }
 
     @Override
-    public boolean[] unwrap(ModificationPredicate shouldMutate) {
+    public Boolean[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 
