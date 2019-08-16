@@ -20,10 +20,14 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-interface WrappedPlaceholder {
+public interface Placeholder {
+
+}
+
+interface WrappedPlaceholder extends Placeholder {
     void substitute(final Wrapped wrapped);
 }
 
-interface UnwrappedPlaceholder {
+interface UnwrappedPlaceholder extends Placeholder {
     void substitute(final Object unwrappedTargetObject) throws Exception;
 }

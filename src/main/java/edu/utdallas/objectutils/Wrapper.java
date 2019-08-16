@@ -21,6 +21,7 @@ package edu.utdallas.objectutils;
  */
 
 
+import edu.utdallas.objectutils.utils.TodoListManager;
 import edu.utdallas.objectutils.utils.W;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -39,7 +40,7 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public final class Wrapper {
     /* we are using this to resolve cyclic pointers between objects */
     /* is to be reset before each wrapping operation */
-    private static final Map<W, List<WrappedPlaceholder>> todos;
+    private static final Map<W, List<Placeholder>> todos;
 
     /* we are using this to avoid re-wrapping already wrapped objects.
     please note that this is an important requirement for correctness of unwrapped objects. */
@@ -120,7 +121,7 @@ public final class Wrapper {
             return new WrappedShort((Short) object);
         }
         final Class<?> clazz = object.getClass();
-        final List<WrappedPlaceholder> todoList = new LinkedList<>();
+        final List<Placeholder> todoList = TodoListManager.allocate();
         todos.put(coveredObject, todoList);
         final Wrapped wrappedObject;
         if (clazz.isArray()) {
@@ -166,7 +167,7 @@ public final class Wrapper {
             for (int i = 0; i < len; i++) {
                 final Object e = Array.get(object, i);
                 final W coveredElement = W.of(e);
-                final List<WrappedPlaceholder> tdl = todos.get(coveredElement);
+                final List<Placeholder> tdl = todos.get(coveredElement);
                 if (tdl != null) { // cycle?
                     elements[i] = null;
                     tdl.add(woa.createWrappedPlaceholder(i));
@@ -182,9 +183,10 @@ public final class Wrapper {
                     }
                 }
             }
-            for (final WrappedPlaceholder placeholder : todoList) {
-                placeholder.substitute(woa);
+            for (final Placeholder placeholder : todoList) {
+                ((WrappedPlaceholder) placeholder).substitute(woa);
             }
+            TodoListManager.free(todoList);
             wrappedObject = woa;
         } else { // wrapping a general object
             final WrappedObject temp = new WrappedObject(null, null);
@@ -192,9 +194,10 @@ public final class Wrapper {
                     wrapFieldValuesRecursively(temp, clazz, object);
             temp.setType(clazz);
             temp.setValues(wrappedFieldValues);
-            for (final WrappedPlaceholder placeholder : todoList) {
-                placeholder.substitute(temp);
+            for (final Placeholder placeholder : todoList) {
+                ((WrappedPlaceholder) placeholder).substitute(temp);
             }
+            TodoListManager.free(todoList);
             wrappedObject = temp;
         }
         todos.remove(coveredObject);
@@ -218,7 +221,7 @@ public final class Wrapper {
                 wrappedFieldValue = null;
             } else {
                 final W coveredFieldValue = W.of(fieldValue);
-                final List<WrappedPlaceholder> todoList = todos.get(coveredFieldValue);
+                final List<Placeholder> todoList = todos.get(coveredFieldValue);
                 if (todoList != null) { // cycle?
                     wrappedFieldValue = null;
                     final WrappedPlaceholder todoTask =
