@@ -65,7 +65,7 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
-    public Double unwrap(final ModificationPredicate mutateStatics) {
+    public Double unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

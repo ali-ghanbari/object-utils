@@ -22,7 +22,6 @@ package edu.utdallas.objectutils;
 
 
 import edu.utdallas.objectutils.utils.W;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Array;
@@ -40,12 +39,17 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public final class Wrapper {
     /* we are using this to resolve cyclic pointers between objects */
     /* is to be reset before each wrapping operation */
-    private static Map<W, List<WrappedPlaceholder>> todos;
+    private static final Map<W, List<WrappedPlaceholder>> todos;
 
     /* we are using this to avoid re-wrapping already wrapped objects.
-    please note that this is an important requirement for correctness of reified objects. */
+    please note that this is an important requirement for correctness of unwrapped objects. */
     /* is to be reset before each wrapping operation */
-    private static Map<W, Wrapped> cache;
+    private static final Map<W, Wrapped> cache;
+
+    static {
+        todos = new HashMap<>();
+        cache = new HashMap<>();
+    }
 
     public static WrappedBoolean wrapBoolean(final boolean value) {
         return new WrappedBoolean(value);
@@ -84,20 +88,22 @@ public final class Wrapper {
     }
 
     public static Wrapped wrapObject(final Object object) throws Exception {
+        if (object == null) {
+            return WrappedNull.INSTANCE;
+        }
         Commons.resetAddressCounter();
         return wrap1(object);
     }
 
     private static Wrapped wrap1(final Object object) throws Exception {
-        Validate.notNull(object);
-        todos = new HashMap<>();
-        cache = new HashMap<>();
+        todos.clear();
+        cache.clear();
         final W coveredObject = W.of(object);
-        return wrap0(coveredObject, object);
+        return wrap0(coveredObject);
     }
 
-    private static Wrapped wrap0(final W coveredObject,
-                                 final Object object) throws Exception {
+    private static Wrapped wrap0(final W coveredObject) throws Exception {
+        final Object object = coveredObject.getCore();
         if (object instanceof Boolean) {
             return new WrappedBoolean((Boolean) object);
         } else if (object instanceof boolean[]) {
@@ -166,14 +172,14 @@ public final class Wrapper {
                 final List<WrappedPlaceholder> tdl = todos.get(coveredElement);
                 if (tdl != null) { // cycle?
                     elements[i] = null;
-                    tdl.add(woa.createPlaceholder(i));
+                    tdl.add(woa.createWrappedPlaceholder(i));
                 } else {
                     if (e == null) {
                         elements[i] = null;
                     } else {
                         Wrapped we = cache.get(coveredElement);
                         if (we == null) {
-                            we = wrap0(W.of(e), e);
+                            we = wrap0(W.of(e));
                         }
                         elements[i] = we;
                     }
@@ -184,11 +190,11 @@ public final class Wrapper {
             }
             wrappedObject = woa;
         } else { // wrapping a general object
-            final WrappedObject temp = new WrappedObject();
+            final WrappedObject temp = new WrappedObject(null, null);
             final Wrapped[] wrappedFieldValues =
                     wrapFieldValuesRecursively(temp, clazz, object);
-            temp.setClazz(clazz);
-            temp.setWrappedFieldValues(wrappedFieldValues);
+            temp.setType(clazz);
+            temp.setValues(wrappedFieldValues);
             for (final WrappedPlaceholder placeholder : todoList) {
                 placeholder.substitute(temp);
             }
@@ -219,13 +225,13 @@ public final class Wrapper {
                 if (todoList != null) { // cycle?
                     wrappedFieldValue = null;
                     final WrappedPlaceholder todoTask =
-                            currentWrappedObject.createPlaceholder(fieldIndexCounter);
+                            currentWrappedObject.createWrappedPlaceholder(fieldIndexCounter);
                     todoList.add(todoTask);
                 } else {
                     /* recompute the wrapped object only once we have not already computed it */
                     final Wrapped wrappedObject = cache.get(coveredFieldValue);
                     if (wrappedObject == null) {
-                        wrappedFieldValue = wrap0(coveredFieldValue, fieldValue);
+                        wrappedFieldValue = wrap0(coveredFieldValue);
                     } else {
                         wrappedFieldValue = wrappedObject;
                     }

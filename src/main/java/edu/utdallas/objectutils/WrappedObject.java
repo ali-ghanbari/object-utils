@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.ObjectPrinter;
-import edu.utdallas.objectutils.utils.W;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.objenesis.ObjenesisHelper;
 
@@ -30,7 +29,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
-import static edu.utdallas.objectutils.ModificationPredicate.NO;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.
@@ -39,27 +37,56 @@ import static edu.utdallas.objectutils.ModificationPredicate.NO;
  *
  * @author Ali Ghanbari
  */
-public class WrappedObject implements Wrapped {
+
+public class WrappedObject extends AbstractWrappedObject {
     private static final long serialVersionUID = 1L;
 
-    private static Map<W, List<UnwrappedObjectPlaceholder>> todos;
+    private transient Iterator<Field> fieldsIterator;
 
-    private static Map<W, Object> cache;
+    private transient Field fieldAtCursor;
 
-    protected Class<?> clazz;
-
-    protected Wrapped[] wrappedFieldValues;
-
-    protected final int address;
-
-    public WrappedObject() {
-        this.address = Commons.newAddress();
+    public WrappedObject(Class<?> type, Wrapped[] values) {
+        super(type, values);
     }
 
-    public WrappedObject(Class<?> clazz, Wrapped[] wrappedFieldValues) {
-        this.clazz = clazz;
-        this.wrappedFieldValues = wrappedFieldValues;
-        this.address = Commons.newAddress();
+    @Override
+    protected Object createRawObject() {
+        return ObjenesisHelper.newInstance(this.type);
+    }
+
+    @Override
+    protected void resetCursor() {
+        this.fieldsIterator = FieldUtils.getAllFieldsList(this.type).iterator();
+    }
+
+    @Override
+    protected void advanceCursor() {
+        this.fieldAtCursor = this.fieldsIterator.next();
+    }
+
+    @Override
+    protected boolean strictlyImmutableAtCursor() {
+        return strictlyImmutable(this.fieldAtCursor);
+    }
+
+    @Override
+    protected boolean shouldMutateAtCursor(ModificationPredicate mutateStatics) {
+        final Field field = this.fieldAtCursor;
+        return !Modifier.isStatic(field.getModifiers()) || mutateStatics.test(field);
+    }
+
+    @Override
+    protected void setAtCursor(Object rawObject, Object value) throws Exception {
+        FieldUtils.writeField(this.fieldAtCursor, rawObject, value, true);
+    }
+
+    @Override
+    protected UnwrappedPlaceholder createUnwrappedPlaceholderForCursor(Object unwrapped) {
+        return new UnwrappedObjectPlaceholder(unwrapped, this.fieldAtCursor);
+    }
+
+    WrappedPlaceholder createWrappedPlaceholder(final int fieldIndex) {
+        return new ObjectWrappedPlaceholder(fieldIndex);
     }
 
     @Override
@@ -72,127 +99,21 @@ public class WrappedObject implements Wrapped {
         }
         WrappedObject that = (WrappedObject) o;
         /* I work around the problem of graph isomorphism by converting the object graphs
-        * into strings and the comparing the strings. This is not a true isomorphism
-        * checking algorithm as depending on the head node, the result will be different */
+         * into strings and the comparing the strings. This is not a true isomorphism
+         * checking algorithm as depending on the head node, the result will be different */
         return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.clazz);
-    }
-
-    public Class<?> getClazz() {
-        return this.clazz;
-    }
-
-    public void setClazz(Class<?> clazz) {
-        this.clazz = clazz;
-    }
-
-    public Wrapped[] getWrappedFieldValues() {
-        return this.wrappedFieldValues;
-    }
-
-    public void setWrappedFieldValues(Wrapped[] wrappedFieldValues) {
-        this.wrappedFieldValues = wrappedFieldValues;
-    }
-
-    private static Object getCache(final Wrapped wrapped) {
-        return cache.get(W.of(wrapped));
-    }
-
-    private static void putCache(final Wrapped wrapped, final Object unwrapped) {
-        cache.put(W.of(wrapped), unwrapped);
-    }
-
-    private static List<UnwrappedObjectPlaceholder> getToDo(final Wrapped wrapped) {
-        return todos.get(W.of(wrapped));
-    }
-
-    private static List<UnwrappedObjectPlaceholder> createToDo(final Wrapped wrapped) {
-        final List<UnwrappedObjectPlaceholder> todoList = new LinkedList<>();
-        todos.put(W.of(wrapped), todoList);
-        return todoList;
-    }
-
-    private static void deleteToDo(final Wrapped wrapped) {
-        todos.remove(W.of(wrapped));
-    }
-
-    @Override
-    public Object unwrap() throws Exception {
-        return unwrap(NO);
-    }
-
-    @Override
-    public Object unwrap(ModificationPredicate mutateStatics) throws Exception {
-        todos = new HashMap<>();
-        cache = new HashMap<>();
-        return unwrap0(mutateStatics);
-    }
-
-//    /* this method intended to avoid lock re-entrance */
-//    private static Object unwrapMux(final Wrapped wrappedObject,
-//                                    final ModificationPredicate predicate) throws Exception {
-//        if (wrappedObject instanceof WrappedObject) {
-//            return ((WrappedObject) wrappedObject).unwrap0(predicate);
-//        }
-//        return wrappedObject.unwrap(predicate);
-//    }
-
-    private Object unwrap0(final ModificationPredicate mutateStatics) throws Exception {
-        final List<UnwrappedObjectPlaceholder> todoList = createToDo(this);
-        final boolean shouldModifyStatics = mutateStatics.test(this.clazz);
-        final Object rawObject = ObjenesisHelper.newInstance(this.clazz);
-        final Iterator<Field> fieldsIterator = FieldUtils.getAllFieldsList(this.clazz).iterator();
-        for (final Wrapped wrappedFieldValue : this.wrappedFieldValues) {
-            Field field = fieldsIterator.next();
-            while (strictlyImmutable(field)) {
-                field = fieldsIterator.next();
-            }
-            if (!Modifier.isStatic(field.getModifiers()) || shouldModifyStatics) {
-                Object value = null;
-                if (wrappedFieldValue != null) {
-                    final List<UnwrappedObjectPlaceholder> targetObjectToDoList =
-                            getToDo(wrappedFieldValue);
-                    if (targetObjectToDoList != null) { // cycle?
-                        final UnwrappedObjectPlaceholder placeholder =
-                                new UnwrappedObjectPlaceholder(rawObject, field);
-                        targetObjectToDoList.add(placeholder);
-                    } else {
-                        value = getCache(wrappedFieldValue);
-                        if (value == null) {
-                            value = wrappedFieldValue.unwrap(mutateStatics);
-                            //unwrapMux(wrappedFieldValue, mutateStatics);
-                        }
-                    }
-                }
-                FieldUtils.writeField(field, rawObject, value, true);
-            }
-        }
-        putCache(this, rawObject);
-        deleteToDo(this);
-        for (final UnwrappedObjectPlaceholder placeholder : todoList) {
-            placeholder.substitute(rawObject);
-        }
-        return rawObject;
-    }
-
-    WrappedPlaceholder createPlaceholder(final int fieldIndex) {
-        return new WrappedObjectPlaceholder(fieldIndex);
-    }
-
-    protected class WrappedObjectPlaceholder implements WrappedPlaceholder {
+    protected class ObjectWrappedPlaceholder implements WrappedPlaceholder {
         final int fieldIndex;
 
-        public WrappedObjectPlaceholder(final int fieldIndex) {
+        public ObjectWrappedPlaceholder(final int fieldIndex) {
             this.fieldIndex = fieldIndex;
         }
 
         @Override
         public void substitute(Wrapped wrapped) {
-            WrappedObject.this.wrappedFieldValues[this.fieldIndex] = wrapped;
+            WrappedObject.this.values[this.fieldIndex] = wrapped;
         }
     }
 
@@ -211,10 +132,5 @@ public class WrappedObject implements Wrapped {
         public void substitute(final Object unwrappedTargetObject) throws Exception {
             FieldUtils.writeField(this.field, this.sourceObject, unwrappedTargetObject, true);
         }
-    }
-
-    @Override
-    public int getAddress() {
-        return this.address;
     }
 }

@@ -65,7 +65,7 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public Character unwrap(final ModificationPredicate mutateStatics) {
+    public Character unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

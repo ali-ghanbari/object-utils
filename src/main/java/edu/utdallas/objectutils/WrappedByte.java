@@ -65,7 +65,7 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public Byte unwrap(final ModificationPredicate mutateStatics) {
+    public Byte unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

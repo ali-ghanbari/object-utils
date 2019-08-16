@@ -65,7 +65,7 @@ public class WrappedDoubleArray implements WrappedArray {
     }
 
     @Override
-    public double[] unwrap(ModificationPredicate mutateStatics) {
+    public double[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

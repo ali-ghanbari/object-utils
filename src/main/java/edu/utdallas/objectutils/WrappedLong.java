@@ -65,7 +65,7 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long unwrap(final ModificationPredicate mutateStatics) {
+    public Long unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

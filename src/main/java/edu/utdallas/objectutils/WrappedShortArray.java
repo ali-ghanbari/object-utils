@@ -65,7 +65,7 @@ public class WrappedShortArray implements WrappedArray {
     }
 
     @Override
-    public short[] unwrap(ModificationPredicate mutateStatics) {
+    public short[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

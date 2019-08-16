@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.junit.Ignore;
 import org.junit.Test;
 

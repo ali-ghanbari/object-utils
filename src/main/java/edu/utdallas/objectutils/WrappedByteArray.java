@@ -65,7 +65,7 @@ public class WrappedByteArray implements WrappedArray {
     }
 
     @Override
-    public byte[] unwrap(ModificationPredicate mutateStatics) {
+    public byte[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

@@ -65,7 +65,7 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public Boolean unwrap(final ModificationPredicate mutateStatics) {
+    public Boolean unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

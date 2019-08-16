@@ -65,7 +65,7 @@ public class WrappedString implements Wrapped {
     }
 
     @Override
-    public String unwrap(final ModificationPredicate mutateStatics) {
+    public String unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

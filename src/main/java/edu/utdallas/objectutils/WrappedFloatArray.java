@@ -65,7 +65,7 @@ public class WrappedFloatArray implements WrappedArray {
     }
 
     @Override
-    public float[] unwrap(ModificationPredicate mutateStatics) {
+    public float[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

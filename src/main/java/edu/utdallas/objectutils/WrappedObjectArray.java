@@ -21,12 +21,8 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.ObjectPrinter;
-import edu.utdallas.objectutils.utils.W;
 
 import java.lang.reflect.Array;
-import java.util.*;
-
-import static edu.utdallas.objectutils.ModificationPredicate.NO;
 
 /**
  * Represents an array of objects or a multi-dimensional array.
@@ -34,23 +30,52 @@ import static edu.utdallas.objectutils.ModificationPredicate.NO;
  *
  * @author Ali Ghanbari
  */
-public class WrappedObjectArray implements WrappedArray {
+public class WrappedObjectArray extends AbstractWrappedObject implements WrappedArray {
     private static final long serialVersionUID = 1L;
 
-    protected final int address;
+    private transient int cursor;
 
-    protected final Class<?> componentType;
+    public WrappedObjectArray(Class<?> type, Wrapped[] values) {
+        super(type, values);
+    }
 
-    protected final Wrapped[] value;
+    @Override
+    protected Object createRawObject() {
+        return Array.newInstance(this.type, this.values.length);
+    }
 
-    private static Map<W, List<UnwrappedObjectArrayPlaceholder>> todos;
+    @Override
+    protected void resetCursor() {
+        this.cursor = -1;
+    }
 
-    private static Map<W, Object> cache;
+    @Override
+    protected void advanceCursor() {
+        this.cursor++;
+    }
 
-    public WrappedObjectArray(Class<?> componentType, Wrapped[] value) {
-        this.value = value;
-        this.componentType = componentType;
-        this.address = Commons.newAddress();
+    @Override
+    protected boolean strictlyImmutableAtCursor() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldMutateAtCursor(ModificationPredicate mutateStatics) {
+        return true;
+    }
+
+    @Override
+    protected void setAtCursor(Object array, Object value) throws Exception {
+        Array.set(array, this.cursor, value);
+    }
+
+    @Override
+    protected UnwrappedPlaceholder createUnwrappedPlaceholderForCursor(Object array) {
+        return new UnwrappedObjectArrayPlaceholder(array, this.cursor);
+    }
+
+    WrappedPlaceholder createWrappedPlaceholder(final int elementIndex) {
+        return new ObjectArrayWrappedPlaceholder(elementIndex);
     }
 
     @Override
@@ -68,104 +93,34 @@ public class WrappedObjectArray implements WrappedArray {
         return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
     }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(this.value);
-    }
-
-    public Class<?> getComponentType() {
-        return componentType;
-    }
-
-    public Wrapped[] getValue() {
-        return value;
-    }
-
-    private static Object getCache(final Wrapped wrapped) {
-        return cache.get(W.of(wrapped));
-    }
-
-    private static void putCache(final Wrapped wrapped, final Object unwrapped) {
-        cache.put(W.of(wrapped), unwrapped);
-    }
-
-    private static List<UnwrappedObjectArrayPlaceholder> getToDo(final Wrapped wrapped) {
-        return todos.get(W.of(wrapped));
-    }
-
-    private static List<UnwrappedObjectArrayPlaceholder> createToDo(final Wrapped wrapped) {
-        final List<UnwrappedObjectArrayPlaceholder> todoList = new LinkedList<>();
-        todos.put(W.of(wrapped), todoList);
-        return todoList;
-    }
-
-    private static void deleteToDo(final Wrapped wrapped) {
-        todos.remove(W.of(wrapped));
-    }
-
-    @Override
-    public Object unwrap() throws Exception {
-        return unwrap(NO);
-    }
-
-    @Override
-    public Object unwrap(ModificationPredicate mutateStatics) throws Exception {
-//        final int len = this.value.length;
-//        final Object array = Array.newInstance(this.componentType, len);
-//        for (int i = 0; i < len; i++) {
-//            final Wrapped we = this.value[i];
-//            Array.set(array, i, we == null ? null : we.unwrap(mutateStatics));
-//        }
-//        return array;
-        todos = new HashMap<>();
-        cache = new HashMap<>();
-
-        return unwrap0(mutateStatics);
-    }
-
-    public Object unwrap0(ModificationPredicate mutateStatics) throws Exception {
-        final List<UnwrappedObjectArrayPlaceholder> todoList = createToDo(this);
-        final int len = this.value.length;
-        final Object array = Array.newInstance(this.componentType, len);
-
-    }
-
-    WrappedPlaceholder createPlaceholder(final int elementIndex) {
-        return new WrappedObjectArrayPlaceholder(elementIndex);
-    }
-
-    protected class WrappedObjectArrayPlaceholder implements WrappedPlaceholder {
+    protected class ObjectArrayWrappedPlaceholder implements WrappedPlaceholder {
         final int elementIndex;
 
-        public WrappedObjectArrayPlaceholder(final int elementIndex) {
+        public ObjectArrayWrappedPlaceholder(final int elementIndex) {
             this.elementIndex = elementIndex;
         }
 
         @Override
-        public void substitute(Wrapped wrappedObjectArray) {
-            WrappedObjectArray.this.value[this.elementIndex] = wrappedObjectArray;
+        public void substitute(Wrapped wrapped) {
+            WrappedObjectArray.this.values[this.elementIndex] = wrapped;
         }
     }
 
     protected static class UnwrappedObjectArrayPlaceholder implements UnwrappedPlaceholder {
-        /* this is the array whose index'th index is going to be replaced by some unwrapped object */
-        final Object[] sourceArray;
+        /* this is the array whose index'th index is going to be
+         replaced by some unwrapped object */
+        final Object sourceArray;
 
         final int index;
 
-        public UnwrappedObjectArrayPlaceholder(final Object[] sourceArray, final int index) {
+        public UnwrappedObjectArrayPlaceholder(final Object sourceArray, final int index) {
             this.sourceArray = sourceArray;
             this.index = index;
         }
 
         @Override
-        public void substitute(final Object unwrappedTargetObject) throws Exception {
-            this.sourceArray[this.index] = unwrappedTargetObject;
+        public void substitute(final Object unwrappedTargetObject) {
+            Array.set(this.sourceArray, this.index, unwrappedTargetObject);
         }
-    }
-
-    @Override
-    public int getAddress() {
-        return this.address;
     }
 }

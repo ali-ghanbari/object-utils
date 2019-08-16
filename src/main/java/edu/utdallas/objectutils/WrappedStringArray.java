@@ -59,7 +59,7 @@ public class WrappedStringArray implements WrappedArray {
     }
 
     @Override
-    public String[] unwrap(ModificationPredicate mutateStatics) {
+    public String[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

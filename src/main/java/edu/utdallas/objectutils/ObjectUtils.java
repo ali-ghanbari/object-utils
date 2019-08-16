@@ -29,11 +29,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 public final class ObjectUtils {
 	public static <T> void shallowCopy(final T dest, final T src) throws Exception {
-//		if (dest.getClass() != src.getClass()) {
-//			final String msg = String.format("soruce type %s does not match destination type %s",
-//					src.getClass().getName(), dest.getClass().getName());
-//			throw new IllegalArgumentException(msg);
-//		}
 		final Class<?> clazz = src.getClass();
 		final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
         for (final Field field : fields) {

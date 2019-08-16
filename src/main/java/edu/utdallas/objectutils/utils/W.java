@@ -57,6 +57,6 @@ public class W {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.core);
+        return System.identityHashCode(this.core);
     }
 }

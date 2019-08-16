@@ -65,7 +65,7 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public Short unwrap(final ModificationPredicate mutateStatics) {
+    public Short unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

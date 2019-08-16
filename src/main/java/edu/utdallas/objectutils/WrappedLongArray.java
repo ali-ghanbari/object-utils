@@ -65,7 +65,7 @@ public class WrappedLongArray implements WrappedArray {
     }
 
     @Override
-    public long[] unwrap(ModificationPredicate mutateStatics) {
+    public long[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

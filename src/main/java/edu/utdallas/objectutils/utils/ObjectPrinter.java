@@ -62,13 +62,13 @@ public final class ObjectPrinter {
     private static void printWrappedObject(final WrappedObject wrappedObject) {
         visitedAddresses.add(wrappedObject.getAddress());
         final StringBuilder sb = new StringBuilder();
-        sb.append(wrappedObject.getClazz().getName());
+        sb.append(wrappedObject.getType().getName());
         sb.append('@');
         sb.append(wrappedObject.getAddress());
         sb.append('{');
-        final Wrapped[] wrappedFieldValues = wrappedObject.getWrappedFieldValues();
+        final Wrapped[] wrappedFieldValues = wrappedObject.getValues();
         final int iMax = wrappedFieldValues.length - 1;
-        for (int i = 0; ; i++) {
+        for (int i = 0; iMax >= 0; i++) {
             sb.append(i);
             sb.append(':');
             final Wrapped fv = wrappedFieldValues[i];
@@ -103,15 +103,15 @@ public final class ObjectPrinter {
     }
 
     private static void printWrappedObjectArray(final WrappedObjectArray wrappedObjectArray) {
-        final Wrapped[] value = wrappedObjectArray.getValue();
-        final Class<?> componentType = wrappedObjectArray.getComponentType();
+        final Wrapped[] value = wrappedObjectArray.getValues();
+        final Class<?> componentType = wrappedObjectArray.getType();
         final int iMax = value.length - 1;
         final StringBuilder sb = new StringBuilder();
         sb.append(componentType.getName());
         sb.append('@');
         sb.append(wrappedObjectArray.getAddress());
         sb.append('[');
-        for (int i = 0; ; i++) {
+        for (int i = 0; iMax >= 0; i++) {
             final Wrapped wrapped = value[i];
             if (wrapped instanceof WrappedObject) {
                 final int addr = wrapped.getAddress();

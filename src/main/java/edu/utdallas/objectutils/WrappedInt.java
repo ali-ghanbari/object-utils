@@ -65,7 +65,7 @@ public class WrappedInt implements Wrapped {
     }
 
     @Override
-    public Integer unwrap(final ModificationPredicate mutateStatics) {
+    public Integer unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

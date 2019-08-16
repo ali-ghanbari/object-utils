@@ -20,20 +20,22 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import java.lang.reflect.Field;
+
 public abstract class ModificationPredicate {
     public static final ModificationPredicate YES = new ModificationPredicate() {
         @Override
-        public boolean test(final Class<?> object) {
+        public boolean test(final Field field) {
             return true;
         }
     };
 
     public static final ModificationPredicate NO = new ModificationPredicate() {
         @Override
-        public boolean test(final Class<?> object) {
+        public boolean test(final Field field) {
             return false;
         }
     };
 
-    public abstract boolean test(Class<?> object);
+    public abstract boolean test(Field field);
 }

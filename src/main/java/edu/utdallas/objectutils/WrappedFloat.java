@@ -65,7 +65,7 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public Float unwrap(final ModificationPredicate mutateStatics) {
+    public Float unwrap(final ModificationPredicate shouldMutate) {
         return this.value;
     }
 

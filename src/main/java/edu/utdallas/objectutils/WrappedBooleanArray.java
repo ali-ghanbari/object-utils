@@ -64,7 +64,7 @@ public class WrappedBooleanArray implements WrappedArray {
     }
 
     @Override
-    public boolean[] unwrap(ModificationPredicate mutateStatics) {
+    public boolean[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 

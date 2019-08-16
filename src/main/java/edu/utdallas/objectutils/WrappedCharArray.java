@@ -65,7 +65,7 @@ public class WrappedCharArray implements WrappedArray {
     }
 
     @Override
-    public char[] unwrap(ModificationPredicate mutateStatics) {
+    public char[] unwrap(ModificationPredicate shouldMutate) {
         return this.value;
     }
 
