@@ -90,19 +90,17 @@ public abstract class AbstractWrappedObject implements Wrapped {
                 advanceCursor();
             }
             if (shouldMutateAtCursor(shouldMutate)) {
-                Object value = null;
-                if (wrappedValue != WrappedNull.INSTANCE) {
-                    if (wrappedValue instanceof AbstractWrappedObject) {
-                        final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
-                        final Object targetObject = unwrappedObjects.get(wrappedObject.address);
-                        if (targetObject != null) { // cycle?
-                            value = targetObject;
-                        } else {
-                            value = wrappedObject.unwrap0(shouldMutate);
-                        }
+                final Object value;
+                if (wrappedValue instanceof AbstractWrappedObject) {
+                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
+                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
+                    if (targetObject != null) { // cycle?
+                        value = targetObject;
                     } else {
-                        value = wrappedValue.unwrap(shouldMutate);
+                        value = wrappedObject.unwrap0(shouldMutate);
                     }
+                } else {
+                    value = wrappedValue.unwrap(shouldMutate);
                 }
                 setAtCursor(unwrapped, value);
             }

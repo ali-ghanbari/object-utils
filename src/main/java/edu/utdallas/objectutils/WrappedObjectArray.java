@@ -69,15 +69,6 @@ public class WrappedObjectArray extends AbstractWrappedObject implements Wrapped
         Array.set(array, this.cursor, value);
     }
 
-//    @Override
-//    protected UnwrappedPlaceholder createUnwrappedPlaceholderForCursor(Object array) {
-//        return new UnwrappedObjectArrayPlaceholder(array, this.cursor);
-//    }
-
-//    WrappedPlaceholder createWrappedPlaceholder(final int elementIndex) {
-//        return new ObjectArrayWrappedPlaceholder(elementIndex);
-//    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -92,35 +83,4 @@ public class WrappedObjectArray extends AbstractWrappedObject implements Wrapped
          * checking algorithm as depending on the head node, the result will be different */
         return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
     }
-
-//    protected class ObjectArrayWrappedPlaceholder implements WrappedPlaceholder {
-//        final int elementIndex;
-//
-//        public ObjectArrayWrappedPlaceholder(final int elementIndex) {
-//            this.elementIndex = elementIndex;
-//        }
-//
-//        @Override
-//        public void substitute(Wrapped wrapped) {
-//            WrappedObjectArray.this.values[this.elementIndex] = wrapped;
-//        }
-//    }
-
-//    protected static class UnwrappedObjectArrayPlaceholder implements UnwrappedPlaceholder {
-//        /* this is the array whose index'th index is going to be
-//         replaced by some unwrapped object */
-//        final Object sourceArray;
-//
-//        final int index;
-//
-//        public UnwrappedObjectArrayPlaceholder(final Object sourceArray, final int index) {
-//            this.sourceArray = sourceArray;
-//            this.index = index;
-//        }
-//
-//        @Override
-//        public void substitute(final Object unwrappedTargetObject) {
-//            Array.set(this.sourceArray, this.index, unwrappedTargetObject);
-//        }
-//    }
 }

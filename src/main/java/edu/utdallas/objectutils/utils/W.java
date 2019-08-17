@@ -20,8 +20,6 @@ package edu.utdallas.objectutils.utils;
  * #L%
  */
 
-import java.util.Objects;
-
 /**
  * Yet another wrapper class that allows us override the behavior of
  * already implemented <code>equals</code> method.
