@@ -49,7 +49,7 @@ public final class ObjectPrinter {
         } else if (wrapped instanceof WrappedObjectArray) {
             printWrappedObjectArray((WrappedObjectArray) wrapped);
         } else {
-            return wrapped.toString();
+            return wrapped.print();
         }
         while (!OBJECT_DESCRIPTIONS.empty()) {
             objectDescription += OBJECT_DESCRIPTIONS.pop();
@@ -72,9 +72,7 @@ public final class ObjectPrinter {
             sb.append(i);
             sb.append(':');
             final Wrapped fv = wrappedFieldValues[i];
-            if (fv == null) {
-                sb.append("null");
-            } else if (fv instanceof WrappedObject) {
+            if (fv instanceof WrappedObject) {
                 final int addr = fv.getAddress();
                 sb.append('@');
                 sb.append(addr);
@@ -91,7 +89,7 @@ public final class ObjectPrinter {
                     printWrappedObjectArray((WrappedObjectArray) fv);
                 }
             } else {
-                sb.append(fv);
+                sb.append(fv.print());
             }
             if (i == iMax) {
                 sb.append('}');
@@ -130,7 +128,7 @@ public final class ObjectPrinter {
                     printWrappedObjectArray((WrappedObjectArray) wrapped);
                 }
             } else {
-                sb.append(wrapped);
+                sb.append(wrapped.print());
             }
             if (i == iMax) {
                 sb.append(']');

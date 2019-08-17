@@ -459,7 +459,7 @@ public class WrapperTest {
         final Wrapped wa1 = Wrapper.wrapObject(arr1);
         final Wrapped wa2 = Wrapper.wrapObject(arr2);
         assertEquals(wa1, wa2);
-        assertEquals("[1, 2, 3]", wa1.toString());
+        assertEquals("[1, 2, 3]", wa1.print());
     }
 
     @Test

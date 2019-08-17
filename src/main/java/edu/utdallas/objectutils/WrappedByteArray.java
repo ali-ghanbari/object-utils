@@ -48,9 +48,14 @@ public class WrappedByteArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
+    private transient String stringValue = null;
+
     @Override
-    public String toString() {
-        return Arrays.toString(this.value);
+    public String print() {
+        if (this.stringValue == null) {
+            this.stringValue = Arrays.toString(this.value);
+        }
+        return this.stringValue;
     }
 
     @Override

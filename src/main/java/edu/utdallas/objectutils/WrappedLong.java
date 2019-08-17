@@ -55,7 +55,7 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public String toString() {
+    public String print() {
         return String.valueOf(this.value);
     }
 

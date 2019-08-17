@@ -21,7 +21,7 @@ public enum WrappedNull implements Wrapped {
     }
 
     @Override
-    public String toString() {
+    public String print() {
         return "null";
     }
 }

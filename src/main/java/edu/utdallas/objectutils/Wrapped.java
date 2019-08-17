@@ -41,4 +41,6 @@ public interface Wrapped extends Serializable {
     <T> T unwrap(ModificationPredicate shouldMutate) throws Exception;
 
     int getAddress();
+
+    String print();
 }

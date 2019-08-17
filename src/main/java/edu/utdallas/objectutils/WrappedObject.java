@@ -92,6 +92,16 @@ public class WrappedObject extends AbstractWrappedObject {
         /* I work around the problem of graph isomorphism by converting the object graphs
          * into strings and the comparing the strings. This is not a true isomorphism
          * checking algorithm as depending on the head node, the result will be different */
-        return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
+        return print().equals(that.print());
+    }
+
+    private transient String stringValue = null;
+
+    @Override
+    public String print() {
+        if (this.stringValue == null) {
+            this.stringValue = ObjectPrinter.print(this);
+        }
+        return this.stringValue;
     }
 }
