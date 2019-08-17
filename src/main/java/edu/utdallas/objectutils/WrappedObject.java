@@ -37,7 +37,6 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
  *
  * @author Ali Ghanbari
  */
-
 public class WrappedObject extends AbstractWrappedObject {
     private static final long serialVersionUID = 1L;
 
@@ -78,21 +77,6 @@ public class WrappedObject extends AbstractWrappedObject {
     @Override
     protected void setAtCursor(Object rawObject, Object value) throws Exception {
         FieldUtils.writeField(this.fieldAtCursor, rawObject, value, true);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        WrappedObject that = (WrappedObject) o;
-        /* I work around the problem of graph isomorphism by converting the object graphs
-         * into strings and the comparing the strings. This is not a true isomorphism
-         * checking algorithm as depending on the head node, the result will be different */
-        return print().equals(that.print());
     }
 
     private transient String stringValue = null;

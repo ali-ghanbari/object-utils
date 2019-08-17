@@ -26,9 +26,14 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
@@ -514,7 +519,7 @@ public class WrapperTest {
         objectArray[0] = objectArray;
         final Wrapped wrapped = Wrapper.wrapObject(objectArray);
         final Object[] uw = (Object[]) wrapped.unwrap();
-        System.out.println(uw[0].getClass().getName());
+        //System.out.println(uw[0].getClass().getName());
         assertTrue(uw[0] == uw);
     }
 
@@ -536,5 +541,156 @@ public class WrapperTest {
         final TC tc = new TC();
         final Wrapped wrapped = Wrapper.wrapObject(tc);
         assertEquals(tc.toString(), wrapped.unwrap().toString());
+    }
+
+    @Test
+    public void wrappedObjectArrayEqualsTest1() throws Exception {
+        Object oa1[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa1 = Arrays.copyOf(oa1, oa1.length + 1);
+            oa1[oa1.length - 1] = sb.toString();
+        }
+        Object oa2[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa2 = Arrays.copyOf(oa2, oa2.length + 1);
+            oa2[oa2.length - 1] = sb.toString();
+        }
+        assertArrayEquals(oa1, oa2);
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertEquals(w1, w2);
+    }
+
+    @Test
+    public void wrappedObjectArrayEqualsTest2() throws Exception {
+        Object oa1[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa1 = Arrays.copyOf(oa1, oa1.length + 1);
+            if ((oa1.length - 1) % 2 == 0) {
+                oa1[oa1.length - 1] = sb.toString();
+            } else {
+                oa1[oa1.length - 1] = oa1;
+            }
+        }
+        Object oa2[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa2 = Arrays.copyOf(oa2, oa2.length + 1);
+            if ((oa2.length - 1) % 2 == 0) {
+                oa2[oa2.length - 1] = sb.toString();
+            } else {
+                oa2[oa2.length - 1] = oa2;
+            }
+        }
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertEquals(w1, w2);
+    }
+
+    @Test
+    public void wrappedObjectArrayEqualsTest3() throws Exception {
+        Object oa1[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa1 = Arrays.copyOf(oa1, oa1.length + 1);
+            if ((oa1.length - 1) % 2 == 0) {
+                oa1[oa1.length - 1] = sb.toString();
+            } else {
+                oa1[oa1.length - 1] = oa1;
+            }
+        }
+        Object oa2[] = new Object[0];
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            oa2 = Arrays.copyOf(oa2, oa2.length + 1);
+            if ((oa2.length - 1) % 2 == 0) {
+                oa2[oa2.length - 1] = sb.toString();
+            } else {
+                oa2[oa2.length - 1] = oa1;
+            }
+        }
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertNotEquals(w1, w2);
+    }
+
+    @Test
+    public void wrappedObjectEqualsTest3() throws Exception {
+        final List<String> l1 = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            l1.add(sb.toString());
+        }
+        final List<String> l2 = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            l2.add(sb.toString());
+        }
+        assertEquals(l1, l2);
+        final Wrapped w1 = Wrapper.wrapObject(l1);
+        final Wrapped w2 = Wrapper.wrapObject(l2);
+        System.out.println("-------------");
+        assertEquals(w1, w2);
+    }
+
+    @Test
+    public void wrappedObjectEqualsTest4() throws Exception {
+        final Map<Integer, String> map1 = new LinkedHashMap<>();
+        for (int i = 0; i < 10; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            map1.put(i, sb.toString());
+        }
+        final Map<Integer, String> map2 = new LinkedHashMap<>();
+        for (int i = 0; i < 10; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            map2.put(i, sb.toString());
+        }
+        final Wrapped w1 = Wrapper.wrapObject(map1);
+        final Wrapped w2 = Wrapper.wrapObject(map2);
+        assertEquals(w1, w2);
+    }
+
+    @Test
+    public void wrappedObjectEqualsTest5() throws Exception {
+        final Set<String> set1 = new HashSet<>();
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            set1.add(sb.toString());
+        }
+        final Set<String> set2 = new HashSet<>();
+        for (int i = 0; i < 100; i++) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("#");
+            sb.append(i);
+            set2.add(sb.toString());
+        }
+        final Wrapped w1 = Wrapper.wrapObject(set1);
+        final Wrapped w2 = Wrapper.wrapObject(set2);
+        assertEquals(w1, w2);
     }
 }

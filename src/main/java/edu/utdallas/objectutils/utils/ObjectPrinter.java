@@ -29,11 +29,8 @@ import java.util.Set;
 import java.util.Stack;
 
 /**
- * This allows us work around the difficulties of checking graph isomorphism.
- * We don't need to do actual graph isomorphism; we just textually describe
- * two object graphs and then compare the two descriptions.
- * This obviously won't work in the general case and the result will depend
- * on which object be the head node.
+ * Utility for printing wrapped objects
+ * This is used only for debugging purposes
  *
  * @author Ali Ghanbari
  */
