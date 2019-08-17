@@ -80,14 +80,14 @@ public class WrappedObject extends AbstractWrappedObject {
         FieldUtils.writeField(this.fieldAtCursor, rawObject, value, true);
     }
 
-    @Override
-    protected UnwrappedPlaceholder createUnwrappedPlaceholderForCursor(Object unwrapped) {
-        return new UnwrappedObjectPlaceholder(unwrapped, this.fieldAtCursor);
-    }
+//    @Override
+//    protected UnwrappedPlaceholder createUnwrappedPlaceholderForCursor(Object unwrapped) {
+//        return new UnwrappedObjectPlaceholder(unwrapped, this.fieldAtCursor);
+//    }
 
-    WrappedPlaceholder createWrappedPlaceholder(final int fieldIndex) {
-        return new ObjectWrappedPlaceholder(fieldIndex);
-    }
+//    WrappedPlaceholder createWrappedPlaceholder(final int fieldIndex) {
+//        return new ObjectWrappedPlaceholder(fieldIndex);
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -104,33 +104,33 @@ public class WrappedObject extends AbstractWrappedObject {
         return ObjectPrinter.print(this).equals(ObjectPrinter.print(that));
     }
 
-    protected class ObjectWrappedPlaceholder implements WrappedPlaceholder {
-        final int fieldIndex;
-
-        public ObjectWrappedPlaceholder(final int fieldIndex) {
-            this.fieldIndex = fieldIndex;
-        }
-
-        @Override
-        public void substitute(Wrapped wrapped) {
-            WrappedObject.this.values[this.fieldIndex] = wrapped;
-        }
-    }
-
-    protected static class UnwrappedObjectPlaceholder implements UnwrappedPlaceholder {
-        /* this is the object whose field is going to be replaced by some unwrapped object */
-        final Object sourceObject;
-
-        final Field field;
-
-        public UnwrappedObjectPlaceholder(final Object sourceObject, final Field field) {
-            this.sourceObject = sourceObject;
-            this.field = field;
-        }
-
-        @Override
-        public void substitute(final Object unwrappedTargetObject) throws Exception {
-            FieldUtils.writeField(this.field, this.sourceObject, unwrappedTargetObject, true);
-        }
-    }
+//    protected class ObjectWrappedPlaceholder implements WrappedPlaceholder {
+//        final int fieldIndex;
+//
+//        public ObjectWrappedPlaceholder(final int fieldIndex) {
+//            this.fieldIndex = fieldIndex;
+//        }
+//
+//        @Override
+//        public void substitute(Wrapped wrapped) {
+//            WrappedObject.this.values[this.fieldIndex] = wrapped;
+//        }
+//    }
+//
+//    protected static class UnwrappedObjectPlaceholder implements UnwrappedPlaceholder {
+//        /* this is the object whose field is going to be replaced by some unwrapped object */
+//        final Object sourceObject;
+//
+//        final Field field;
+//
+//        public UnwrappedObjectPlaceholder(final Object sourceObject, final Field field) {
+//            this.sourceObject = sourceObject;
+//            this.field = field;
+//        }
+//
+//        @Override
+//        public void substitute(final Object unwrappedTargetObject) throws Exception {
+//            FieldUtils.writeField(this.field, this.sourceObject, unwrappedTargetObject, true);
+//        }
+//    }
 }

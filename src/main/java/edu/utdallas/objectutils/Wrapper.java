@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 
-import edu.utdallas.objectutils.utils.TodoListManager;
 import edu.utdallas.objectutils.utils.W;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -38,20 +37,11 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
  * @author Ali Ghanbari
  */
 public final class Wrapper {
-//    /* we are using this to resolve cyclic pointers between objects */
-//    /* is to be reset before each wrapping operation */
-//    private static final Map<W, List<Placeholder>> todos;
-//
-//    /* we are using this to avoid re-wrapping already wrapped objects.
-//    please note that this is an important requirement for correctness of unwrapped objects. */
-//    /* is to be reset before each wrapping operation */
-
     /* We are using this to wrap cyclic object graphs */
+    /* We consult this hash-table to find out if we have already wrapped an object */
     private static final Map<W, Wrapped> wrappedObjects;
 
     static {
-//        todos = new HashMap<>();
-//        cache = new HashMap<>();
         wrappedObjects = new HashMap<>();
     }
 
@@ -216,160 +206,4 @@ public final class Wrapper {
         }
         return wrappedFieldValues;
     }
-
-//    public static Wrapped wrapObject(final Object object) throws Exception {
-//        if (object == null) {
-//            return WrappedNull.INSTANCE;
-//        }
-//        todos.clear();
-//        cache.clear();
-//        Commons.resetAddressCounter();
-//        final W coveredObject = W.of(object);
-//        return wrap0(coveredObject);
-//    }
-//
-//    private static Wrapped wrap0(final W coveredObject) throws Exception {
-//        final Object object = coveredObject.getCore();
-//        if (object instanceof Integer) {
-//            return new WrappedInt((Integer) object);
-//        } else if (object instanceof String) {
-//            return new WrappedString((String) object);
-//        } else if (object instanceof Float) {
-//            return new WrappedFloat((Float) object);
-//        } else if (object instanceof Double) {
-//            return new WrappedDouble((Double) object);
-//        } else if (object instanceof Long) {
-//            return new WrappedLong((Long) object);
-//        } else if (object instanceof Boolean) {
-//            return new WrappedBoolean((Boolean) object);
-//        } else if (object instanceof Byte) {
-//            return new WrappedByte((Byte) object);
-//        } else if (object instanceof Character) {
-//            return new WrappedChar((Character) object);
-//        } else if (object instanceof Short) {
-//            return new WrappedShort((Short) object);
-//        }
-//        final Class<?> clazz = object.getClass();
-//        final List<Placeholder> todoList = TodoListManager.allocate();
-//        todos.put(coveredObject, todoList);
-//        final Wrapped wrappedObject;
-//        if (clazz.isArray()) {
-//            if (object instanceof int[]) {
-//                return new WrappedPrimitiveIntArray((int[]) object);
-//            } else if (object instanceof boolean[]) {
-//                return new WrappedPrimitiveBooleanArray((boolean[]) object);
-//            } else if (object instanceof byte[]) {
-//                return new WrappedPrimitiveByteArray((byte[]) object);
-//            } else if (object instanceof char[]) {
-//                return new WrappedPrimitiveCharArray((char[]) object);
-//            } else if (object instanceof short[]) {
-//                return new WrappedPrimitiveShortArray((short[]) object);
-//            } else if (object instanceof float[]) {
-//                return new WrappedPrimitiveFloatArray((float[]) object);
-//            } else if (object instanceof double[]) {
-//                return new WrappedPrimitiveDoubleArray((double[]) object);
-//            } else if (object instanceof long[]) {
-//                return new WrappedPrimitiveLongArray((long[]) object);
-//            } else if (object instanceof String[]) {
-//                return new WrappedStringArray((String[]) object);
-//            } else if (object instanceof Boolean[]) {
-//                return new WrappedBooleanArray((Boolean[]) object);
-//            } else  if (object instanceof Byte[]) {
-//                return new WrappedByteArray((Byte[]) object);
-//            } else if (object instanceof Character[]) {
-//                return new WrappedCharArray((Character[]) object);
-//            } else if (object instanceof Short[]) {
-//                return new WrappedShortArray((Short[]) object);
-//            } else if (object instanceof Integer[]) {
-//                return new WrappedIntArray((Integer[]) object);
-//            } else if (object instanceof Float[]) {
-//                return new WrappedFloatArray((Float[]) object);
-//            } else if (object instanceof Double[]) {
-//                return new WrappedDoubleArray((Double[]) object);
-//            } else if (object instanceof Long[]) {
-//                return new WrappedLongArray((Long[]) object);
-//            }
-//            final Class<?> componentType = clazz.getComponentType();
-//            final int len = Array.getLength(object);
-//            final Wrapped[] elements = new Wrapped[len];
-//            final WrappedObjectArray woa = new WrappedObjectArray(componentType, elements);
-//            for (int i = 0; i < len; i++) {
-//                final Object e = Array.get(object, i);
-//                final W coveredElement = W.of(e);
-//                final List<Placeholder> tdl = todos.get(coveredElement);
-//                if (tdl != null) { // cycle?
-//                    elements[i] = null;
-//                    tdl.add(woa.createWrappedPlaceholder(i));
-//                } else {
-//                    if (e == null) {
-//                        elements[i] = null;
-//                    } else {
-//                        Wrapped we = cache.get(coveredElement);
-//                        if (we == null) {
-//                            we = wrap0(W.of(e));
-//                        }
-//                        elements[i] = we;
-//                    }
-//                }
-//            }
-//            for (final Placeholder placeholder : todoList) {
-//                ((WrappedPlaceholder) placeholder).substitute(woa);
-//            }
-//            TodoListManager.free(todoList);
-//            wrappedObject = woa;
-//        } else { // wrapping a general object
-//            final WrappedObject temp = new WrappedObject(null, null);
-//            final Wrapped[] wrappedFieldValues =
-//                    wrapFieldValuesRecursively(temp, clazz, object);
-//            temp.setType(clazz);
-//            temp.setValues(wrappedFieldValues);
-//            for (final Placeholder placeholder : todoList) {
-//                ((WrappedPlaceholder) placeholder).substitute(temp);
-//            }
-//            TodoListManager.free(todoList);
-//            wrappedObject = temp;
-//        }
-//        todos.remove(coveredObject);
-//        cache.put(coveredObject, wrappedObject);
-//        return wrappedObject;
-//    }
-//
-//    private static Wrapped[] wrapFieldValuesRecursively(final WrappedObject currentWrappedObject,
-//                                                        final Class<?> clazz,
-//                                                        final Object object) throws Exception {
-//        Wrapped[] wrappedFieldValues = new Wrapped[0];
-//        int fieldIndexCounter = 0;
-//        final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
-//        for (final Field field : fields) {
-//            if (strictlyImmutable(field)) {
-//                continue;
-//            }
-//            final Object fieldValue = FieldUtils.readField(field, object, true);
-//            final Wrapped wrappedFieldValue;
-//            if (fieldValue == null) {
-//                wrappedFieldValue = null;
-//            } else {
-//                final W coveredFieldValue = W.of(fieldValue);
-//                final List<Placeholder> todoList = todos.get(coveredFieldValue);
-//                if (todoList != null) { // cycle?
-//                    wrappedFieldValue = null;
-//                    final WrappedPlaceholder todoTask =
-//                            currentWrappedObject.createWrappedPlaceholder(fieldIndexCounter);
-//                    todoList.add(todoTask);
-//                } else {
-//                    /* recompute the wrapped object only once we have not already computed it */
-//                    final Wrapped wrappedObject = cache.get(coveredFieldValue);
-//                    if (wrappedObject == null) {
-//                        wrappedFieldValue = wrap0(coveredFieldValue);
-//                    } else {
-//                        wrappedFieldValue = wrappedObject;
-//                    }
-//                }
-//            }
-//            wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
-//            wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;
-//            fieldIndexCounter++;
-//        }
-//        return wrappedFieldValues;
-//    }
 }
