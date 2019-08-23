@@ -24,16 +24,7 @@ import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -692,5 +683,134 @@ public class WrapperTest {
         final Wrapped w1 = Wrapper.wrapObject(set1);
         final Wrapped w2 = Wrapper.wrapObject(set2);
         assertEquals(w1, w2);
+    }
+
+    private static class Course {
+        private final String name;
+        private final int id;
+        private final float grade;
+
+        public Course(String name, int id, float grade) {
+            this.name = name;
+            this.id = id;
+            this.grade = grade;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public float getGrade() {
+            return grade;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Course course = (Course) o;
+            return id == course.id &&
+                    Float.compare(course.grade, grade) == 0 &&
+                    Objects.equals(name, course.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, id, grade);
+        }
+    }
+
+    private static class BSCStudent {
+        private final String name;
+        private final String id;
+        private final Set<Course> ah;
+
+        public BSCStudent(String name, String id) {
+            this.name = name;
+            this.id = id;
+            this.ah = new HashSet<>();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void addCourses(final Course... courses) {
+            for (final Course course : courses) {
+                this.ah.add(course);
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            BSCStudent that = (BSCStudent) o;
+            return Objects.equals(name, that.name) &&
+                    Objects.equals(id, that.id) &&
+                    Objects.equals(ah, that.ah);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, id, ah);
+        }
+    }
+
+    @Test
+    public void testHashMap1() throws Exception {
+        final Map<BSCStudent, String> students = new HashMap<>();
+        final BSCStudent student1 = new BSCStudent("a", "a1");
+        final BSCStudent student2 = new BSCStudent("a", "a1");
+        final BSCStudent student3 = new BSCStudent("c", "c1");
+        final Course course1 = new Course("os", 1, 19.5F);
+        final Course course2 = new Course("ds", 2, 20.0F);
+        final Course course3 = new Course("cn", 3, 17.0F);
+        final Course course4 = new Course("pl", 4, 20.0F);
+        final Course course5 = new Course("al", 5, 18.5F);
+        student1.addCourses(course1, course2, course4);
+        student2.addCourses(course1, course2, course4);
+        student3.addCourses(course3, course5);
+        students.put(student1, "good");
+        students.put(student2, "bad");
+        students.put(student3, "ugly");
+        assertEquals(2, students.size());
+        final Wrapped wrappedStudent1 = Wrapper.wrapObject(student1);
+        final Wrapped wrappedStudent2 = Wrapper.wrapObject(student2);
+        final Wrapped wrappedStudent3 = Wrapper.wrapObject(student3);
+        final Map<Wrapped, String> wrappedStudents = new HashMap<>();
+        wrappedStudents.put(wrappedStudent1, "good");
+        wrappedStudents.put(wrappedStudent2, "bad");
+        wrappedStudents.put(wrappedStudent3, "ugly");
+        assertEquals(2, wrappedStudents.size());
+        assertEquals(students, Wrapper.wrapObject(students).unwrap());
+    }
+
+    @Test
+    public void testArrayElementsReference1() throws Exception {
+        final BSCStudent student1 = new BSCStudent("a", "a1");
+        final BSCStudent student2 = student1;
+        final BSCStudent student3 = new BSCStudent("c", "c1");
+        final Course course1 = new Course("os", 1, 19.5F);
+        final Course course2 = new Course("ds", 2, 20.0F);
+        final Course course3 = new Course("cn", 3, 17.0F);
+        final Course course4 = new Course("pl", 4, 20.0F);
+        final Course course5 = new Course("al", 5, 18.5F);
+        student1.addCourses(course1, course2, course4);
+        student3.addCourses(course3, course5);
+        final Object[] students = {student1, student2, student3};
+        assertSame(students[0], students[1]);
+        final Object[] unwrapped = Wrapper.wrapObject(students).unwrap();
+        assertEquals(students.length, unwrapped.length);
+        assertSame(unwrapped[0], unwrapped[1]);
+        assertArrayEquals(students, (Object[]) Wrapper.wrapObject(students).unwrap());
     }
 }
