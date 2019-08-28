@@ -24,6 +24,7 @@ import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -812,5 +813,62 @@ public class WrapperTest {
         assertEquals(students.length, unwrapped.length);
         assertSame(unwrapped[0], unwrapped[1]);
         assertArrayEquals(students, (Object[]) Wrapper.wrapObject(students).unwrap());
+    }
+
+    private static File createTempFile() throws Exception {
+        File tempFile = File.createTempFile("object-utils-", "-io-test");
+        tempFile.deleteOnExit();
+        return tempFile;
+    }
+
+    private static <T> Wrapped wrapWriteAndRead(T object) throws Exception {
+        final Wrapped wrapped = Wrapper.wrapObject(object);
+        final File tempFile = createTempFile();
+        try (final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(tempFile))) {
+            oos.writeObject(wrapped);
+        }
+        try (final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(tempFile))) {
+            return (Wrapped) ois.readObject();
+        } catch (Throwable __) {
+            fail();
+        }
+        return null; // unreachable
+    }
+
+    @Test
+    public void testWrappedObjectIO1() throws Exception {
+        final SelfList selfList = new SelfList();
+        wrapWriteAndRead(selfList);
+    }
+
+    @Test
+    public void testWrappedObjectIO2() throws Exception {
+        final Map<BSCStudent, String> students = new HashMap<>();
+        final BSCStudent student1 = new BSCStudent("a", "a1");
+        final BSCStudent student2 = new BSCStudent("a", "a1");
+        final BSCStudent student3 = new BSCStudent("c", "c1");
+        final Course course1 = new Course("os", 1, 19.5F);
+        final Course course2 = new Course("ds", 2, 20.0F);
+        final Course course3 = new Course("cn", 3, 17.0F);
+        final Course course4 = new Course("pl", 4, 20.0F);
+        final Course course5 = new Course("al", 5, 18.5F);
+        student1.addCourses(course1, course2, course4);
+        student2.addCourses(course1, course2, course4);
+        student3.addCourses(course3, course5);
+        students.put(student1, "good");
+        students.put(student2, "bad");
+        students.put(student3, "ugly");
+        final Wrapped wrapped = wrapWriteAndRead(students);
+        assertEquals(students, wrapped.unwrap());
+    }
+
+    @Test
+    public void testWrappedObjectIO3() throws Exception {
+        final List<Integer> list = new LinkedList<>();
+        for (int i = 0; i < 1000; i++) {
+            list.add(i);
+        }
+        final Wrapped wrapped = wrapWriteAndRead(list);
+        assertEquals(list, wrapped.unwrap());
     }
 }
