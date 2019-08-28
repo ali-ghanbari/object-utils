@@ -175,26 +175,26 @@ public abstract class AbstractWrappedObject implements Wrapped {
                 }
                 visitedNodes1.add(wrappedObject1.getAddress());
                 visitedNodes2.add(wrappedObject2.getAddress());
-                final Wrapped[] fieldValues1 = wrappedObject1.getValues();
-                final Wrapped[] fieldValues2 = wrappedObject2.getValues();
-                if (fieldValues1.length != fieldValues2.length) {
+                final Wrapped[] values1 = wrappedObject1.getValues();
+                final Wrapped[] values2 = wrappedObject2.getValues();
+                if (values1.length != values2.length) {
                     return false;
                 }
-                for (final Wrapped fieldValue : wrappedObject1.getValues()) {
-                    if (fieldValue instanceof AbstractWrappedObject) {
-                        if (visitedNodes1.contains(fieldValue.getAddress())) {
+                for (final Wrapped value : wrappedObject1.getValues()) {
+                    if (value instanceof AbstractWrappedObject) {
+                        if (visitedNodes1.contains(value.getAddress())) {
                             continue;
                         }
                     }
-                    workList1.offer(fieldValue);
+                    workList1.offer(value);
                 }
-                for (final Wrapped fieldValue : fieldValues2) {
-                    if (fieldValue instanceof AbstractWrappedObject) {
-                        if (visitedNodes2.contains(fieldValue.getAddress())) {
+                for (final Wrapped value : values2) {
+                    if (value instanceof AbstractWrappedObject) {
+                        if (visitedNodes2.contains(value.getAddress())) {
                             continue;
                         }
                     }
-                    workList2.offer(fieldValue);
+                    workList2.offer(value);
                 }
             } else if (!node1.equals(node2)) {
                 return false;

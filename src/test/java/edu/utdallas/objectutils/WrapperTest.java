@@ -871,4 +871,24 @@ public class WrapperTest {
         final Wrapped wrapped = wrapWriteAndRead(list);
         assertEquals(list, wrapped.unwrap());
     }
+
+    @Test
+    public void testWrappedObjectArrayNullElements1() throws Exception {
+        final Object[] arr = {null, new Object[]{null, null}};
+        assertArrayEquals(arr, arr);
+        assertEquals(Wrapper.wrapObject(arr), Wrapper.wrapObject(arr));
+        assertArrayEquals(arr, (Object[]) Wrapper.wrapObject(arr).unwrap());
+    }
+
+    private static class NullFieldsClass {
+        private final Object nf = null;
+        private final Object[] naf = {null, new Object[]{null, null}};
+    }
+
+    @Test
+    public void testWrappedObjectNullFields1() throws Exception {
+        final Wrapped w1 = Wrapper.wrapObject(new NullFieldsClass());
+        final Wrapped w2 = Wrapper.wrapObject(new NullFieldsClass());
+        assertEquals(w1, w2);
+    }
 }
