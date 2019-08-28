@@ -21,22 +21,23 @@ package edu.utdallas.objectutils;
  */
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
+import static edu.utdallas.objectutils.Commons.readField;
+import static edu.utdallas.objectutils.Commons.writeField;
+import static edu.utdallas.objectutils.Commons.getAllFieldsList;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-
 public final class ObjectUtils {
 	public static <T> void shallowCopy(final T dest, final T src) throws Exception {
 		final Class<?> clazz = src.getClass();
-		final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
+		final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
             }
-            final Object fieldValue = FieldUtils.readField(field, src, true);
-            FieldUtils.writeField(field, dest, fieldValue, true);
+            final Object fieldValue = readField(field, src, true);
+            writeField(field, dest, fieldValue, true);
         }
 	}
 }
