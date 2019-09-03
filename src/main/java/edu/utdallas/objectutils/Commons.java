@@ -52,6 +52,7 @@ public final class Commons {
 
     //-------------------------------------------- copied from Apache Commons Lang
     //---------------------------------------------due to dependency incompatibility
+    //---------------------------------------------with some of Defects4J programs
 
     private static boolean setAccessibleWorkaround(final AccessibleObject o) {
         if (o == null || o.isAccessible()) {

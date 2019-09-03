@@ -30,8 +30,10 @@ import java.io.Serializable;
  */
 public interface Wrapped extends Serializable {
     /**
-     * Reifies wrapped object without altering any static fields
-     * <b>Note:</b> <code>static final</code> fields are ignored anyway
+     * Reifies wrapped object without altering any static fields.
+     * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
+     * <b>Note 1:</b> those fields that are not included in the wrapped object shall be left with their default values.
+     *
      * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
      * @return Reified object
      * @throws Exception Any Java reflection-related exception
@@ -39,6 +41,21 @@ public interface Wrapped extends Serializable {
     <T> T unwrap() throws Exception;
 
     <T> T unwrap(ModificationPredicate shouldMutate) throws Exception;
+
+    /**
+     * Reifies a wrapped object without altering any static fields.
+     * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
+     * <b>Note 1:</b> those fields that are excluded from the wrapped object shall be left with their current values.
+     *
+     * @param template The target object whose field value will be updated according to data present in the wrapped
+     *                 object.
+     * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
+     * @return <code>template</code> with its fields updated (if applicable).
+     * @throws Exception Any Java reflection-related exception
+     */
+    <T> T unwrap(Object template) throws Exception;
+
+    <T> T unwrap(Object template, ModificationPredicate shouldMutate) throws Exception;
 
     int getAddress();
 

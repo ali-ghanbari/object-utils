@@ -69,6 +69,16 @@ public class WrappedPrimitiveShortArray implements WrappedArray {
     }
 
     @Override
+    public short[] unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public short[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

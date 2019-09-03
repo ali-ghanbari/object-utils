@@ -70,6 +70,16 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
+    public Byte unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public Byte unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

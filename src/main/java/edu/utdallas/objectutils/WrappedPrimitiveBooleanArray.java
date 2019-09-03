@@ -69,6 +69,16 @@ public class WrappedPrimitiveBooleanArray implements WrappedArray {
     }
 
     @Override
+    public boolean[] unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public boolean[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

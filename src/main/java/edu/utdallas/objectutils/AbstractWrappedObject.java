@@ -92,6 +92,16 @@ public abstract class AbstractWrappedObject implements Wrapped {
         return unwrap0(shouldMutate);
     }
 
+    @Override
+    public Object unwrap(Object template) throws Exception {
+        return unwrap(template, NO);
+    }
+
+    @Override
+    public Object unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
     protected abstract Object createRawObject();
 
     protected abstract void resetCursor(); // objects create iterator; arrays just reset to -1
@@ -102,35 +112,67 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     protected abstract boolean shouldMutateAtCursor(ModificationPredicate mutateStatics);
 
+    protected abstract boolean shouldIgnore(Wrapped wrapped); // for objects: wrapped == null, for arrays: always false
+
     protected abstract void setAtCursor(Object rawObject, Object value) throws Exception;
 
-    private Object unwrap0(ModificationPredicate shouldMutate) throws Exception {
-        final Object unwrapped = createRawObject();
-        unwrappedObjects.put(this.address, unwrapped);
+    private Object unwrap0(final Object template, final ModificationPredicate shouldMutate) throws Exception {
+//        final Object template = createRawObject();
+        unwrappedObjects.put(this.address, template);
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
             advanceCursor();
             while (strictlyImmutableAtCursor()) {
                 advanceCursor();
             }
-            if (shouldMutateAtCursor(shouldMutate)) {
-                final Object value;
-                if (wrappedValue instanceof AbstractWrappedObject) {
-                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
-                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
-                    if (targetObject != null) { // cycle?
-                        value = targetObject;
+            if (shouldIgnore(wrappedValue)) {
+                if (shouldMutateAtCursor(shouldMutate)) {
+                    final Object value;
+                    if (wrappedValue instanceof AbstractWrappedObject) {
+                        final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
+                        final Object targetObject = unwrappedObjects.get(wrappedObject.address);
+                        if (targetObject != null) { // cycle?
+                            value = targetObject;
+                        } else {
+                            value = wrappedObject.unwrap0(, shouldMutate);
+                        }
                     } else {
-                        value = wrappedObject.unwrap0(shouldMutate);
+                        value = wrappedValue.unwrap(shouldMutate);
                     }
-                } else {
-                    value = wrappedValue.unwrap(shouldMutate);
+                    setAtCursor(template, value);
                 }
-                setAtCursor(unwrapped, value);
             }
         }
-        return unwrapped;
+        return template;
     }
+
+//    private Object unwrap0(ModificationPredicate shouldMutate) throws Exception {
+//        final Object unwrapped = createRawObject();
+//        unwrappedObjects.put(this.address, unwrapped);
+//        resetCursor();
+//        for (final Wrapped wrappedValue : this.values) {
+//            advanceCursor();
+//            while (strictlyImmutableAtCursor()) {
+//                advanceCursor();
+//            }
+//            if (shouldMutateAtCursor(shouldMutate)) {
+//                final Object value;
+//                if (wrappedValue instanceof AbstractWrappedObject) {
+//                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
+//                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
+//                    if (targetObject != null) { // cycle?
+//                        value = targetObject;
+//                    } else {
+//                        value = wrappedObject.unwrap0(shouldMutate);
+//                    }
+//                } else {
+//                    value = wrappedValue.unwrap(shouldMutate);
+//                }
+//                setAtCursor(unwrapped, value);
+//            }
+//        }
+//        return unwrapped;
+//    }
 
     @Override
     public int getAddress() {

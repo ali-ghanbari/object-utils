@@ -69,6 +69,16 @@ public class WrappedPrimitiveCharArray implements WrappedArray {
     }
 
     @Override
+    public char[] unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public char[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

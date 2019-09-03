@@ -83,16 +83,24 @@ public final class Wrapper {
     }
 
     public static Wrapped wrapObject(final Object object) throws Exception {
+        return wrapObject(object, InclusionPredicate.INCLUDE_ALL);
+    }
+
+    public static Wrapped wrapObject(final Object object,
+                                     final InclusionPredicate inclusionPredicate)
+            throws Exception {
         if (object == null) {
             return WrappedNull.INSTANCE;
         }
         wrappedObjects.clear();
         Commons.resetAddressCounter();
         final W hashMapSafeObject = W.of(object);
-        return wrap0(hashMapSafeObject);
+        return wrap0(hashMapSafeObject, inclusionPredicate);
     }
 
-    private static Wrapped wrap0(final W hashMapSafeObject) throws Exception {
+    private static Wrapped wrap0(final W hashMapSafeObject,
+                                 final InclusionPredicate inclusionPredicate)
+            throws Exception {
         final Object object = hashMapSafeObject.getCore();
         if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
@@ -167,40 +175,47 @@ public final class Wrapper {
                 if (target != null) { // cycle?
                     elements[i] = target;
                 } else {
-                    elements[i] = wrap0(hashMapSafeElement);
+                    elements[i] = wrap0(hashMapSafeElement, inclusionPredicate);
                 }
             }
             return wrappedObjectArray;
         }
         final WrappedObject wrappedObject = new WrappedObject(null, null);
         wrappedObjects.put(hashMapSafeObject, wrappedObject);
-        final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(wrappedObject, clazz, object);
+        final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object, inclusionPredicate);
         wrappedObject.setType(clazz);
         wrappedObject.setValues(wrappedFieldValues);
         return wrappedObject;
     }
 
-    private static Wrapped[] wrapFieldValuesRecursively(final WrappedObject currentWrappedObject,
-                                                        final Class<?> clazz,
-                                                        final Object object) throws Exception {
+    private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz,
+                                                        final Object object,
+                                                        InclusionPredicate inclusionPredicate)
+            throws Exception {
         Wrapped[] wrappedFieldValues = new Wrapped[0];
         final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
             }
-            final Object fieldValue = readField(field, object, true);
             final Wrapped wrappedFieldValue;
-            if (fieldValue == null) {
-                wrappedFieldValue = WrappedNull.INSTANCE;
-            } else {
-                final W hashMapSafeFieldValue = W.of(fieldValue);
-                final Wrapped target = wrappedObjects.get(hashMapSafeFieldValue);
-                if (target != null) { // cycle?
-                    wrappedFieldValue = target;
+            if (inclusionPredicate.test(field)) {
+                final Object fieldValue = readField(field, object, true);
+                if (fieldValue == null) {
+                    wrappedFieldValue = WrappedNull.INSTANCE;
                 } else {
-                    wrappedFieldValue = wrap0(hashMapSafeFieldValue);
+                    final W hashMapSafeFieldValue = W.of(fieldValue);
+                    final Wrapped target = wrappedObjects.get(hashMapSafeFieldValue);
+                    if (target != null) { // cycle?
+                        wrappedFieldValue = target;
+                    } else {
+                        wrappedFieldValue = wrap0(hashMapSafeFieldValue, inclusionPredicate);
+                    }
                 }
+            } else {
+                // this null value is different from WrappedNull.INSTANCE
+                // null values are going to be ignored during
+                wrappedFieldValue = null;
             }
             wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
             wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;

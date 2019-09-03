@@ -69,6 +69,16 @@ public class WrappedPrimitiveDoubleArray implements WrappedArray {
     }
 
     @Override
+    public double[] unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public double[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

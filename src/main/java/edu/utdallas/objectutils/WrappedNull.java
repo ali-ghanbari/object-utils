@@ -41,6 +41,16 @@ public enum WrappedNull implements Wrapped {
     }
 
     @Override
+    public <T> T unwrap(Object template) throws Exception {
+        return null;
+    }
+
+    @Override
+    public <T> T unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return null;
+    }
+
+    @Override
     public int getAddress() {
         return 0;
     }

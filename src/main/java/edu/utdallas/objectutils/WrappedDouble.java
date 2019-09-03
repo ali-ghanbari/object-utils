@@ -70,6 +70,16 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
+    public Double unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public Double unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

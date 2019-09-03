@@ -70,6 +70,16 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
+    public Boolean unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public Boolean unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }

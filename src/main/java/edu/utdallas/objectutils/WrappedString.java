@@ -70,6 +70,16 @@ public class WrappedString implements Wrapped {
     }
 
     @Override
+    public String unwrap(Object template) throws Exception {
+        return this.value;
+    }
+
+    @Override
+    public String unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
+        return this.value;
+    }
+
+    @Override
     public int getAddress() {
         throw new UnsupportedOperationException();
     }
