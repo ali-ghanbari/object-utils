@@ -147,34 +147,6 @@ public abstract class AbstractWrappedObject implements Wrapped {
         return template;
     }
 
-//    private Object unwrap0(ModificationPredicate shouldMutate) throws Exception {
-//        final Object unwrapped = createRawObject();
-//        unwrappedObjects.put(this.address, unwrapped);
-//        resetCursor();
-//        for (final Wrapped wrappedValue : this.values) {
-//            advanceCursor();
-//            while (strictlyImmutableAtCursor()) {
-//                advanceCursor();
-//            }
-//            if (shouldMutateAtCursor(shouldMutate)) {
-//                final Object value;
-//                if (wrappedValue instanceof AbstractWrappedObject) {
-//                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
-//                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
-//                    if (targetObject != null) { // cycle?
-//                        value = targetObject;
-//                    } else {
-//                        value = wrappedObject.unwrap0(shouldMutate);
-//                    }
-//                } else {
-//                    value = wrappedValue.unwrap(shouldMutate);
-//                }
-//                setAtCursor(unwrapped, value);
-//            }
-//        }
-//        return unwrapped;
-//    }
-
     @Override
     public int getAddress() {
         return this.address;
