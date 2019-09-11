@@ -18,10 +18,12 @@ public abstract class InclusionPredicate {
     };
 
     /**
-     * This check should return <code>true</code> if and only if the field <code>field</code> is to be included
-     * in the wrapped representation of the object. The field might be declared or inherited, or it might have
-     * any access modifiers. The way the client program wants to answer is left open; one could use ASM, Soot,
-     * and Java reflection to answer this question.
+     * This check should return <code>true</code> if and only if <code>field</code> is to be included
+     * in the wrapped representation of the object. Because of the complexities of dealing with field type
+     * and declaring/inheriting class, I expect that any implementation of this method will check only the
+     * type of the field: the method will return true iff the type is primitive and it is accessed
+     * (read or updated) in the body of the method to be memoized. However, later, we might come up with more
+     * advanced, admissive analyzes that let us include more fields.
      *
      * @param field the field that is queried for inclusion
      * @return <code>true</code> iff <code>field</code> should be included in the wrapped representation of the

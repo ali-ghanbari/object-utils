@@ -88,8 +88,8 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     @Override
     public Object unwrap(ModificationPredicate shouldMutate) throws Exception {
-        unwrappedObjects.clear();
-        return unwrap0(shouldMutate);
+        final Object rawObject = createRawObject();
+        return unwrap(rawObject, shouldMutate);
     }
 
     @Override
@@ -99,7 +99,8 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     @Override
     public Object unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
+        unwrappedObjects.clear();
+        return unwrap0(template, shouldMutate);
     }
 
     protected abstract Object createRawObject();
@@ -112,12 +113,9 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     protected abstract boolean shouldMutateAtCursor(ModificationPredicate mutateStatics);
 
-    protected abstract boolean shouldIgnore(Wrapped wrapped); // for objects: wrapped == null, for arrays: always false
-
     protected abstract void setAtCursor(Object rawObject, Object value) throws Exception;
 
     private Object unwrap0(final Object template, final ModificationPredicate shouldMutate) throws Exception {
-//        final Object template = createRawObject();
         unwrappedObjects.put(this.address, template);
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
@@ -125,22 +123,25 @@ public abstract class AbstractWrappedObject implements Wrapped {
             while (strictlyImmutableAtCursor()) {
                 advanceCursor();
             }
-            if (shouldIgnore(wrappedValue)) {
-                if (shouldMutateAtCursor(shouldMutate)) {
-                    final Object value;
-                    if (wrappedValue instanceof AbstractWrappedObject) {
-                        final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
-                        final Object targetObject = unwrappedObjects.get(wrappedObject.address);
-                        if (targetObject != null) { // cycle?
-                            value = targetObject;
-                        } else {
-                            value = wrappedObject.unwrap0(, shouldMutate);
-                        }
+            // note that an array element cannot be 'null' as filtering only applies to fields
+            if (wrappedValue == null) {
+                continue;
+            }
+            if (shouldMutateAtCursor(shouldMutate)) {
+                final Object value;
+                if (wrappedValue instanceof AbstractWrappedObject) {
+                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
+                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
+                    if (targetObject != null) { // cycle?
+                        value = targetObject;
                     } else {
-                        value = wrappedValue.unwrap(shouldMutate);
+                        final Object rawObject = wrappedObject.createRawObject();
+                        value = wrappedObject.unwrap0(rawObject, shouldMutate);
                     }
-                    setAtCursor(template, value);
+                } else {
+                    value = wrappedValue.unwrap(shouldMutate);
                 }
+                setAtCursor(template, value);
             }
         }
         return template;
@@ -202,6 +203,13 @@ public abstract class AbstractWrappedObject implements Wrapped {
         while (!workList1.isEmpty()) {
             final Wrapped node1 = workList1.poll();
             final Wrapped node2 = workList2.poll();
+            if (node1 == null || node2 == null) {
+                if (node1 == node2) { // fields in both objects are ignored
+                    continue;
+                } else {
+                    return false;
+                }
+            }
             /* assume node1 != null && node2 != null */
             if (node1.getClass() != node2.getClass()) {
                 return false;

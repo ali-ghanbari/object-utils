@@ -29,7 +29,6 @@ import java.util.*;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.getAllFieldsList;
-import static edu.utdallas.objectutils.Commons.readField;
 import static edu.utdallas.objectutils.Commons.writeField;
 
 /**

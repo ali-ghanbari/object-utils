@@ -214,7 +214,7 @@ public final class Wrapper {
                 }
             } else {
                 // this null value is different from WrappedNull.INSTANCE
-                // null values are going to be ignored during
+                // null values are going to be ignored during unwrapping
                 wrappedFieldValue = null;
             }
             wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
