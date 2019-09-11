@@ -196,8 +196,8 @@ public abstract class AbstractWrappedObject implements Wrapped {
         AbstractWrappedObject that = (AbstractWrappedObject) object;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
-        Set<Integer> visitedNodes1 = new HashSet<>();
-        Set<Integer> visitedNodes2 = new HashSet<>();
+        final Set<Integer> visitedNodes1 = new HashSet<>();
+        final Set<Integer> visitedNodes2 = new HashSet<>();
         workList1.offer(this);
         workList2.offer(that);
         while (!workList1.isEmpty()) {

@@ -20,11 +20,10 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import edu.utdallas.objectutils.utils.ObjectPrinter;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -890,5 +889,68 @@ public class WrapperTest {
         final Wrapped w1 = Wrapper.wrapObject(new NullFieldsClass());
         final Wrapped w2 = Wrapper.wrapObject(new NullFieldsClass());
         assertEquals(w1, w2);
+    }
+
+    private static class SelectiveClass {
+        private int a;
+        private String b;
+        private final float c;
+        private long d;
+
+        public SelectiveClass(int a, String b, float c, long d) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.d = d;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SelectiveClass that = (SelectiveClass) o;
+            return a == that.a &&
+                    Float.compare(that.c, c) == 0 &&
+                    d == that.d &&
+                    Objects.equals(b, that.b);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(a, b, c, d);
+        }
+
+        @Override
+        public String toString() {
+            return "SelectiveClass{" +
+                    "a=" + a +
+                    ", b='" + b + '\'' +
+                    ", c=" + c +
+                    ", d=" + d +
+                    '}';
+        }
+    }
+
+    @Test
+    public void testWrappingObjectsWithIgnoredFields1() throws Exception {
+        final InclusionPredicate ipIgnoreB = new InclusionPredicate() {
+            @Override
+            public boolean test(Field field) {
+                return !field.getName().equals("b");
+            }
+        };
+        final SelectiveClass objA = new SelectiveClass(10, "aa", 11, 23);
+        Wrapped wrappedObjA = Wrapper.wrapObject(objA, ipIgnoreB);
+        final SelectiveClass objB = new SelectiveClass(10, "bb", 11, 23);
+        Wrapped wrappedObjB = Wrapper.wrapObject(objB, ipIgnoreB);
+        assertEquals(wrappedObjA, wrappedObjB);
+        final SelectiveClass objATemplate1 = new SelectiveClass(10, "xx", 12, 22);
+        assertEquals(Wrapper.wrapObject(objA, ipIgnoreB).unwrap(objATemplate1).toString(),
+                "SelectiveClass{a=10, b=\'xx\', c=11.0, d=23}");
+        final SelectiveClass objATemplate2 = new SelectiveClass(10, "aa", 11, 23);
+        assertEquals(Wrapper.wrapObject(objA, ipIgnoreB).unwrap(objATemplate2), objA);
+        wrappedObjA = Wrapper.wrapObject(objA);
+        wrappedObjB = Wrapper.wrapObject(objB);
+        assertNotEquals(wrappedObjA, wrappedObjB);
     }
 }

@@ -69,7 +69,9 @@ public final class ObjectPrinter {
             sb.append(i);
             sb.append(':');
             final Wrapped fv = wrappedFieldValues[i];
-            if (fv instanceof WrappedObject) {
+            if (fv == null) {
+                sb.append("SKIPPED");
+            } else if (fv instanceof WrappedObject) {
                 final int addr = fv.getAddress();
                 sb.append('@');
                 sb.append(addr);
@@ -108,7 +110,9 @@ public final class ObjectPrinter {
         sb.append('[');
         for (int i = 0; iMax >= 0; i++) {
             final Wrapped wrapped = value[i];
-            if (wrapped instanceof WrappedObject) {
+            if (wrapped == null) {
+                sb.append("SKIPPED");
+            } else if (wrapped instanceof WrappedObject) {
                 final int addr = wrapped.getAddress();
                 sb.append('@');
                 sb.append(addr);
