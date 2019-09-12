@@ -861,6 +861,7 @@ public class WrapperTest {
         assertEquals(students, wrapped.unwrap());
     }
 
+    /*fails on JDK 10*/
     @Test
     public void testWrappedObjectIO3() throws Exception {
         final List<Integer> list = new LinkedList<>();
