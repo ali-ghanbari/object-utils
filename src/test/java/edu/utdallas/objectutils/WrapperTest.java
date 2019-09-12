@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.junit.Test;
 
 import java.io.*;
@@ -953,5 +954,25 @@ public class WrapperTest {
         wrappedObjA = Wrapper.wrapObject(objA);
         wrappedObjB = Wrapper.wrapObject(objB);
         assertNotEquals(wrappedObjA, wrappedObjB);
+    }
+
+    @Test
+    public void testWrappingObjectsWithIgnoredFields2() throws Exception {
+        final InclusionPredicate ipIgnoreB = new InclusionPredicate() {
+            @Override
+            public boolean test(Field field) {
+                return !field.getName().equals("b");
+            }
+        };
+        SelectiveClass[] arr1 = new SelectiveClass[2];
+        arr1[0] = new SelectiveClass(10, "aa", 11, 23);
+        arr1[1] = new SelectiveClass(10, "bb", 11, 23);
+        Wrapped wrappedArray1 = Wrapper.wrapObject(arr1, ipIgnoreB);
+        SelectiveClass[] arr2 = new SelectiveClass[2];
+        arr2[0] = new SelectiveClass(20, "aa", 21, 3);
+        arr2[1] = new SelectiveClass(11, "bb", 12, 2);
+        assertFalse(Arrays.equals(arr1, arr2));
+        System.out.println(((SelectiveClass[]) wrappedArray1.unwrap(arr2))[1]);
+        //assertArrayEquals((SelectiveClass[]) wrappedArray1.unwrap(arr2), arr1);
     }
 }

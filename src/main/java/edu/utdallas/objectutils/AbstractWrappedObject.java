@@ -125,6 +125,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
             }
             // note that an array element cannot be 'null' as filtering only applies to fields
             if (wrappedValue == null) {
+                System.out.println("******");
                 continue;
             }
             if (shouldMutateAtCursor(shouldMutate)) {
