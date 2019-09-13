@@ -153,7 +153,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
                         // assert wrapped value does not represent null value
                         if (originalObject == null) {
                             originalObject = wrappedObject.createRawObject();
-                        } else if (!originalObject.getClass().equals(wrappedObject.type)) {
+                        } else if (originalObject.getClass() != wrappedObject.type) {
                             // should we change the type of object?
                             originalObject = wrappedObject.createRawObject();
                         }
