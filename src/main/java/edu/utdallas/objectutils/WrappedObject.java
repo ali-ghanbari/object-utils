@@ -30,6 +30,7 @@ import java.util.*;
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.getAllFieldsList;
 import static edu.utdallas.objectutils.Commons.writeField;
+import static edu.utdallas.objectutils.Commons.readField;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.
@@ -78,6 +79,11 @@ public class WrappedObject extends AbstractWrappedObject {
     @Override
     protected void setAtCursor(Object rawObject, Object value) throws Exception {
         writeField(this.fieldAtCursor, rawObject, value, true);
+    }
+
+    @Override
+    protected Object getAtCursor(Object rawObject) throws Exception {
+        return readField(this.fieldAtCursor, rawObject, true);
     }
 
     private transient String stringValue = null;

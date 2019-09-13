@@ -40,10 +40,10 @@ public abstract class AbstractWrappedObject implements Wrapped {
     /* We are using this to unwrap cyclic object graphs */
     /* We consult this hash-table to find out if we have already unwrapped a wrapped object */
     /* Note that we use object addresses as key for performance reasons */
-    private static final Map<Integer, Object> unwrappedObjects;
+    private static final Map<Integer, Object> UNWRAPPED_OBJECTS;
 
     static {
-        unwrappedObjects = new HashMap<>();
+        UNWRAPPED_OBJECTS = new HashMap<>();
     }
 
     AbstractWrappedObject(Class<?> type, Wrapped[] values) {
@@ -99,7 +99,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     @Override
     public Object unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        unwrappedObjects.clear();
+        UNWRAPPED_OBJECTS.clear();
         return unwrap0(template, shouldMutate);
     }
 
@@ -115,31 +115,53 @@ public abstract class AbstractWrappedObject implements Wrapped {
 
     protected abstract void setAtCursor(Object rawObject, Object value) throws Exception;
 
-    private Object unwrap0(final Object template, final ModificationPredicate shouldMutate) throws Exception {
-        unwrappedObjects.put(this.address, template);
+    protected abstract Object getAtCursor(Object rawObject) throws Exception;
+
+    private Object unwrap0(final Object template,
+                           final ModificationPredicate shouldMutate) throws Exception {
+        // we always need a genuine template object
+        if (template == null) {
+            throw new IllegalArgumentException("Template object cannot be null!");
+        }
+        UNWRAPPED_OBJECTS.put(this.address, template);
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
             advanceCursor();
             while (strictlyImmutableAtCursor()) {
                 advanceCursor();
             }
-            // note that an array element cannot be 'null' as filtering only applies to fields
+            // we ignore some fields based on what the client has requested.
+            // ignored fields shall continue to have their values they used to have
+            // in the template object. this means that if the template object is not
+            // provided by the client, those fields shall have their default values.
+            // note that an array element cannot be 'null' as filtering only
+            // applies to fields.
             if (wrappedValue == null) {
-                System.out.println("******");
                 continue;
             }
             if (shouldMutateAtCursor(shouldMutate)) {
                 final Object value;
                 if (wrappedValue instanceof AbstractWrappedObject) {
-                    final AbstractWrappedObject wrappedObject = (AbstractWrappedObject) wrappedValue;
-                    final Object targetObject = unwrappedObjects.get(wrappedObject.address);
+                    final AbstractWrappedObject wrappedObject =
+                            (AbstractWrappedObject) wrappedValue;
+                    final Object targetObject =
+                            UNWRAPPED_OBJECTS.get(wrappedObject.address);
                     if (targetObject != null) { // cycle?
                         value = targetObject;
                     } else {
-                        final Object rawObject = wrappedObject.createRawObject();
-                        value = wrappedObject.unwrap0(rawObject, shouldMutate);
+                        Object originalObject = getAtCursor(template);
+                        // assert wrapped value does not represent null value
+                        if (originalObject == null) {
+                            originalObject = wrappedObject.createRawObject();
+                        } else if (!originalObject.getClass().equals(wrappedObject.type)) {
+                            // should we change the type of object?
+                            originalObject = wrappedObject.createRawObject();
+                        }
+                        value = wrappedObject.unwrap0(originalObject, shouldMutate);
                     }
                 } else {
+                    // if the wrapped value represents null, an array of primitive-typed
+                    // data, or a primitive-typed value.
                     value = wrappedValue.unwrap(shouldMutate);
                 }
                 setAtCursor(template, value);

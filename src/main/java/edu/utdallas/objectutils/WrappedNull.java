@@ -28,8 +28,6 @@ package edu.utdallas.objectutils;
 public enum WrappedNull implements Wrapped {
     INSTANCE;
 
-    private static final long serialVersionUID = 1L;
-
     @Override
     public <T> T unwrap() throws Exception {
         return null;

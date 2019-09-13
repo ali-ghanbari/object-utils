@@ -69,6 +69,11 @@ public class WrappedObjectArray extends AbstractWrappedObject implements Wrapped
         Array.set(array, this.cursor, value);
     }
 
+    @Override
+    protected Object getAtCursor(Object rawObject) throws Exception {
+        return Array.get(rawObject, this.cursor);
+    }
+
     private transient String stringValue = null;
 
     @Override

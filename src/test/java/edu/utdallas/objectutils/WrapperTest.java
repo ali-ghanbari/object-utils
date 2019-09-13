@@ -20,7 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import edu.utdallas.objectutils.utils.ObjectPrinter;
 import org.junit.Test;
 
 import java.io.*;
@@ -972,7 +971,6 @@ public class WrapperTest {
         arr2[0] = new SelectiveClass(20, "aa", 21, 3);
         arr2[1] = new SelectiveClass(11, "bb", 12, 2);
         assertFalse(Arrays.equals(arr1, arr2));
-        System.out.println(((SelectiveClass[]) wrappedArray1.unwrap(arr2))[1]);
-        //assertArrayEquals((SelectiveClass[]) wrappedArray1.unwrap(arr2), arr1);
+        assertArrayEquals((SelectiveClass[]) wrappedArray1.unwrap(arr2), arr1);
     }
 }
