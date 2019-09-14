@@ -973,4 +973,19 @@ public class WrapperTest {
         assertFalse(Arrays.equals(arr1, arr2));
         assertArrayEquals((SelectiveClass[]) wrappedArray1.unwrap(arr2), arr1);
     }
+
+    @Test
+    public void testWrappingObjectsWithIgnoredFields3() throws Exception {
+        final double array[][] = new double[2][];
+        array[0] = new double[]{1.2D, 2.1D};
+        array[1] = array[0];
+        Wrapped wrapped = Wrapper.wrapObject(array);
+        double[][] unwrapped = wrapped.unwrap();
+        unwrapped[0][0] = 3.14D;
+        array[0][0] = 3.14D;
+        System.out.println(wrapped.print());
+        System.out.println(Arrays.deepToString(unwrapped));
+        System.out.println(Arrays.deepToString(array));
+        assertArrayEquals(array, unwrapped);
+    }
 }
