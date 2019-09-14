@@ -159,11 +159,14 @@ public final class Wrapper {
             } else if (object instanceof Long[]) {
                 wrappedArray = new WrappedLongArray((Long[]) object);
             }
-            if (wrappedArray == null) {
+            if (wrappedArray != null) {
+                WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedArray);
+            } else {
                 final Class<?> componentType = clazz.getComponentType();
                 final int len = Array.getLength(object);
                 final Wrapped[] elements = new Wrapped[len];
                 wrappedArray = new WrappedObjectArray(componentType, elements);
+                WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedArray);
                 for (int i = 0; i < len; i++) {
                     final Object e = Array.get(object, i);
                     if (e == null) {
@@ -179,7 +182,6 @@ public final class Wrapper {
                     }
                 }
             }
-            WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedArray);
             return wrappedArray;
         }
         final WrappedObject wrappedObject = new WrappedObject(null, null);
