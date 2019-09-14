@@ -22,13 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
-public class WrappedPrimitiveFloatArray implements WrappedArray {
-    private static final long serialVersionUID = 1L;
-
-    private final float[] value;
-
+public class WrappedPrimitiveFloatArray extends AbstractWrappedBasicArray<float[]> {
     public WrappedPrimitiveFloatArray(float[] value) {
-        this.value = Arrays.copyOf(value, value.length);
+        super(value.clone());
     }
 
     @Override
@@ -48,38 +44,28 @@ public class WrappedPrimitiveFloatArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
-    private transient String stringValue = null;
-
     @Override
     public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = Arrays.toString(this.value);
-        }
-        return this.stringValue;
+        return Arrays.toString(this.value);
     }
 
     @Override
     public float[] unwrap() {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public float[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public float[] unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public float[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public int getAddress() {
-        throw new UnsupportedOperationException();
+        return this.value.clone();
     }
 }

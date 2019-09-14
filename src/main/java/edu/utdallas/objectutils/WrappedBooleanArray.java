@@ -20,15 +20,12 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+
 import java.util.Arrays;
 
-public class WrappedBooleanArray implements WrappedArray {
-    private static final long serialVersionUID = 1L;
-
-    private Boolean[] value;
-
+public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
     public WrappedBooleanArray(Boolean[] value) {
-        this.value = Arrays.copyOf(value, value.length);
+        super(value.clone());
     }
 
     @Override
@@ -36,7 +33,7 @@ public class WrappedBooleanArray implements WrappedArray {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WrappedBooleanArray)) {
             return false;
         }
         WrappedBooleanArray that = (WrappedBooleanArray) o;
@@ -48,38 +45,28 @@ public class WrappedBooleanArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
-    private transient String stringValue = null;
-
     @Override
-    public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = Arrays.toString(this.value);
-        }
-        return this.stringValue;
+    public Boolean[] unwrap() throws Exception {
+        return this.value.clone();
     }
 
     @Override
-    public Boolean[] unwrap() {
-        return this.value;
-    }
-
-    @Override
-    public Boolean[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value;
+    public Boolean[] unwrap(ModificationPredicate shouldMutate) throws Exception {
+        return this.value.clone();
     }
 
     @Override
     public Boolean[] unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public Boolean[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
-    public int getAddress() {
-        throw new UnsupportedOperationException();
+    public String print() {
+        return Arrays.toString(this.value);
     }
 }

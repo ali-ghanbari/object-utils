@@ -22,13 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
-public class WrappedDoubleArray implements WrappedArray {
-    private static final long serialVersionUID = 1L;
-
-    private final Double[] value;
-
+public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
     public WrappedDoubleArray(Double[] value) {
-        this.value = Arrays.copyOf(value, value.length);
+        super(value.clone());
     }
 
     @Override
@@ -36,7 +32,7 @@ public class WrappedDoubleArray implements WrappedArray {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WrappedDoubleArray)) {
             return false;
         }
         WrappedDoubleArray that = (WrappedDoubleArray) o;
@@ -48,38 +44,28 @@ public class WrappedDoubleArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
-    private transient String stringValue = null;
-
     @Override
-    public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = Arrays.toString(this.value);
-        }
-        return this.stringValue;
+    public Double[] unwrap() throws Exception {
+        return this.value.clone();
     }
 
     @Override
-    public Double[] unwrap() {
-        return this.value;
-    }
-
-    @Override
-    public Double[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value;
+    public Double[] unwrap(ModificationPredicate shouldMutate) throws Exception {
+        return this.value.clone();
     }
 
     @Override
     public Double[] unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public Double[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
-    public int getAddress() {
-        throw new UnsupportedOperationException();
+    public String print() {
+        return Arrays.toString(this.value);
     }
 }

@@ -33,24 +33,24 @@ import java.util.List;
  *
  * @author Ali Ghanbari
  */
-public final class Commons {
-    public static boolean strictlyImmutable(final Field field) {
+final class Commons {
+    static boolean strictlyImmutable(final Field field) {
         final int modifiers = field.getModifiers();
         return Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
     }
 
     private static int addressCounter = 0;
 
-    public static int newAddress() {
+    static int newAddress() {
         return addressCounter++;
     }
 
-    public static void resetAddressCounter() {
+    static void resetAddressCounter() {
         addressCounter = 0;
     }
 
 
-    //-------------------------------------------- copied from Apache Commons Lang
+    //---------------------------------------------copied from Apache Commons Lang
     //---------------------------------------------due to dependency incompatibility
     //---------------------------------------------with some of Defects4J programs
 
@@ -76,7 +76,7 @@ public final class Commons {
         return (modifiers & ACCESS_TEST) == 0;
     }
 
-    public static Object readField(final Field field, final Object target, final boolean forceAccess) throws IllegalAccessException {
+    static Object readField(final Field field, final Object target, final boolean forceAccess) throws IllegalAccessException {
         isTrue(field != null, "The field must not be null");
         if (forceAccess && !field.isAccessible()) {
             field.setAccessible(true);
@@ -92,7 +92,7 @@ public final class Commons {
         }
     }
 
-    public static List<Field> getAllFieldsList(final Class<?> cls) {
+    static List<Field> getAllFieldsList(final Class<?> cls) {
         isTrue(cls != null, "The class must not be null");
         final List<Field> allFields = new ArrayList<>();
         Class<?> currentClass = cls;
@@ -104,7 +104,7 @@ public final class Commons {
         return allFields;
     }
 
-    public static void writeField(final Field field, final Object target, final Object value, final boolean forceAccess)
+    static void writeField(final Field field, final Object target, final Object value, final boolean forceAccess)
             throws IllegalAccessException {
         isTrue(field != null, "The field must not be null");
         if (forceAccess && !field.isAccessible()) {

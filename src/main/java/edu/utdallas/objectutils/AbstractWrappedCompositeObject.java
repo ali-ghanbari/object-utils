@@ -30,9 +30,15 @@ import java.util.Set;
 
 import static edu.utdallas.objectutils.ModificationPredicate.NO;
 
-public abstract class AbstractWrappedObject implements Wrapped {
-    protected final int address;
+/**
+ * Base class for object arrays and proper objects.
+ * These objects are composite in a sense they have elements/fields that
+ * might be objects in turn.
+ *
+ * @author Ali Ghanbari
+ */
 
+public abstract class AbstractWrappedCompositeObject extends AbstractWrappedReference {
     protected Class<?> type; // array element type or the object type
 
     protected Wrapped[] values; // field values or array elements
@@ -46,10 +52,10 @@ public abstract class AbstractWrappedObject implements Wrapped {
         UNWRAPPED_OBJECTS = new HashMap<>();
     }
 
-    AbstractWrappedObject(Class<?> type, Wrapped[] values) {
+    AbstractWrappedCompositeObject(Class<?> type, Wrapped[] values) {
+        super(); // obtain address
         this.values = values;
         this.type = type;
-        this.address = Commons.newAddress();
     }
 
     /**
@@ -141,38 +147,37 @@ public abstract class AbstractWrappedObject implements Wrapped {
             }
             if (shouldMutateAtCursor(shouldMutate)) {
                 final Object value;
-                if (wrappedValue instanceof AbstractWrappedObject) {
-                    final AbstractWrappedObject wrappedObject =
-                            (AbstractWrappedObject) wrappedValue;
+                if (wrappedValue instanceof AbstractWrappedReference) {
+                    final AbstractWrappedReference wrappedReference =
+                            (AbstractWrappedReference) wrappedValue;
                     final Object targetObject =
-                            UNWRAPPED_OBJECTS.get(wrappedObject.address);
-                    if (targetObject != null) { // cycle?
+                            UNWRAPPED_OBJECTS.get(wrappedReference.address);
+                    if (targetObject != null) { // reusable object?
                         value = targetObject;
-                    } else {
+                    } else if (wrappedReference instanceof AbstractWrappedCompositeObject) {
+                        final AbstractWrappedCompositeObject compositeObject =
+                                (AbstractWrappedCompositeObject) wrappedReference;
                         Object originalObject = getAtCursor(template);
                         // assert wrapped value does not represent null value
                         if (originalObject == null) {
-                            originalObject = wrappedObject.createRawObject();
-                        } else if (originalObject.getClass() != wrappedObject.type) {
+                            originalObject = compositeObject.createRawObject();
+                        } else if (originalObject.getClass() != compositeObject.type) {
                             // should we change the type of object?
-                            originalObject = wrappedObject.createRawObject();
+                            originalObject = compositeObject.createRawObject();
                         }
-                        value = wrappedObject.unwrap0(originalObject, shouldMutate);
+                        value = compositeObject.unwrap0(originalObject, shouldMutate);
+                    } else { // basic-typed array
+                        value = wrappedReference.unwrap(shouldMutate);
                     }
+                    UNWRAPPED_OBJECTS.put(wrappedReference.address, value);
                 } else {
-                    // if the wrapped value represents null, an array of primitive-typed
-                    // data, or a primitive-typed value.
+                    // if the wrapped value represents null or a primitive-typed object
                     value = wrappedValue.unwrap(shouldMutate);
                 }
                 setAtCursor(template, value);
             }
         }
         return template;
-    }
-
-    @Override
-    public int getAddress() {
-        return this.address;
     }
 
     @Override
@@ -188,7 +193,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        AbstractWrappedObject that = (AbstractWrappedObject) object;
+        AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) object;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
         final Set<Integer> visitedNodes1 = new HashSet<>();
@@ -209,12 +214,12 @@ public abstract class AbstractWrappedObject implements Wrapped {
             if (node1.getClass() != node2.getClass()) {
                 return false;
             }
-            if (node1 instanceof AbstractWrappedObject) {
+            if (node1 instanceof AbstractWrappedCompositeObject) {
                 /* this implies node2 instanceof AbstractWrappedObject */
-                final AbstractWrappedObject wrappedObject1 =
-                        ((AbstractWrappedObject) node1);
-                final AbstractWrappedObject wrappedObject2 =
-                        ((AbstractWrappedObject) node2);
+                final AbstractWrappedCompositeObject wrappedObject1 =
+                        ((AbstractWrappedCompositeObject) node1);
+                final AbstractWrappedCompositeObject wrappedObject2 =
+                        ((AbstractWrappedCompositeObject) node2);
                 if (wrappedObject1.getType() != wrappedObject2.getType()) {
                     return false;
                 }
@@ -226,7 +231,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
                     return false;
                 }
                 for (final Wrapped value : wrappedObject1.getValues()) {
-                    if (value instanceof AbstractWrappedObject) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
                         if (visitedNodes1.contains(value.getAddress())) {
                             continue;
                         }
@@ -234,7 +239,7 @@ public abstract class AbstractWrappedObject implements Wrapped {
                     workList1.offer(value);
                 }
                 for (final Wrapped value : values2) {
-                    if (value instanceof AbstractWrappedObject) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
                         if (visitedNodes2.contains(value.getAddress())) {
                             continue;
                         }

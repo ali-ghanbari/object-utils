@@ -22,13 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
-public class WrappedPrimitiveShortArray implements WrappedArray {
-    private static final long serialVersionUID = 1L;
-
-    private final short[] value;
-
+public class WrappedPrimitiveShortArray extends AbstractWrappedBasicArray<short[]> {
     public WrappedPrimitiveShortArray(short[] value) {
-        this.value = Arrays.copyOf(value, value.length);
+        super(value.clone());
     }
 
     @Override
@@ -48,38 +44,28 @@ public class WrappedPrimitiveShortArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
-    private transient String stringValue = null;
-
     @Override
     public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = Arrays.toString(this.value);
-        }
-        return this.stringValue;
+        return Arrays.toString(this.value);
     }
 
     @Override
     public short[] unwrap() {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public short[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public short[] unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public short[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public int getAddress() {
-        throw new UnsupportedOperationException();
+        return this.value.clone();
     }
 }

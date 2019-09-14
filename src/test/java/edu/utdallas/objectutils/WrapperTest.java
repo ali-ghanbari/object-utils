@@ -975,7 +975,7 @@ public class WrapperTest {
     }
 
     @Test
-    public void testWrappingObjectsWithIgnoredFields3() throws Exception {
+    public void testArrayReference1() throws Exception {
         final double array[][] = new double[2][];
         array[0] = new double[]{1.2D, 2.1D};
         array[1] = array[0];
@@ -983,9 +983,49 @@ public class WrapperTest {
         double[][] unwrapped = wrapped.unwrap();
         unwrapped[0][0] = 3.14D;
         array[0][0] = 3.14D;
-        System.out.println(wrapped.print());
-        System.out.println(Arrays.deepToString(unwrapped));
-        System.out.println(Arrays.deepToString(array));
         assertArrayEquals(array, unwrapped);
+    }
+
+    @Test
+    public void testArrayReference2() throws Exception {
+        final double array[][] = new double[2][];
+        array[0] = new double[]{1.2D, 2.1D};
+        array[1] = array[0];
+        Wrapped wrapped = Wrapper.wrapObject(array);
+        final String prev = wrapped.print();
+        double[][] unwrapped = wrapped.unwrap();
+        unwrapped[0][0] = 3.14D;
+        assertEquals(prev, wrapped.print());
+    }
+
+    @Test
+    public void testArrayReference3() throws Exception {
+        final int[] arr = {1, 2};
+        final Wrapped wrapped = Wrapper.wrapObject(arr);
+        final String prev = wrapped.print();
+        final int[] unwrapped = wrapped.unwrap();
+        unwrapped[0] = 0;
+        assertEquals(prev, wrapped.print());
+    }
+
+    private static class OuterClass {
+        InnerClass f1;
+        InnerClass f2;
+        String s;
+    }
+
+    private static class InnerClass {
+        int[] f1;
+        int[][] f2;
+        OuterClass back;
+        OuterClass forward;
+    }
+
+    @Test
+    public void testObjectReference2() throws Exception {
+        OuterClass outerClass = new OuterClass();
+        outerClass.f1 = outerClass.f2 = new InnerClass();
+        outerClass.s = "hello";
+
     }
 }

@@ -25,7 +25,7 @@ import org.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Iterator;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.getAllFieldsList;
@@ -39,7 +39,7 @@ import static edu.utdallas.objectutils.Commons.readField;
  *
  * @author Ali Ghanbari
  */
-public class WrappedObject extends AbstractWrappedObject {
+public class WrappedObject extends AbstractWrappedCompositeObject {
     private static final long serialVersionUID = 1L;
 
     private transient Iterator<Field> fieldsIterator;
@@ -86,13 +86,8 @@ public class WrappedObject extends AbstractWrappedObject {
         return readField(this.fieldAtCursor, rawObject, true);
     }
 
-    private transient String stringValue = null;
-
     @Override
     public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = ObjectPrinter.print(this);
-        }
-        return this.stringValue;
+        return ObjectPrinter.print(this);
     }
 }

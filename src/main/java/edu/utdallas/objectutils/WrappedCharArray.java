@@ -22,13 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
-public class WrappedCharArray implements WrappedArray {
-    private static final long serialVersionUID = 1L;
-
-    private final Character[] value;
-
+public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
     public WrappedCharArray(Character[] value) {
-        this.value = Arrays.copyOf(value, value.length);
+        super(value.clone());
     }
 
     @Override
@@ -36,7 +32,7 @@ public class WrappedCharArray implements WrappedArray {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WrappedCharArray)) {
             return false;
         }
         WrappedCharArray that = (WrappedCharArray) o;
@@ -48,38 +44,28 @@ public class WrappedCharArray implements WrappedArray {
         return Arrays.hashCode(this.value);
     }
 
-    private transient String stringValue = null;
-
     @Override
-    public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = Arrays.toString(this.value);
-        }
-        return this.stringValue;
+    public Character[] unwrap() throws Exception {
+        return this.value.clone();
     }
 
     @Override
-    public Character[] unwrap() {
-        return this.value;
-    }
-
-    @Override
-    public Character[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value;
+    public Character[] unwrap(ModificationPredicate shouldMutate) throws Exception {
+        return this.value.clone();
     }
 
     @Override
     public Character[] unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
     public Character[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
+        return this.value.clone();
     }
 
     @Override
-    public int getAddress() {
-        throw new UnsupportedOperationException();
+    public String print() {
+        return Arrays.toString(this.value);
     }
 }

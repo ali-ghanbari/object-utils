@@ -30,7 +30,7 @@ import java.lang.reflect.Array;
  *
  * @author Ali Ghanbari
  */
-public class WrappedObjectArray extends AbstractWrappedObject implements WrappedArray {
+public class WrappedObjectArray extends AbstractWrappedCompositeObject implements WrappedArray {
     private static final long serialVersionUID = 1L;
 
     private transient int cursor;
@@ -74,13 +74,8 @@ public class WrappedObjectArray extends AbstractWrappedObject implements Wrapped
         return Array.get(rawObject, this.cursor);
     }
 
-    private transient String stringValue = null;
-
     @Override
     public String print() {
-        if (this.stringValue == null) {
-            this.stringValue = ObjectPrinter.print(this);
-        }
-        return this.stringValue;
+        return ObjectPrinter.print(this);
     }
 }
