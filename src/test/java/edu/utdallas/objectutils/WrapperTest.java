@@ -22,13 +22,26 @@ package edu.utdallas.objectutils;
 
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.*;
-
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static edu.utdallas.objectutils.ModificationPredicate.YES;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Ali Ghanbari
@@ -1024,8 +1037,21 @@ public class WrapperTest {
     @Test
     public void testObjectReference2() throws Exception {
         OuterClass outerClass = new OuterClass();
-        outerClass.f1 = outerClass.f2 = new InnerClass();
-        outerClass.s = "hello";
-
+        {
+            outerClass.f1 = outerClass.f2 = new InnerClass();
+            outerClass.s = "hello";
+            InnerClass innerClass = outerClass.f1;
+            innerClass.f1 = new int[]{1, 2};
+            innerClass.f2 = new int[][]{innerClass.f1, {3, 4}};
+            innerClass.back = outerClass;
+            innerClass.forward = new OuterClass();
+        }
+        Wrapped wrapped = Wrapper.wrapObject(outerClass);
+        final String prev = wrapped.print();
+        final OuterClass unwrapped = wrapped.unwrap();
+        assertEquals(prev, Wrapper.wrapObject(unwrapped).print());
+        assertSame(unwrapped.f1, unwrapped.f2);
+        unwrapped.f1.f1[1] = 5;
+        assertEquals(prev, wrapped.print());
     }
 }

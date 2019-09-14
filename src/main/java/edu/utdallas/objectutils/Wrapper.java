@@ -25,7 +25,10 @@ import edu.utdallas.objectutils.utils.W;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static edu.utdallas.objectutils.Commons.readField;

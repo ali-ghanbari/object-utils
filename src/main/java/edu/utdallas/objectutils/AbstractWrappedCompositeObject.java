@@ -150,8 +150,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 if (wrappedValue instanceof AbstractWrappedReference) {
                     final AbstractWrappedReference wrappedReference =
                             (AbstractWrappedReference) wrappedValue;
-                    final Object targetObject =
-                            UNWRAPPED_OBJECTS.get(wrappedReference.address);
+                    final Object targetObject = UNWRAPPED_OBJECTS.get(wrappedReference.address);
                     if (targetObject != null) { // reusable object?
                         value = targetObject;
                     } else if (wrappedReference instanceof AbstractWrappedCompositeObject) {
