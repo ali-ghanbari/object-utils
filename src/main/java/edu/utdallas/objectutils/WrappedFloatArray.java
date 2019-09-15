@@ -56,12 +56,14 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
 
     @Override
     public Float[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Float[]) template;
     }
 
     @Override
     public Float[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Float[]) template;
     }
 
     @Override

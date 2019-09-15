@@ -57,12 +57,14 @@ public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
 
     @Override
     public Boolean[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Boolean[]) template;
     }
 
     @Override
     public Boolean[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Boolean[]) template;
     }
 
     @Override

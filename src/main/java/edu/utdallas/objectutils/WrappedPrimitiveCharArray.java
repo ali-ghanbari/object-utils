@@ -61,11 +61,13 @@ public class WrappedPrimitiveCharArray extends AbstractWrappedBasicArray<char[]>
 
     @Override
     public char[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (char[]) template;
     }
 
     @Override
     public char[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (char[]) template;
     }
 }

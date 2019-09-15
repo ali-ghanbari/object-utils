@@ -61,11 +61,13 @@ public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]>
 
     @Override
     public byte[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (byte[]) template;
     }
 
     @Override
     public byte[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (byte[]) template;
     }
 }

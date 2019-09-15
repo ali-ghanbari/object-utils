@@ -166,7 +166,8 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                         }
                         value = compositeObject.unwrap0(originalObject, shouldMutate);
                     } else { // basic-typed array
-                        value = wrappedReference.unwrap(shouldMutate);
+                        Object originalObject = getAtCursor(template);
+                        value = wrappedReference.unwrap(originalObject, shouldMutate);
                     }
                     UNWRAPPED_OBJECTS.put(wrappedReference.address, value);
                 } else {

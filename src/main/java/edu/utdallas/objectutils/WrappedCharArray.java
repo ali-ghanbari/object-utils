@@ -56,12 +56,14 @@ public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
 
     @Override
     public Character[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Character[]) template;
     }
 
     @Override
     public Character[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Character[]) template;
     }
 
     @Override

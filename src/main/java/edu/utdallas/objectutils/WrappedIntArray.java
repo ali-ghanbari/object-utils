@@ -56,12 +56,14 @@ public class WrappedIntArray extends AbstractWrappedBasicArray<Integer[]> {
 
     @Override
     public Integer[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Integer[]) template;
     }
 
     @Override
     public Integer[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Integer[]) template;
     }
 
     @Override

@@ -56,12 +56,14 @@ public class WrappedShortArray extends AbstractWrappedBasicArray<Short[]> {
 
     @Override
     public Short[] unwrap(Object template) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Short[]) template;
     }
 
     @Override
     public Short[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
+        System.arraycopy(this.value, 0, template, 0, this.value.length);
+        return (Short[]) template;
     }
 
     @Override
