@@ -1060,7 +1060,7 @@ public class WrapperTest {
         final InclusionPredicate ip = new InclusionPredicate() {
             @Override
             public boolean test(Field field) {
-                return field.getName().equals("f1");
+                return field.getName().matches("back|f1");
             }
         };
         OuterClass outerClass = new OuterClass();
@@ -1073,8 +1073,9 @@ public class WrapperTest {
             innerClass.back = outerClass;
             innerClass.forward = new OuterClass();
         }
+        assertSame(outerClass.f1.f1, outerClass.f1.f2[0]);
         Wrapped wrapped = Wrapper.wrapObject(outerClass, ip);
-        System.out.println(wrapped.print());
-        System.out.println(Wrapper.wrapObject(outerClass).print());
+        wrapped.unwrap(outerClass);
+        assertSame(outerClass.f1.f1, outerClass.f1.f2[0]);
     }
 }
