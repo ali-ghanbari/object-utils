@@ -1054,4 +1054,27 @@ public class WrapperTest {
         unwrapped.f1.f1[1] = 5;
         assertEquals(prev, wrapped.print());
     }
+
+    @Test
+    public void testWrappingObjectsWithIgnoredFields3() throws Exception {
+        final InclusionPredicate ip = new InclusionPredicate() {
+            @Override
+            public boolean test(Field field) {
+                return field.getName().equals("f1");
+            }
+        };
+        OuterClass outerClass = new OuterClass();
+        {
+            outerClass.f1 = outerClass.f2 = new InnerClass();
+            outerClass.s = "hello";
+            InnerClass innerClass = outerClass.f1;
+            innerClass.f1 = new int[]{1, 2};
+            innerClass.f2 = new int[][]{innerClass.f1, {3, 4}};
+            innerClass.back = outerClass;
+            innerClass.forward = new OuterClass();
+        }
+        Wrapped wrapped = Wrapper.wrapObject(outerClass, ip);
+        System.out.println(wrapped.print());
+        System.out.println(Wrapper.wrapObject(outerClass).print());
+    }
 }
