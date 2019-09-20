@@ -154,6 +154,9 @@ public final class ObjectPrinter {
                 }
                 sb.append(',');
             }
+            if (iMax < 0) {
+                sb.append('}');
+            }
         } else {
             throw new IllegalArgumentException();
         }

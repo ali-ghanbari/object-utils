@@ -40,11 +40,6 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.commons</groupId>-->
-<!--            <artifactId>commons-lang3</artifactId>-->
-<!--            <version>3.8.1</version> &lt;!&ndash;this is not the latest version but it is compatible with JDK 1.7&ndash;&gt;-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>

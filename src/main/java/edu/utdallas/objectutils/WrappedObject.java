@@ -42,9 +42,9 @@ import static edu.utdallas.objectutils.Commons.readField;
 public class WrappedObject extends AbstractWrappedCompositeObject {
     private static final long serialVersionUID = 1L;
 
-    private transient Iterator<Field> fieldsIterator;
+    protected transient Iterator<Field> fieldsIterator;
 
-    private transient Field fieldAtCursor;
+    protected transient Field fieldAtCursor;
 
     public WrappedObject(Class<?> type, Wrapped[] values) {
         super(type, values);

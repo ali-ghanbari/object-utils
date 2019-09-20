@@ -123,6 +123,8 @@ public final class Wrapper {
             return new WrappedChar((Character) object);
         } else if (object instanceof Short) {
             return new WrappedShort((Short) object);
+        } else if (object instanceof Class) {
+            return new WrappedClassConstant((Class<?>) object);
         }
         final Class<?> clazz = object.getClass();
         if (clazz.isArray()) {
@@ -187,7 +189,12 @@ public final class Wrapper {
             }
             return wrappedArray;
         }
-        final WrappedObject wrappedObject = new WrappedObject(null, null);
+        final WrappedObject wrappedObject;
+        if (object instanceof Enum) {
+            wrappedObject = new WrappedEnumConstant(clazz, null, ((Enum) object).name());
+        } else {
+            wrappedObject = new WrappedObject(null, null);
+        }
         WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedObject);
         final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object, inclusionPredicate);
         wrappedObject.setType(clazz);
@@ -203,6 +210,9 @@ public final class Wrapper {
         final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
+                continue;
+            }
+            if (field.getDeclaringClass() == Enum.class && field.getName().matches("name|ordinal")) {
                 continue;
             }
             final Wrapped wrappedFieldValue;

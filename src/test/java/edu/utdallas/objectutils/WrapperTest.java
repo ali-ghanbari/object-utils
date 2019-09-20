@@ -1078,4 +1078,107 @@ public class WrapperTest {
         wrapped.unwrap(outerClass);
         assertSame(outerClass.f1.f1, outerClass.f1.f2[0]);
     }
+
+    @Test
+    public void test2DDoubleArray1() throws Exception {
+        final double[][] arr1 = {
+                {1D, 2D, 3D},
+                {1.1D, 2.2D, 3.3D},
+                {3.14D, 2.718D, 0.08D}
+        };
+        final double[][] arr2 = {
+                {1D, 2D, 3D},
+                {1.1D, 2.2D, 3.3D},
+                {3.14D, 2.718D, 0.08D}
+        };
+        assertTrue(Arrays.deepEquals(arr1, arr2));
+        final Wrapped wrapped1 = Wrapper.wrapObject(arr1);
+        final Wrapped wrapped2 = Wrapper.wrapObject(arr2);
+        assertEquals(wrapped1.hashCode(), wrapped2.hashCode());
+        assertEquals(wrapped1, wrapped2);
+        assertTrue(Arrays.deepEquals((double[][]) wrapped1.unwrap(), arr2));
+        assertTrue(Arrays.deepEquals((double[][]) wrapped1.unwrap(arr2), arr1));
+
+    }
+
+    @Test
+    public void testDoubleArray2() throws Exception {
+        final double[] arr1 = {3.14D, -1D, -0.08D, 1};
+        final double[] arr2 = {3.14D, -1D, -0.08D, 1};
+        assertArrayEquals(arr1, arr2, 0.0);
+        final Wrapped wrapped1 = Wrapper.wrapObject(arr1);
+        final Wrapped wrapped2 = Wrapper.wrapObject(arr2);
+        assertEquals(wrapped1.hashCode(), wrapped2.hashCode());
+        assertEquals(wrapped1, wrapped2);
+        assertArrayEquals((double[]) wrapped1.unwrap(), arr2, 0.0);
+        assertArrayEquals((double[]) wrapped1.unwrap(arr2), arr1, 0.0);
+    }
+
+    @Test
+    public void testClassObjects1() throws Exception {
+        final Wrapped wc1 = Wrapper.wrapObject(String.class);
+        final Wrapped wc2 = Wrapper.wrapObject(String.class);
+        assertEquals(wc1, wc2);
+        assertSame(wc1.unwrap(), wc2.unwrap());
+        final Wrapped wc3 = Wrapper.wrapObject(String[].class);
+        final Wrapped wc4 = Wrapper.wrapObject(int.class);
+        assertNotEquals(wc3, wc4);
+        assertSame(wc3.unwrap(), String[].class);
+        assertNotSame(wc3.unwrap(), wc4.unwrap());
+    }
+
+    private enum Colors {
+        RED,
+        GREEN,
+        BLUE
+    }
+
+    @Test
+    public void testEnumObjects1() throws Exception {
+        final Wrapped we1 = Wrapper.wrapObject(Colors.RED);
+        final Wrapped we2 = Wrapper.wrapObject(Colors.BLUE);
+        assertNotEquals(we1, we2);
+        assertNotSame(we1.unwrap(), we2.unwrap());
+        final Wrapped b1 = Wrapper.wrapObject(Colors.GREEN);
+        final Wrapped b2 = Wrapper.wrapObject(Colors.GREEN);
+        assertEquals(b1, b2);
+        assertSame(b1.unwrap(), b2.unwrap());
+    }
+
+    private enum BigEnum {
+        I1(1, "S1", Dummy.J1),
+        I2(1, "B1", Dummy.J2),
+        I3(1, "D1", new Enum[]{Dummy.J1, Dummy.J2});
+
+        private int i;
+        private final String s;
+        private Object bl;
+
+        BigEnum(int i, String s, Object bl) {
+            this.i = i;
+            this.s = s;
+            this.bl = bl;
+        }
+    }
+
+    private enum Dummy {
+        J1(BigEnum.I1),
+        J2(BigEnum.I2);
+
+        private Enum e;
+
+        Dummy(Enum e) {
+            this.e = e;
+        }
+    }
+
+    @Test
+    public void testEnumObjects2() throws Exception {
+        final Wrapped wrappedI1 = Wrapper.wrapObject(BigEnum.I1);
+        final Wrapped wrappedI2 = Wrapper.wrapObject(BigEnum.I2);
+        final Wrapped wrappedI3 = Wrapper.wrapObject(BigEnum.I3);
+        assertEquals(wrappedI1.print(), "I1:BigEnum@1{0:1,1:S1,2:@3}Dummy@3{0:null}");
+        assertEquals(wrappedI2.print(), "I2:BigEnum@1{0:1,1:B1,2:@3}Dummy@3{0:null}");
+        assertEquals(wrappedI3.print(), "I3:BigEnum@1{0:1,1:D1,2:@2}OBJ_ARRAY@2{0:@3,1:@3}Dummy@3{0:null}");
+    }
 }
