@@ -191,7 +191,7 @@ public final class Wrapper {
         }
         final WrappedObject wrappedObject;
         if (object instanceof Enum) {
-            wrappedObject = new WrappedEnumConstant(clazz, null, ((Enum) object).name());
+            wrappedObject = new WrappedEnumConstant((Enum) object, null);
         } else {
             wrappedObject = new WrappedObject(null, null);
         }

@@ -31,32 +31,23 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public class WrappedEnumConstant extends WrappedObject {
     private static final long serialVersionUID = 1L;
 
-    private static final Map<Class<?>, Map<String, Integer>> ADDRESS_MAPS;
+    private static final Map<Enum, Integer> ADDRESS_MAP;
 
     static {
-        ADDRESS_MAPS = new HashMap<>();
+        ADDRESS_MAP = new HashMap<>();
     }
 
     private final String name;
 
-    private static int obtainAddress(Class<?> type, String name) {
-        Map<String, Integer> nameMap = ADDRESS_MAPS.get(type);
-        if (nameMap == null) {
-            nameMap = new HashMap<>();
-        }
-        Integer address = nameMap.get(name);
+    public WrappedEnumConstant(Enum object, Wrapped[] values) {
+        super(object.getClass(), values);
+        this.name = object.name();
+        Integer address = ADDRESS_MAP.get(object);
         if (address == null) {
             address = newAddress();
         }
-        nameMap.put(name, address);
-        ADDRESS_MAPS.put(type, nameMap);
-        return address;
-    }
-
-    public WrappedEnumConstant(Class<?> type, Wrapped[] values, String name) {
-        super(type, values);
-        this.name = name;
-        this.address = obtainAddress(type, name);
+        ADDRESS_MAP.put(object, address);
+        this.address = address;
     }
 
     @Override

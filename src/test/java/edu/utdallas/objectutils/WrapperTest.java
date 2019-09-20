@@ -1177,6 +1177,8 @@ public class WrapperTest {
         final Wrapped wrappedI1 = Wrapper.wrapObject(BigEnum.I1);
         final Wrapped wrappedI2 = Wrapper.wrapObject(BigEnum.I2);
         final Wrapped wrappedI3 = Wrapper.wrapObject(BigEnum.I3);
+        assertEquals(BigEnum.I1, wrappedI1.unwrap(BigEnum.I1));
+        wrappedI1.unwrap(BigEnum.I2);
         assertEquals(wrappedI1.print(), "I1:BigEnum@1{0:1,1:S1,2:@3}Dummy@3{0:null}");
         assertEquals(wrappedI2.print(), "I2:BigEnum@1{0:1,1:B1,2:@3}Dummy@3{0:null}");
         assertEquals(wrappedI3.print(), "I3:BigEnum@1{0:1,1:D1,2:@2}OBJ_ARRAY@2{0:@3,1:@3}Dummy@3{0:null}");
