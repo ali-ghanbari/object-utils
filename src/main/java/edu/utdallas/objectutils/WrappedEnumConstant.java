@@ -28,6 +28,11 @@ import java.util.Objects;
 import static edu.utdallas.objectutils.Commons.newAddress;
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
+/**
+ * Wraps an enum constant. Just like a normal object, an enum constant might have fields.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedEnumConstant extends WrappedObject {
     private static final long serialVersionUID = 1L;
 
@@ -45,13 +50,16 @@ public class WrappedEnumConstant extends WrappedObject {
         Integer address = ADDRESS_MAP.get(object);
         if (address == null) {
             address = newAddress();
+            ADDRESS_MAP.put(object, address);
         }
-        ADDRESS_MAP.put(object, address);
         this.address = address;
     }
 
     @Override
     public Object unwrap() throws Exception {
+        // unwrapping an enum constant without having a template makes sense only when
+        // we have no fields as there is only one instance of any enum constant and we
+        // cannot instantiate enums.
         if (this.values.length > 0) {
             throw new IllegalStateException();
         }
@@ -101,6 +109,6 @@ public class WrappedEnumConstant extends WrappedObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), this.name);
+        return Objects.hashCode(this.name);
     }
 }

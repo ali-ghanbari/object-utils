@@ -149,7 +149,7 @@ public final class Wrapper {
                 wrappedArray = new WrappedStringArray((String[]) object);
             } else if (object instanceof Boolean[]) {
                 wrappedArray = new WrappedBooleanArray((Boolean[]) object);
-            } else  if (object instanceof Byte[]) {
+            } else if (object instanceof Byte[]) {
                 wrappedArray = new WrappedByteArray((Byte[]) object);
             } else if (object instanceof Character[]) {
                 wrappedArray = new WrappedCharArray((Character[]) object);

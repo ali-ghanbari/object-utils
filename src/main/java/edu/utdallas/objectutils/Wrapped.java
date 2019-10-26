@@ -32,7 +32,7 @@ public interface Wrapped extends Serializable {
     /**
      * Reifies wrapped object without altering any static fields.
      * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
-     * <b>Note 1:</b> those fields that are not included in the wrapped object shall be left with their default values.
+     * <b>Note 2:</b> those fields that are not included in the wrapped object shall be left with their default values.
      *
      * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
      * @return Reified object
@@ -45,7 +45,7 @@ public interface Wrapped extends Serializable {
     /**
      * Reifies a wrapped object without altering any static fields.
      * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
-     * <b>Note 1:</b> those fields that are excluded from the wrapped object shall be left with their current values.
+     * <b>Note 2:</b> those fields that are excluded from the wrapped object shall be left with their current values.
      *
      * @param template The target object whose field value will be updated according to data present in the wrapped
      *                 object.

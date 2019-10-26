@@ -28,16 +28,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static edu.utdallas.objectutils.ModificationPredicate.YES;
 
@@ -1182,5 +1173,32 @@ public class WrapperTest {
         assertEquals(wrappedI1.print(), "I1:BigEnum@1{0:1,1:S1,2:@3}Dummy@3{0:null}");
         assertEquals(wrappedI2.print(), "I2:BigEnum@1{0:1,1:B1,2:@3}Dummy@3{0:null}");
         assertEquals(wrappedI3.print(), "I3:BigEnum@1{0:1,1:D1,2:@2}OBJ_ARRAY@2{0:@3,1:@3}Dummy@3{0:null}");
+    }
+
+    private enum E1 {
+        F1;
+    }
+
+    private enum E2 {
+        F1;
+    }
+
+    @Test
+    public void testEnumObjects3() throws Exception {
+        final Wrapped w1 = Wrapper.wrapObject(E1.F1);
+        final Wrapped w2 = Wrapper.wrapObject(E2.F1);
+        assertNotEquals(w1, w2);
+    }
+
+    private class ClazzTestClass {
+        private final Class<?> c1 = String.class;
+        private final Field f1 = c1.getDeclaredFields()[0];
+    }
+
+    @Test
+    public void testClassObjects3() throws Exception {
+        final ClazzTestClass clazz = new ClazzTestClass();
+        final Wrapped w = Wrapper.wrapObject(clazz);
+        System.out.println(w.print());
     }
 }
