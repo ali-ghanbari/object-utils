@@ -1,6 +1,6 @@
 package edu.utdallas.objectutils.shallow;
 
-import edu.utdallas.objectutils.*;
+import edu.utdallas.objectutils.WrappedNull;
 
 import java.util.Objects;
 
@@ -32,17 +32,41 @@ public class ShallowWrapped {
     @Override
     public int hashCode() {
         final Object core = this.core;
-        if (core instanceof Integer || core instanceof String || core instanceof Float 
-                || core instanceof Double || core instanceof Long || core instanceof Boolean 
-                || core instanceof Byte || core instanceof Character || core instanceof Short 
-                || core instanceof Class || core instanceof int[] || core instanceof boolean[]
-                || core instanceof byte[] || core instanceof char[] || core instanceof short[]
-                || core instanceof float[] || core instanceof double[] || core instanceof long[]
-                || core instanceof String[] || core instanceof Boolean[] || core instanceof Byte[]
-                || core instanceof Character[] || core instanceof Short[] || core instanceof Integer[]
-                || core instanceof Float[] || core instanceof Double[] || core instanceof Long[]) {
+        if (core == null) {
+            return WrappedNull.INSTANCE.hashCode();
+        }
+        if (core instanceof Integer
+                || core instanceof String
+                || core instanceof Float
+                || core instanceof Double
+                || core instanceof Long
+                || core instanceof Boolean
+                || core instanceof Byte
+                || core instanceof Character
+                || core instanceof Short
+                || core instanceof Class
+                || core instanceof int[]
+                || core instanceof boolean[]
+                || core instanceof byte[]
+                || core instanceof char[]
+                || core instanceof short[]
+                || core instanceof float[]
+                || core instanceof double[]
+                || core instanceof long[]
+                || core instanceof String[]
+                || core instanceof Boolean[]
+                || core instanceof Byte[]
+                || core instanceof Character[]
+                || core instanceof Short[]
+                || core instanceof Integer[]
+                || core instanceof Float[]
+                || core instanceof Double[]
+                || core instanceof Long[]) {
             return Objects.hashCode(core);
         }
-        return 0;
+        if (core instanceof Enum) {
+            return ((Enum) core).name().hashCode();
+        }
+        return core.getClass().hashCode();
     }
 }

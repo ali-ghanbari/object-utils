@@ -1192,13 +1192,14 @@ public class WrapperTest {
 
     private class ClazzTestClass {
         private final Class<?> c1 = String.class;
-        private final Field f1 = c1.getDeclaredFields()[0];
+        private final Field f1 = c1.getDeclaredFields()[2];
     }
 
     @Test
     public void testClassObjects3() throws Exception {
         final ClazzTestClass clazz = new ClazzTestClass();
-        final Wrapped w = Wrapper.wrapObject(clazz);
+        clazz.f1.setAccessible(true);
+        final Wrapped w = Wrapper.wrapObject(clazz.f1);
         System.out.println(w.print());
     }
 }

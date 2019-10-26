@@ -90,8 +90,7 @@ public final class Wrapper {
     }
 
     public static Wrapped wrapObject(final Object object,
-                                     final InclusionPredicate inclusionPredicate)
-            throws Exception {
+                                     final InclusionPredicate inclusionPredicate) throws Exception {
         if (object == null) {
             return WrappedNull.INSTANCE;
         }
@@ -102,8 +101,7 @@ public final class Wrapper {
     }
 
     private static Wrapped wrap0(final W hashMapSafeObject,
-                                 final InclusionPredicate inclusionPredicate)
-            throws Exception {
+                                 final InclusionPredicate inclusionPredicate) throws Exception {
         final Object object = hashMapSafeObject.getCore();
         if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
@@ -125,6 +123,9 @@ public final class Wrapper {
             return new WrappedShort((Short) object);
         } else if (object instanceof Class) {
             return new WrappedClassConstant((Class<?>) object);
+        } else if (object instanceof Field) {
+            System.err.println("fff");
+            return new WrappedClassField((Field) object);
         }
         final Class<?> clazz = object.getClass();
         if (clazz.isArray()) {
@@ -204,7 +205,7 @@ public final class Wrapper {
 
     private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz,
                                                         final Object object,
-                                                        InclusionPredicate inclusionPredicate)
+                                                        final InclusionPredicate inclusionPredicate)
             throws Exception {
         Wrapped[] wrappedFieldValues = new Wrapped[0];
         final List<Field> fields = getAllFieldsList(clazz);
