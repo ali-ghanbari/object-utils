@@ -1,5 +1,5 @@
 language: java
 sudo: false
-script: mvn clean test -Dhttps.protocols=TLSv1.2
+script: mvn clean test
 jdk:
-  oraclejdk7
+  oraclejdk8
