@@ -36,7 +36,6 @@ import static edu.utdallas.objectutils.ModificationPredicate.NO;
  *
  * @author Ali Ghanbari
  */
-
 public abstract class AbstractWrappedCompositeObject extends AbstractWrappedReference {
     protected Class<?> type; // array element type or the object type
 
@@ -189,7 +188,6 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     }
 
     @Override
-    //FIXME: simplify the algorithm; I think we can get rid of one of the sets and loops
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -201,7 +199,6 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
         final Set<Integer> visitedNodes1 = new HashSet<>();
-        final Set<Integer> visitedNodes2 = new HashSet<>();
         workList1.offer(this);
         workList2.offer(that);
         while (!workList1.isEmpty()) {
@@ -228,27 +225,20 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                     return false;
                 }
                 visitedNodes1.add(wrappedObject1.getAddress());
-                visitedNodes2.add(wrappedObject2.getAddress());
                 final Wrapped[] values1 = wrappedObject1.getValues();
                 final Wrapped[] values2 = wrappedObject2.getValues();
                 if (values1.length != values2.length) {
                     return false;
                 }
-                for (final Wrapped value : values1) {
+                for (int i = 0; i < values1.length; i++) {
+                    final Wrapped value = values1[i];
                     if (value instanceof AbstractWrappedCompositeObject) {
                         if (visitedNodes1.contains(value.getAddress())) {
                             continue;
                         }
                     }
                     workList1.offer(value);
-                }
-                for (final Wrapped value : values2) {
-                    if (value instanceof AbstractWrappedCompositeObject) {
-                        if (visitedNodes2.contains(value.getAddress())) {
-                            continue;
-                        }
-                    }
-                    workList2.offer(value);
+                    workList2.offer(values2[i]);
                 }
             } else if (!node1.equals(node2)) {
                 return false;
