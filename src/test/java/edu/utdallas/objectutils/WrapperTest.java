@@ -1392,4 +1392,10 @@ public class WrapperTest {
         map.put(classA, "hello");
         assertNotNull(map.get(shallowClassA));
     }
+
+    @Test
+    public void testShallowWrapping5() throws Exception {
+        final Wrapped wrapped = Wrapper.wrapObject(1);
+        assertEquals(wrapped.hashCode(), ShallowWrapped.of(1).hashCode());
+    }
 }
