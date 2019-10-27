@@ -1254,4 +1254,142 @@ public class WrapperTest {
         assertFalse(wrapped.coreEquals(obj));
         assertEquals(wrapped.hashCode(), shallowWrapped.hashCode());
     }
+
+    private static class ClassA {
+        private final Wrapped wrappedArray;
+        private final ClassB classB;
+
+        public ClassA(Wrapped wrappedArray, ClassB classB) {
+            this.wrappedArray = wrappedArray;
+            this.classB = classB;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ClassA classA = (ClassA) o;
+            return Objects.equals(wrappedArray, classA.wrappedArray) &&
+                    Objects.equals(classB, classA.classB);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(wrappedArray, classB);
+        }
+    }
+
+    private static class ClassB {
+        private final String[] names;
+        private final Wrapped[] wrappedArray;
+
+        public ClassB(String[] names, Wrapped[] wrappedArray) {
+            this.names = names;
+            this.wrappedArray = wrappedArray;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ClassB classB = (ClassB) o;
+            return Arrays.equals(names, classB.names) &&
+                    Arrays.equals(wrappedArray, classB.wrappedArray);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(names);
+            result = 31 * result + Arrays.hashCode(wrappedArray);
+            return result;
+        }
+    }
+
+    private static class ShallowClassA {
+        private final ShallowWrapped wrappedArray;
+        private final ShallowClassB classB;
+
+        public ShallowClassA(ShallowWrapped wrappedArray, ShallowClassB classB) {
+            this.wrappedArray = wrappedArray;
+            this.classB = classB;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ClassA)) {
+                return false;
+            }
+            final ClassA that = (ClassA) o;
+            if (!this.classB.equals(that.classB)) {
+                return false;
+            }
+            return that.wrappedArray.coreEquals(this.wrappedArray.getCore());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(wrappedArray, classB);
+        }
+    }
+
+    private static class ShallowClassB {
+        private final String[] names;
+        private final ShallowWrapped[] wrappedArray;
+
+        public ShallowClassB(String[] names, ShallowWrapped[] wrappedArray) {
+            this.names = names;
+            this.wrappedArray = wrappedArray;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ClassB)) {
+                return false;
+            }
+            final ClassB that = (ClassB) o;
+            if (!Arrays.equals(names, that.names)) {
+                return false;
+            }
+            final Wrapped[] wrappedValues = that.wrappedArray;
+            final ShallowWrapped[] shallowWrappedValues = this.wrappedArray;
+            final int iMax = this.names.length;
+            for (int i = 0; i < iMax; i++) {
+                if (!wrappedValues[i].coreEquals(shallowWrappedValues[i].getCore())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(names);
+            result = 31 * result + Arrays.hashCode(wrappedArray);
+            return result;
+        }
+    }
+
+    @Test
+    public void testShallowWrapping4() throws Exception {
+        final String[] names = new String[] {"f1", "f2"};
+        final Object[] f1Val = new Object[]{"hello", 10, true};
+        final Object[] f2Val = new Object[]{"world", 11};
+        final ClassB classB = new ClassB(names, new Wrapped[] {
+                Wrapper.wrapObject(f1Val),
+                Wrapper.wrapObject(f2Val),
+        });
+        final Object[] pVals = new Object[]{"hi", "bye!"};
+        final ClassA classA = new ClassA(Wrapper.wrapObject(pVals), classB);
+        final ShallowClassB shallowClassB = new ShallowClassB(names, new ShallowWrapped[] {
+                ShallowWrapped.of(f1Val),
+                ShallowWrapped.of(f2Val)
+        });
+        final ShallowClassA shallowClassA = new ShallowClassA(ShallowWrapped.of(pVals), shallowClassB);
+        assertEquals(shallowClassB.hashCode(), classB.hashCode());
+        assertEquals(classA.hashCode(), shallowClassA.hashCode());
+        assertEquals(shallowClassA, classA);
+        final Map<ClassA, String> map = new HashMap<>();
+        map.put(classA, "hello");
+        assertNotNull(map.get(shallowClassA));
+    }
 }
