@@ -124,7 +124,6 @@ public final class Wrapper {
         } else if (object instanceof Class) {
             return new WrappedClassConstant((Class<?>) object);
         } else if (object instanceof Field) {
-            System.err.println("fff");
             return new WrappedClassField((Field) object);
         }
         final Class<?> clazz = object.getClass();

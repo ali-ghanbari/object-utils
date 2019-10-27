@@ -1190,7 +1190,7 @@ public class WrapperTest {
         assertNotEquals(w1, w2);
     }
 
-    private class ClazzTestClass {
+    private static class ClazzTestClass {
         private final Class<?> c1 = String.class;
         private final Field f1 = c1.getDeclaredFields()[2];
     }
@@ -1199,7 +1199,14 @@ public class WrapperTest {
     public void testClassObjects3() throws Exception {
         final ClazzTestClass clazz = new ClazzTestClass();
         clazz.f1.setAccessible(true);
-        final Wrapped w = Wrapper.wrapObject(clazz.f1);
-        System.out.println(w.print());
+        Wrapped w = wrapWriteAndRead(clazz.f1);
+        assertSame(((Field) w.unwrap()).getDeclaringClass(), String.class);
+        w = wrapWriteAndRead(clazz);
+        assertSame(((ClazzTestClass) w.unwrap()).c1, String.class);
+    }
+
+    @Test
+    public void testShallowWrapping1() throws Exception {
+
     }
 }

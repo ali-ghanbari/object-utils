@@ -7,11 +7,13 @@ import java.lang.reflect.Field;
  *
  * @author Ali Ghanbari
  */
-public class WrappedClassField extends WrappedObject {
+public class WrappedClassField implements Wrapped {
+    private final Class<?> declaringClass;
+
     private final String fieldName;
 
     public WrappedClassField(Field field) {
-        super(field.getDeclaringClass(), null);
+        this.declaringClass = field.getDeclaringClass();
         this.fieldName = field.getName();
     }
 
@@ -22,7 +24,7 @@ public class WrappedClassField extends WrappedObject {
 
     @Override
     public Object unwrap() throws Exception {
-        return this.type.getDeclaredField(this.fieldName);
+        return this.declaringClass.getDeclaredField(this.fieldName);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class WrappedClassField extends WrappedObject {
     @Override
     public String print() {
         try {
-            return String.format("Field<%s::%s>", this.type.getName(), this.fieldName);
+            return String.format("Field<%s::%s>", this.declaringClass.getName(), this.fieldName);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -46,10 +48,15 @@ public class WrappedClassField extends WrappedObject {
     }
 
     @Override
+    public int getAddress() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean coreEquals(Object core) {
         if (core instanceof Field) {
             final Field coreField = (Field) core;
-            return coreField.getDeclaringClass() == this.type
+            return coreField.getDeclaringClass() == this.declaringClass
                     && coreField.getName().equals(this.fieldName);
         }
         return false;

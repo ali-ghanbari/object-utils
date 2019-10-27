@@ -22,11 +22,13 @@ package edu.utdallas.objectutils;
 
 import java.util.Objects;
 
-public class WrappedClassConstant extends WrappedObject {
+public class WrappedClassConstant implements Wrapped {
     private static final long serialVersionUID = 1L;
 
+    private final Class<?> value;
+
     public WrappedClassConstant(Class<?> value) {
-        super(value, null);
+        this.value = value;
     }
 
     @Override
@@ -38,32 +40,32 @@ public class WrappedClassConstant extends WrappedObject {
             return false;
         }
         WrappedClassConstant that = (WrappedClassConstant) o;
-        return this.type == that.type;
+        return this.value == that.value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.type);
+        return Objects.hash(this.value);
     }
 
     @Override
     public Class<?> unwrap() throws Exception {
-        return this.type;
+        return this.value;
     }
 
     @Override
     public Class<?> unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.type;
+        return this.value;
     }
 
     @Override
     public Class<?> unwrap(Object template) throws Exception {
-        return this.type;
+        return this.value;
     }
 
     @Override
     public Class<?> unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        return this.type;
+        return this.value;
     }
 
     @Override
@@ -73,11 +75,11 @@ public class WrappedClassConstant extends WrappedObject {
 
     @Override
     public String print() {
-        return String.format("Class<%s>", this.type.getName());
+        return String.format("Class<%s>", this.value.getName());
     }
 
     @Override
     public boolean coreEquals(Object core) {
-        return core != null && core.getClass() == this.type;
+        return core != null && core.getClass() == this.value;
     }
 }
