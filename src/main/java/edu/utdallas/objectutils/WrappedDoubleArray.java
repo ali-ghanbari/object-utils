@@ -45,6 +45,11 @@ public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Double[] && Arrays.equals((Double[]) core, this.value);
+    }
+
+    @Override
     public Double[] unwrap() throws Exception {
         return this.value.clone();
     }

@@ -45,6 +45,11 @@ public class WrappedByteArray extends AbstractWrappedBasicArray<Byte[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Byte[] && Arrays.equals((Byte[]) core, this.value);
+    }
+
+    @Override
     public Byte[] unwrap() throws Exception {
         return this.value.clone();
     }

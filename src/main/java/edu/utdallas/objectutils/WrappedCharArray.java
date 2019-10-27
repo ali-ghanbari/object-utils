@@ -45,6 +45,11 @@ public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Character[] && Arrays.equals((Character[]) core, this.value);
+    }
+
+    @Override
     public Character[] unwrap() throws Exception {
         return this.value.clone();
     }

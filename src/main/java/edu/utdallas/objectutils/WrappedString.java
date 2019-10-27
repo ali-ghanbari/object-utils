@@ -55,6 +55,11 @@ public class WrappedString implements Wrapped {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return this.value.equals(core);
+    }
+
+    @Override
     public String print() {
         return this.value;
     }

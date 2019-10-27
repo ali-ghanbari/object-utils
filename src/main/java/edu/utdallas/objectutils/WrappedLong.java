@@ -46,12 +46,17 @@ public class WrappedLong implements Wrapped {
             return false;
         }
         WrappedLong that = (WrappedLong) o;
-        return value == that.value;
+        return this.value == that.value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(this.value);
+    }
+
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Long && (this.value == (Long) core);
     }
 
     @Override

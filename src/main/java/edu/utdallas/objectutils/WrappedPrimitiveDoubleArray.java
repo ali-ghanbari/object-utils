@@ -45,6 +45,11 @@ public class WrappedPrimitiveDoubleArray extends AbstractWrappedBasicArray<doubl
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof double[] && Arrays.equals((double[]) core, this.value);
+    }
+
+    @Override
     public String print() {
         return Arrays.toString(this.value);
     }

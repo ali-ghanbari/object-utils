@@ -45,6 +45,11 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Float[] && Arrays.equals((Float[]) core, this.value);
+    }
+
+    @Override
     public Float[] unwrap() throws Exception {
         return this.value.clone();
     }

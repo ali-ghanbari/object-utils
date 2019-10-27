@@ -40,6 +40,11 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     }
 
     @Override
+    protected boolean coreTypeCheck(Object core) {
+        return core.getClass().getComponentType() == this.type;
+    }
+
+    @Override
     protected Object createRawObject() {
         return Array.newInstance(this.type, this.values.length);
     }

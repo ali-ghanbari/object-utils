@@ -46,6 +46,11 @@ public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Boolean[] && Arrays.equals((Boolean[]) core, this.value);
+    }
+
+    @Override
     public Boolean[] unwrap() throws Exception {
         return this.value.clone();
     }

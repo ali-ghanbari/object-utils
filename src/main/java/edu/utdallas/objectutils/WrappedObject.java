@@ -51,6 +51,11 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     }
 
     @Override
+    protected boolean coreTypeCheck(Object core) {
+        return core.getClass() == this.type;
+    }
+
+    @Override
     protected Object createRawObject() {
         return ObjenesisHelper.newInstance(this.type);
     }

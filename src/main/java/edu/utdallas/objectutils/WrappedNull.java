@@ -54,6 +54,12 @@ public enum WrappedNull implements Wrapped {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core == null;
+    }
+
+
+    @Override
     public String print() {
         return "null";
     }

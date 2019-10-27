@@ -55,6 +55,11 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Double && (this.value == (Double) core);
+    }
+
+    @Override
     public String print() {
         return String.valueOf(this.value);
     }

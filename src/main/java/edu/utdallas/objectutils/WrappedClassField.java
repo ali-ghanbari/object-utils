@@ -38,10 +38,20 @@ public class WrappedClassField extends WrappedObject {
     @Override
     public String print() {
         try {
-            return this.type.getName() + "::" + this.fieldName;
+            return String.format("Field<%s::%s>", this.type.getName(), this.fieldName);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public boolean coreEquals(Object core) {
+        if (core instanceof Field) {
+            final Field coreField = (Field) core;
+            return coreField.getDeclaringClass() == this.type
+                    && coreField.getName().equals(this.fieldName);
+        }
+        return false;
     }
 }

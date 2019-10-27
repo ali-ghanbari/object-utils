@@ -46,12 +46,17 @@ public class WrappedFloat implements Wrapped {
             return false;
         }
         WrappedFloat that = (WrappedFloat) o;
-        return Float.compare(that.value, value) == 0;
+        return Float.compare(that.value, this.value) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(this.value);
+    }
+
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Float && (this.value == (Float) core);
     }
 
     @Override

@@ -46,12 +46,17 @@ public class WrappedInt implements Wrapped {
             return false;
         }
         WrappedInt that = (WrappedInt) o;
-        return value == that.value;
+        return this.value == that.value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(this.value);
+    }
+
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Integer && (this.value == (Integer) core);
     }
 
     @Override

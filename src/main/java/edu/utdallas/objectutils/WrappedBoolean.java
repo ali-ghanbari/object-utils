@@ -55,6 +55,11 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Boolean && (this.value == (Boolean) core);
+    }
+
+    @Override
     public String print() {
         return String.valueOf(this.value);
     }

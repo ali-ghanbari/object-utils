@@ -45,6 +45,11 @@ public class WrappedPrimitiveIntArray extends AbstractWrappedBasicArray<int[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof int[] && Arrays.equals((int[]) core, this.value);
+    }
+
+    @Override
     public String print() {
         return Arrays.toString(this.value);
     }

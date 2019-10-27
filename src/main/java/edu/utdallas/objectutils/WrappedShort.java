@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -52,6 +53,11 @@ public class WrappedShort implements Wrapped {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Short && (this.value == (Short) core);
     }
 
     @Override

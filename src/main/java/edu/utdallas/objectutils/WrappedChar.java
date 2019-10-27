@@ -55,6 +55,11 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Character && (this.value == (Character) core);
+    }
+
+    @Override
     public String print() {
         return String.valueOf(this.value);
     }

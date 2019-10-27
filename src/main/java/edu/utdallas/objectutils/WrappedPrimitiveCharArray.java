@@ -45,6 +45,11 @@ public class WrappedPrimitiveCharArray extends AbstractWrappedBasicArray<char[]>
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof char[] && Arrays.equals((char[]) core, this.value);
+    }
+
+    @Override
     public String print() {
         return Arrays.toString(this.value);
     }

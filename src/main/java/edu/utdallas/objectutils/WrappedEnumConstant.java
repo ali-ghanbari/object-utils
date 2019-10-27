@@ -111,4 +111,12 @@ public class WrappedEnumConstant extends WrappedObject {
     public int hashCode() {
         return Objects.hashCode(this.name);
     }
+
+    @Override
+    protected boolean coreTypeCheck(Object core) {
+        if (core instanceof Enum<?>) {
+            return core.getClass() == this.type && ((Enum<?>) core).name().equals(this.name);
+        }
+        return false;
+    }
 }

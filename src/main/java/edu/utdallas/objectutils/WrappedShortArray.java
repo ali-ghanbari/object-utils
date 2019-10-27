@@ -45,6 +45,11 @@ public class WrappedShortArray extends AbstractWrappedBasicArray<Short[]> {
     }
 
     @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Short[] && Arrays.equals((Short[]) core, this.value);
+    }
+
+    @Override
     public Short[] unwrap() throws Exception {
         return this.value.clone();
     }

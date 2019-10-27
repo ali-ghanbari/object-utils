@@ -59,5 +59,7 @@ public interface Wrapped extends Serializable {
 
     int getAddress();
 
+    boolean coreEquals(Object core);
+
     String print();
 }
