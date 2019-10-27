@@ -280,20 +280,21 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 continue;
             }
             if (node1 instanceof AbstractWrappedCompositeObject) {
-                if (node2 == null || !coreTypeCheck(node2)) {
+                final AbstractWrappedCompositeObject wrappedObject =
+                        ((AbstractWrappedCompositeObject) node1);
+                if (node2 == null || !wrappedObject.coreTypeCheck(node2)) {
                     return false;
                 }
-                final AbstractWrappedCompositeObject wrappedObject = ((AbstractWrappedCompositeObject) node1);
                 visitedNodes.add(wrappedObject.getAddress());
                 final Wrapped[] wrappedValues = wrappedObject.getValues();
-                resetCursor();
+                wrappedObject.resetCursor();
                 try {
                     for (final Wrapped wrappedValue : wrappedValues) {
-                        advanceCursor();
-                        while (strictlyImmutableAtCursor()) {
-                            advanceCursor();
+                        wrappedObject.advanceCursor();
+                        while (wrappedObject.strictlyImmutableAtCursor()) {
+                            wrappedObject.advanceCursor();
                         }
-                        final Object value = getAtCursor(node2);
+                        final Object value = wrappedObject.getAtCursor(node2);
                         if (wrappedValue instanceof AbstractWrappedCompositeObject) {
                             if (visitedNodes.contains(wrappedValue.getAddress())) {
                                 continue;

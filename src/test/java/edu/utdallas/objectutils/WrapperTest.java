@@ -1232,4 +1232,26 @@ public class WrapperTest {
         assertTrue(wrapped2.coreEquals(darr2D));
         assertNotEquals(wrapped, wrapped2);
     }
+
+    private class ShallowClassTest {
+        private final double[][] darr2D = {
+                {1.2D, 2.3D, 0.23D},
+                {1.2D, 3.3D, 0.23D}
+        };
+        private final int[] iarr = {1, 2, 3};
+        private final Object[] oarr = new Object[] {this, darr2D, null, iarr, "hello"};
+        private final Class<?> cf = oarr.getClass();
+    }
+
+    @Test
+    public void testShallowWrapping3() throws Exception {
+        final ShallowClassTest obj = new ShallowClassTest();
+        final Wrapped wrapped = Wrapper.wrapObject(obj);
+        final ShallowWrapped shallowWrapped = ShallowWrapped.of(obj);
+        assertEquals(wrapped.hashCode(), shallowWrapped.hashCode());
+        assertTrue(wrapped.coreEquals(obj));
+        obj.iarr[1] = 10;
+        assertFalse(wrapped.coreEquals(obj));
+        assertEquals(wrapped.hashCode(), shallowWrapped.hashCode());
+    }
 }

@@ -80,6 +80,6 @@ public class WrappedClassConstant implements Wrapped {
 
     @Override
     public boolean coreEquals(Object core) {
-        return core != null && core.getClass() == this.value;
+        return core != null && core == this.value;
     }
 }
