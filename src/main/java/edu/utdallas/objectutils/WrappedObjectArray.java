@@ -40,11 +40,6 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     }
 
     @Override
-    protected boolean coreTypeCheck(Object core) {
-        return core.getClass().getComponentType() == this.type;
-    }
-
-    @Override
     protected Object createRawObject() {
         return Array.newInstance(this.type, this.values.length);
     }
@@ -82,5 +77,15 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     @Override
     public String print() {
         return ObjectPrinter.print(this);
+    }
+
+    @Override
+    protected boolean coreTypeCheck(Object core) {
+        if (core == null) {
+            return false;
+        }
+        final Class<?> coreClass = core.getClass();
+        return coreClass.isArray() && coreClass.getComponentType() == this.type
+                && Array.getLength(core) == this.values.length;
     }
 }

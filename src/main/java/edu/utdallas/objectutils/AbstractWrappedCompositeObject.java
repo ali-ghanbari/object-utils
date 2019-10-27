@@ -20,14 +20,10 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -189,7 +185,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.type);
+        return this.type.hashCode();
     }
 
     @Override
@@ -290,40 +286,29 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 final AbstractWrappedCompositeObject wrappedObject = ((AbstractWrappedCompositeObject) node1);
                 visitedNodes.add(wrappedObject.getAddress());
                 final Wrapped[] wrappedValues = wrappedObject.getValues();
-                final List<Field> fields = Commons.getAllFieldsList(node2.getClass());
-                removeStrictlyImmutableFields(fields);
-                final Iterator<Field> fieldIterator = fields.iterator();
-                for (final Wrapped value : wrappedValues) {
-                    if (!fieldIterator.hasNext()) {
-                        return false;
-                    }
-                    final Field field = fieldIterator.next();
-                    if (value instanceof AbstractWrappedCompositeObject) {
-                        if (visitedNodes.contains(value.getAddress())) {
-                            continue;
+                resetCursor();
+                try {
+                    for (final Wrapped wrappedValue : wrappedValues) {
+                        advanceCursor();
+                        while (strictlyImmutableAtCursor()) {
+                            advanceCursor();
                         }
+                        final Object value = getAtCursor(node2);
+                        if (wrappedValue instanceof AbstractWrappedCompositeObject) {
+                            if (visitedNodes.contains(wrappedValue.getAddress())) {
+                                continue;
+                            }
+                        }
+                        workList1.offer(wrappedValue);
+                        workList2.offer(value);
                     }
-                    workList1.offer(value);
-                    try {
-                        workList2.offer(Commons.readField(field, node2, true));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return false;
-                    }
+                } catch (Exception e) {
+                    return false;
                 }
             } else if (!node1.coreEquals(node2)) {
                 return false;
             }
         }
         return workList2.isEmpty();
-    }
-
-    private void removeStrictlyImmutableFields(final List<Field> fields) {
-        final Iterator<Field> fieldIterator = fields.iterator();
-        while (fieldIterator.hasNext()) {
-            if (Commons.strictlyImmutable(fieldIterator.next())) {
-                fieldIterator.remove();
-            }
-        }
     }
 }

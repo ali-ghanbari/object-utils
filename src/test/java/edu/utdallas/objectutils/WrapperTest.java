@@ -20,6 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.shallow.ShallowWrapped;
 import org.junit.Test;
 
 import java.io.File;
@@ -1207,6 +1208,28 @@ public class WrapperTest {
 
     @Test
     public void testShallowWrapping1() throws Exception {
+        final double[] darr1 = {1.2D, 2.3D, 0.23D};
+        final Wrapped wrapped = Wrapper.wrapObject(darr1);
+        final ShallowWrapped shallow = ShallowWrapped.of(darr1);
+        assertEquals(wrapped.hashCode(), shallow.hashCode());
+        assertTrue(wrapped.coreEquals(darr1));
+        assertFalse(wrapped.coreEquals(new double[] {1.2D, 3.3D, 0.23D}));
+    }
 
+    @Test
+    public void testShallowWrapping2() throws Exception {
+        final double[][] darr2D = {
+                {1.2D, 2.3D, 0.23D},
+                {1.2D, 3.3D, 0.23D}
+        };
+        final Wrapped wrapped = Wrapper.wrapObject(darr2D);
+        final ShallowWrapped shallow = ShallowWrapped.of(darr2D);
+        assertEquals(wrapped.hashCode(), shallow.hashCode());
+        assertTrue(wrapped.coreEquals(darr2D));
+        darr2D[0][0] = 10;
+        assertFalse(wrapped.coreEquals(darr2D));
+        final Wrapped wrapped2 = Wrapper.wrapObject(darr2D);
+        assertTrue(wrapped2.coreEquals(darr2D));
+        assertNotEquals(wrapped, wrapped2);
     }
 }
