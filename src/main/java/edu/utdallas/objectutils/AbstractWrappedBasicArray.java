@@ -20,8 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.util.Arrays;
-
 /**
  * Base class for all basic-typed one-dimensional arrays
  * (e.g., String[], Integer[], int[], etc).
