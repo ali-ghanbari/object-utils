@@ -66,7 +66,7 @@ public class ShallowWrapped {
                 || core instanceof Character
                 || core instanceof Short
                 || core instanceof Class) {
-            return Objects.hashCode(core);
+            return Objects.hash(core);
         }
         if (core instanceof int[]) {
             return Arrays.hashCode((int[]) core);
