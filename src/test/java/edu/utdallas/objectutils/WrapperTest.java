@@ -1398,4 +1398,70 @@ public class WrapperTest {
         final Wrapped wrapped = Wrapper.wrapObject(1);
         assertEquals(wrapped.hashCode(), ShallowWrapped.of(1).hashCode());
     }
+
+    private enum MyEnum {
+        O1
+    }
+
+    private static class MyEnumClass {
+        private MyEnum field;
+    }
+
+    @Test
+    public void testEnumConst1() throws Exception {
+        final MyEnumClass myEnumClass = new MyEnumClass();
+        myEnumClass.field = MyEnum.O1;
+        final Wrapped wrapped = Wrapper.wrapObject(myEnumClass);
+        myEnumClass.field = null;
+        wrapped.unwrap(myEnumClass);
+    }
+
+    private static class MyClassClass {
+        private Class field;
+    }
+
+    @Test
+    public void testClassConst1() throws Exception {
+        final MyClassClass myClassClass = new MyClassClass();
+        myClassClass.field = String.class;
+        final Wrapped wrapped = Wrapper.wrapObject(myClassClass);
+        myClassClass.field = null;
+        wrapped.unwrap(myClassClass);
+        assertSame(myClassClass.field, String.class);
+    }
+
+    private static class MyFieldClass {
+        private Field field;
+    }
+
+    @Test
+    public void testClassField1() throws Exception {
+        final MyFieldClass myFieldClass = new MyFieldClass();
+        myFieldClass.field = MyFieldClass.class.getDeclaredFields()[0];
+        final Wrapped wrapped = Wrapper.wrapObject(myFieldClass);
+        myFieldClass.field = null;
+        wrapped.unwrap(myFieldClass);
+        assertEquals(MyFieldClass.class.getDeclaredFields()[0], myFieldClass.field);
+    }
+
+    private static class Interchange1 {
+        int f1 = 1;
+        String f2 = "hello";
+    }
+
+    private static class Interchange2 {
+        int f1 = 1;
+        String f2 = "hello";
+    }
+
+    @Test
+    public void testTemplateTypeMatch() throws Exception {
+        try {
+            final Wrapped wrapped = Wrapper.wrapObject(new Interchange1());
+            wrapped.unwrap(new Interchange2());
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
 }
