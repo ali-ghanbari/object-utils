@@ -99,7 +99,11 @@ public class WrappedEnumConstant extends WrappedObject {
     @Override
     protected boolean strictlyImmutableAtCursor() {
         final Field field = this.fieldAtCursor;
-        return strictlyImmutable(field) || (field.getDeclaringClass() == Enum.class && field.getName().matches("name|ordinal"));
+        if (strictlyImmutable(field)) {
+            return true;
+        }
+        return field.getDeclaringClass() == Enum.class
+                && field.getName().matches("name|ordinal");
     }
 
     @Override
@@ -118,7 +122,7 @@ public class WrappedEnumConstant extends WrappedObject {
         if (!super.equals(o)) {
             return false;
         }
-        WrappedEnumConstant that = (WrappedEnumConstant) o;
+        final WrappedEnumConstant that = (WrappedEnumConstant) o;
         return Objects.equals(this.name, that.name);
     }
 
