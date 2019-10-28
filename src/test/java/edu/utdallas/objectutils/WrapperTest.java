@@ -1443,4 +1443,25 @@ public class WrapperTest {
         wrapped.unwrap(myFieldClass);
         assertEquals(MyFieldClass.class.getDeclaredFields()[0], myFieldClass.field);
     }
+
+    private static class Interchange1 {
+        int f1 = 1;
+        String f2 = "hello";
+    }
+
+    private static class Interchange2 {
+        int f1 = 1;
+        String f2 = "hello";
+    }
+
+    @Test
+    public void testTemplateTypeMatch() throws Exception {
+        try {
+            final Wrapped wrapped = Wrapper.wrapObject(new Interchange1());
+            wrapped.unwrap(new Interchange2());
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
 }
