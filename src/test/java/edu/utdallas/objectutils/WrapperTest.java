@@ -1400,8 +1400,7 @@ public class WrapperTest {
     }
 
     private enum MyEnum {
-        O1,
-        O2;
+        O1
     }
 
     private static class MyEnumClass {
@@ -1415,5 +1414,33 @@ public class WrapperTest {
         final Wrapped wrapped = Wrapper.wrapObject(myEnumClass);
         myEnumClass.field = null;
         wrapped.unwrap(myEnumClass);
+    }
+
+    private static class MyClassClass {
+        private Class field;
+    }
+
+    @Test
+    public void testClassConst1() throws Exception {
+        final MyClassClass myClassClass = new MyClassClass();
+        myClassClass.field = String.class;
+        final Wrapped wrapped = Wrapper.wrapObject(myClassClass);
+        myClassClass.field = null;
+        wrapped.unwrap(myClassClass);
+        assertSame(myClassClass.field, String.class);
+    }
+
+    private static class MyFieldClass {
+        private Field field;
+    }
+
+    @Test
+    public void testClassField1() throws Exception {
+        final MyFieldClass myFieldClass = new MyFieldClass();
+        myFieldClass.field = MyFieldClass.class.getDeclaredFields()[0];
+        final Wrapped wrapped = Wrapper.wrapObject(myFieldClass);
+        myFieldClass.field = null;
+        wrapped.unwrap(myFieldClass);
+        assertEquals(MyFieldClass.class.getDeclaredFields()[0], myFieldClass.field);
     }
 }
