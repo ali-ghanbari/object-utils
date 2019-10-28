@@ -78,7 +78,12 @@ public class WrappedEnumConstant extends WrappedObject {
 
     @Override
     protected Object createRawObject() {
-        throw new UnsupportedOperationException();
+        for (final Object n : this.type.getEnumConstants()) {
+            if (this.name.equals(((Enum) n).name())) {
+                return n;
+            }
+        }
+        throw new IllegalStateException();
     }
 
     @Override
