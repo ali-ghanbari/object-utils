@@ -1398,4 +1398,22 @@ public class WrapperTest {
         final Wrapped wrapped = Wrapper.wrapObject(1);
         assertEquals(wrapped.hashCode(), ShallowWrapped.of(1).hashCode());
     }
+
+    private enum MyEnum {
+        O1,
+        O2;
+    }
+
+    private static class MyEnumClass {
+        private MyEnum field;
+    }
+
+    @Test
+    public void testEnumConst1() throws Exception {
+        final MyEnumClass myEnumClass = new MyEnumClass();
+        myEnumClass.field = MyEnum.O1;
+        final Wrapped wrapped = Wrapper.wrapObject(myEnumClass);
+        myEnumClass.field = null;
+        wrapped.unwrap(myEnumClass);
+    }
 }
