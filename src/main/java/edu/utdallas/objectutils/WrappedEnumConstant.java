@@ -44,6 +44,8 @@ public class WrappedEnumConstant extends WrappedObject {
 
     private final String name;
 
+    private transient Enum object;
+
     public WrappedEnumConstant(Enum object, Wrapped[] values) {
         super(object.getClass(), values);
         this.name = object.name();
@@ -53,6 +55,20 @@ public class WrappedEnumConstant extends WrappedObject {
             ADDRESS_MAP.put(object, address);
         }
         this.address = address;
+        this.object = object;
+    }
+
+    private Enum getObject() {
+        if (this.object == null) {
+            for (final Object n : this.type.getEnumConstants()) {
+                final Enum enumObject = (Enum) n;
+                if (this.name.equals(enumObject.name())) {
+                    this.object = enumObject;
+                    break;
+                }
+            }
+        }
+        return this.object;
     }
 
     @Override
@@ -63,12 +79,7 @@ public class WrappedEnumConstant extends WrappedObject {
         if (this.values.length > 0) {
             throw new IllegalStateException();
         }
-        for (final Object n : this.type.getEnumConstants()) {
-            if (this.name.equals(((Enum) n).name())) {
-                return n;
-            }
-        }
-        throw new IllegalStateException();
+        return getObject();
     }
 
     @Override
@@ -78,7 +89,11 @@ public class WrappedEnumConstant extends WrappedObject {
 
     @Override
     protected Object createRawObject() {
-        throw new UnsupportedOperationException();
+        // since there is only one instance of a given enum object constant
+        // we return the only instance. we don't touch the fields of the
+        // object. I am not sure if we should have resent the values to
+        // JVM default values or not.
+        return getObject();
     }
 
     @Override
