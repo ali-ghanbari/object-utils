@@ -1454,14 +1454,9 @@ public class WrapperTest {
         String f2 = "hello";
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testTemplateTypeMatch() throws Exception {
-        try {
-            final Wrapped wrapped = Wrapper.wrapObject(new Interchange1());
-            wrapped.unwrap(new Interchange2());
-            fail();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        final Wrapped wrapped = Wrapper.wrapObject(new Interchange1());
+        wrapped.unwrap(new Interchange2());
     }
 }
