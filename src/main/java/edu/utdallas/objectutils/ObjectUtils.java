@@ -74,12 +74,12 @@ public final class ObjectUtils {
         if (result != null) {
             return result.longValue();
         }
-        result = new MutableLong(0);
+        result = new MutableLong(0L);
         visited.put(hashSetSafeObject, result);
         final Object object = hashSetSafeObject.getCore();
         if (object != null) {
             final Class<?> clazz = object.getClass();
-            if (isBasicType(clazz)) {
+            if (isBasicType(clazz) || object instanceof Class) {
                 result.setValue(object.hashCode());
             } else {
                 result.setValue(1L);

@@ -24,10 +24,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -244,5 +241,39 @@ public class ObjectUtilsTest {
 		// (1)<------+
 		//
 		assertEquals(ObjectUtils.deepHashCode(objects1), ObjectUtils.deepHashCode(objects2));
+	}
+
+	@Test
+	public void testDeepHashCodeCompositeObject4() throws Exception {
+		final HashSet<String> strings = new HashSet<>();
+		strings.add("hello");
+		strings.add("world!");
+		strings.add("how");
+		strings.add("are");
+		strings.add("you?");
+		strings.add("is");
+		strings.add("everything");
+		strings.add("OK?");
+		strings.add("sure?!");
+		final HashSet<String> strings2 = new HashSet<>();
+		strings2.add("hello");
+		strings2.add("world!");
+		strings2.add("how");
+		strings2.add("are");
+		strings2.add("you?");
+		strings2.add("is");
+		strings2.add("everything");
+		strings2.add("OK?");
+		strings2.add("sure?!");
+		for (int __ = 0; __ < 1000; __++) {
+			assertEquals(strings.hashCode(), strings2.hashCode());
+			assertEquals(ObjectUtils.deepHashCode(strings), ObjectUtils.deepHashCode(strings2));
+		}
+	}
+
+	@Test
+	public void testDeepHashCodeCompositeObject5() throws Exception {
+		assertNotEquals(ObjectUtils.deepHashCode(String.class), ObjectUtils.deepHashCode(Integer.class));
+		assertEquals(ObjectUtils.deepHashCode(String.class), ObjectUtils.deepHashCode(String.class));
 	}
 }
