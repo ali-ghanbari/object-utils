@@ -44,10 +44,10 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Float[] && Arrays.equals((Float[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof Float[] && Arrays.equals((Float[]) core, this.value);
+//    }
 
     @Override
     public Float[] unwrap() throws Exception {

@@ -20,13 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Utility functions common to all modules
@@ -50,68 +45,68 @@ final class Commons {
     }
 
 
-    //---------------------------------------------copied from Apache Commons Lang
-    //---------------------------------------------due to dependency incompatibility
-    //---------------------------------------------with some of Defects4J programs
-
-    private static boolean setAccessibleWorkaround(final AccessibleObject o) {
-        if (o == null || o.isAccessible()) {
-            return false;
-        }
-        final Member m = (Member) o;
-        if (!o.isAccessible() && Modifier.isPublic(m.getModifiers()) && isPackageAccess(m.getDeclaringClass().getModifiers())) {
-            try {
-                o.setAccessible(true);
-                return true;
-            } catch (final SecurityException e) { // NOPMD
-                // ignore in favor of subsequent IllegalAccessException
-            }
-        }
-        return false;
-    }
-
-    private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
-
-    private static boolean isPackageAccess(final int modifiers) {
-        return (modifiers & ACCESS_TEST) == 0;
-    }
-
-    static Object readField(final Field field, final Object target, final boolean forceAccess) throws IllegalAccessException {
-        isTrue(field != null, "The field must not be null");
-        if (forceAccess && !field.isAccessible()) {
-            field.setAccessible(true);
-        } else {
-            setAccessibleWorkaround(field);
-        }
-        return field.get(target);
-    }
-
-    private static void isTrue(final boolean expression, final String message, final Object... values) {
-        if (!expression) {
-            throw new IllegalArgumentException(String.format(message, values));
-        }
-    }
-
-    static List<Field> getAllFieldsList(final Class<?> cls) {
-        isTrue(cls != null, "The class must not be null");
-        final List<Field> allFields = new ArrayList<>();
-        Class<?> currentClass = cls;
-        while (currentClass != null) {
-            final Field[] declaredFields = currentClass.getDeclaredFields();
-            Collections.addAll(allFields, declaredFields);
-            currentClass = currentClass.getSuperclass();
-        }
-        return allFields;
-    }
-
-    static void writeField(final Field field, final Object target, final Object value, final boolean forceAccess)
-            throws IllegalAccessException {
-        isTrue(field != null, "The field must not be null");
-        if (forceAccess && !field.isAccessible()) {
-            field.setAccessible(true);
-        } else {
-            setAccessibleWorkaround(field);
-        }
-        field.set(target, value);
-    }
+//    //---------------------------------------------copied from Apache Commons Lang
+//    //---------------------------------------------due to dependency incompatibility
+//    //---------------------------------------------with some of Defects4J programs
+//
+//    private static boolean setAccessibleWorkaround(final AccessibleObject o) {
+//        if (o == null || o.isAccessible()) {
+//            return false;
+//        }
+//        final Member m = (Member) o;
+//        if (!o.isAccessible() && Modifier.isPublic(m.getModifiers()) && isPackageAccess(m.getDeclaringClass().getModifiers())) {
+//            try {
+//                o.setAccessible(true);
+//                return true;
+//            } catch (final SecurityException e) { // NOPMD
+//                // ignore in favor of subsequent IllegalAccessException
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
+//
+//    private static boolean isPackageAccess(final int modifiers) {
+//        return (modifiers & ACCESS_TEST) == 0;
+//    }
+//
+//    static Object readField(final Field field, final Object target, final boolean forceAccess) throws IllegalAccessException {
+//        isTrue(field != null, "The field must not be null");
+//        if (forceAccess && !field.isAccessible()) {
+//            field.setAccessible(true);
+//        } else {
+//            setAccessibleWorkaround(field);
+//        }
+//        return field.get(target);
+//    }
+//
+//    private static void isTrue(final boolean expression, final String message, final Object... values) {
+//        if (!expression) {
+//            throw new IllegalArgumentException(String.format(message, values));
+//        }
+//    }
+//
+//    static List<Field> getAllFieldsList(final Class<?> cls) {
+//        isTrue(cls != null, "The class must not be null");
+//        final List<Field> allFields = new ArrayList<>();
+//        Class<?> currentClass = cls;
+//        while (currentClass != null) {
+//            final Field[] declaredFields = currentClass.getDeclaredFields();
+//            Collections.addAll(allFields, declaredFields);
+//            currentClass = currentClass.getSuperclass();
+//        }
+//        return allFields;
+//    }
+//
+//    static void writeField(final Field field, final Object target, final Object value, final boolean forceAccess)
+//            throws IllegalAccessException {
+//        isTrue(field != null, "The field must not be null");
+//        if (forceAccess && !field.isAccessible()) {
+//            field.setAccessible(true);
+//        } else {
+//            setAccessibleWorkaround(field);
+//        }
+//        field.set(target, value);
+//    }
 }

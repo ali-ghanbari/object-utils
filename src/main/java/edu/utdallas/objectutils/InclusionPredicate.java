@@ -22,6 +22,11 @@ package edu.utdallas.objectutils;
 
 import java.lang.reflect.Field;
 
+/**
+ * A functional interface for checking whether a field should be included in a wrapped object
+ *
+ * @author Ali Ghanbari
+ */
 public abstract class InclusionPredicate {
     public static final InclusionPredicate INCLUDE_ALL = new InclusionPredicate() {
         @Override

@@ -22,6 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * @author Ali Ghanbari
+ */
 public class WrappedPrimitiveLongArray extends AbstractWrappedBasicArray<long[]> {
     public WrappedPrimitiveLongArray(long[] value) {
         super(value.clone());
@@ -44,10 +47,10 @@ public class WrappedPrimitiveLongArray extends AbstractWrappedBasicArray<long[]>
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof long[] && Arrays.equals((long[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof long[] && Arrays.equals((long[]) core, this.value);
+//    }
 
     @Override
     public String print() {

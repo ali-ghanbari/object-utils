@@ -53,10 +53,10 @@ public enum WrappedNull implements Wrapped {
         return 0;
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core == null;
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core == null;
+//    }
 
 
     @Override

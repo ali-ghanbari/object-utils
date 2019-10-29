@@ -22,6 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * @author Ali Ghanbari
+ */
 public class WrappedPrimitiveBooleanArray extends AbstractWrappedBasicArray<boolean[]> {
     public WrappedPrimitiveBooleanArray(boolean[] value) {
         super(value.clone());
@@ -44,10 +47,10 @@ public class WrappedPrimitiveBooleanArray extends AbstractWrappedBasicArray<bool
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof boolean[] && Arrays.equals((boolean[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof boolean[] && Arrays.equals((boolean[]) core, this.value);
+//    }
 
     @Override
     public boolean[] unwrap() throws Exception {

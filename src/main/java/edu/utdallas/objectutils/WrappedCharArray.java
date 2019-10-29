@@ -44,10 +44,10 @@ public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Character[] && Arrays.equals((Character[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof Character[] && Arrays.equals((Character[]) core, this.value);
+//    }
 
     @Override
     public Character[] unwrap() throws Exception {

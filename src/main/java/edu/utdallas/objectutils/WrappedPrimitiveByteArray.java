@@ -22,6 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * @author Ali Ghanbari
+ */
 public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]> {
     public WrappedPrimitiveByteArray(byte[] value) {
         super(value.clone());
@@ -44,10 +47,10 @@ public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]>
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof byte[] && Arrays.equals((byte[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof byte[] && Arrays.equals((byte[]) core, this.value);
+//    }
 
     @Override
     public String print() {

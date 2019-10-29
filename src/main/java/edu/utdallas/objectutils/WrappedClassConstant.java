@@ -78,8 +78,8 @@ public class WrappedClassConstant implements Wrapped {
         return String.format("Class<%s>", this.value.getName());
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core != null && core == this.value;
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core != null && core == this.value;
+//    }
 }

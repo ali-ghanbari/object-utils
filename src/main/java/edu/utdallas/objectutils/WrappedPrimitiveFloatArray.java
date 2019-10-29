@@ -22,6 +22,9 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * @author Ali Ghanbari
+ */
 public class WrappedPrimitiveFloatArray extends AbstractWrappedBasicArray<float[]> {
     public WrappedPrimitiveFloatArray(float[] value) {
         super(value.clone());
@@ -44,10 +47,10 @@ public class WrappedPrimitiveFloatArray extends AbstractWrappedBasicArray<float[
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof float[] && Arrays.equals((float[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof float[] && Arrays.equals((float[]) core, this.value);
+//    }
 
     @Override
     public String print() {

@@ -53,7 +53,6 @@ import java.util.Stack;
  *
  * @author Ali Ghanbari
  */
-
 public final class ObjectPrinter {
     private static final Stack<String> OBJECT_DESCRIPTIONS = new Stack<>();
 

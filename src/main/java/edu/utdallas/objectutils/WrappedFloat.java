@@ -54,10 +54,10 @@ public class WrappedFloat implements Wrapped {
         return Objects.hash(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Float && (this.value == (Float) core);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof Float && (this.value == (Float) core);
+//    }
 
     @Override
     public String print() {

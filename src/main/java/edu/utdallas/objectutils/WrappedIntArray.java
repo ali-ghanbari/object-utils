@@ -44,10 +44,10 @@ public class WrappedIntArray extends AbstractWrappedBasicArray<Integer[]> {
         return Arrays.hashCode(this.value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Integer[] && Arrays.equals((Integer[]) core, this.value);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof Integer[] && Arrays.equals((Integer[]) core, this.value);
+//    }
 
     @Override
     public Integer[] unwrap() throws Exception {

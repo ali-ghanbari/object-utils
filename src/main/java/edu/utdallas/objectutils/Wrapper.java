@@ -22,6 +22,7 @@ package edu.utdallas.objectutils;
 
 
 import edu.utdallas.objectutils.utils.W;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -31,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
-import static edu.utdallas.objectutils.Commons.readField;
-import static edu.utdallas.objectutils.Commons.getAllFieldsList;
 
 /**
  * A set of factory methods for wrapped objects.
@@ -208,7 +207,7 @@ public final class Wrapper {
                                                         final InclusionPredicate inclusionPredicate)
             throws Exception {
         Wrapped[] wrappedFieldValues = new Wrapped[0];
-        final List<Field> fields = getAllFieldsList(clazz);
+        final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
@@ -218,7 +217,7 @@ public final class Wrapper {
             }
             final Wrapped wrappedFieldValue;
             if (inclusionPredicate.test(field)) {
-                final Object fieldValue = readField(field, object, true);
+                final Object fieldValue = FieldUtils.readField(field, object, true);
                 if (fieldValue == null) {
                     wrappedFieldValue = WrappedNull.INSTANCE;
                 } else {

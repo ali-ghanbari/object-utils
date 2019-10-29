@@ -22,6 +22,11 @@ package edu.utdallas.objectutils;
 
 import java.lang.reflect.Field;
 
+/**
+ * A functional interface for checking whether a static field should be modified during unwrap process
+ *
+ * @author Ali Ghanbari
+ */
 public abstract class ModificationPredicate {
     public static final ModificationPredicate YES = new ModificationPredicate() {
         @Override

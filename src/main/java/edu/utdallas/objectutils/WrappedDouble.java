@@ -54,10 +54,10 @@ public class WrappedDouble implements Wrapped {
         return Objects.hash(value);
     }
 
-    @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Double && (this.value == (Double) core);
-    }
+//    @Override
+//    public boolean coreEquals(Object core) {
+//        return core instanceof Double && (this.value == (Double) core);
+//    }
 
     @Override
     public String print() {
