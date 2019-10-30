@@ -54,10 +54,10 @@ public class WrappedLong implements Wrapped {
         return Objects.hash(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof Long && (this.value == (Long) core);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Long && (this.value == (Long) core);
+    }
 
     @Override
     public String print() {

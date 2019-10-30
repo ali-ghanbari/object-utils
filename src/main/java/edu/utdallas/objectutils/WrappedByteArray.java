@@ -44,10 +44,10 @@ public class WrappedByteArray extends AbstractWrappedBasicArray<Byte[]> {
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof Byte[] && Arrays.equals((Byte[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Byte[] && Arrays.equals((Byte[]) core, this.value);
+    }
 
     @Override
     public Byte[] unwrap() throws Exception {

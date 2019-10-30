@@ -28,15 +28,16 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Basic object utilities
+ * Basic object utilities such as computing deep hash code and
+ * shallow copying of arbitrary objects
  *
  * @author Ali Ghanbari
  */
@@ -63,13 +64,29 @@ public final class ObjectUtils {
      *
      * @param object the object
      * @return deep hash code computed for <code>object</code>
+     * @throws Exception any reflection related exception
      */
-    public static long deepHashCode(final Object object) {
+    public static long deepHashCode(final Object object) throws Exception {
         VISITED.clear();
-        return deepHashCode(W.of(object), VISITED);
+        return deepHashCode(W.of(object), InclusionPredicate.INCLUDE_ALL, VISITED);
     }
 
-    private static long deepHashCode(final W hashSetSafeObject, final Map<W, MutableLong> visited) {
+    /**
+     * Computes deep hash code while ignoring some fields
+     * @param object the object for which the hash code should be calculated
+     * @param inclusionPredicate the predicate that indicates which field should be included
+     * @return deep hash code for <code>object</code>
+     * @throws Exception any reflection related exception
+     */
+    public static long deepHashCode(final Object object,
+                                    final InclusionPredicate inclusionPredicate) throws Exception {
+        VISITED.clear();
+        return deepHashCode(W.of(object), inclusionPredicate, VISITED);
+    }
+
+    private static long deepHashCode(final W hashSetSafeObject,
+                                     final InclusionPredicate inclusionPredicate,
+                                     final Map<W, MutableLong> visited) throws Exception {
         MutableLong result = visited.get(hashSetSafeObject);
         if (result != null) {
             return result.longValue();
@@ -79,85 +96,35 @@ public final class ObjectUtils {
         final Object object = hashSetSafeObject.getCore();
         if (object != null) {
             final Class<?> clazz = object.getClass();
-            if (isBasicType(clazz) || object instanceof Class) {
+            if (isBasicType(clazz) || object instanceof String) {
                 result.setValue(object.hashCode());
+            } else if (object instanceof Class) {
+                result.setValue(((Class) object).getName().hashCode());
+            } else if (clazz.isEnum()) {
+                result.setValue(((Enum) object).name().hashCode());
             } else {
-                result.setValue(1L);
-                final WIterator iterator = clazz.isArray() ?
-                        new ArrayWIterator(object) : new ObjectFieldWIterator(object, clazz);
-                while (iterator.hasNext()) {
-                    result.setValue(result.longValue() * 31L + deepHashCode(iterator.nextW(), visited));
+                result.setValue(clazz.getName().hashCode());
+                if (object instanceof Collection) {
+                    for (final Object o : (Collection) object) {
+                        result.setValue(result.longValue() + deepHashCode(W.of(o), inclusionPredicate, visited));
+                    }
+                } else if (clazz.isArray()) {
+                    final int len = Array.getLength(object);
+                    for (int i = 0; i < len; i++) {
+                        final W wElement = W.of(Array.get(object, i));
+                        result.setValue(result.longValue() * 31L + deepHashCode(wElement, inclusionPredicate, visited));
+                    }
+                } else {
+                    for (final Field field : FieldUtils.getAllFields(clazz)) {
+                        if (inclusionPredicate.test(field)) {
+                            final W wFieldValue = W.of(FieldUtils.readField(field, object, true));
+                            result.setValue(result.longValue() * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited));
+                        }
+                    }
                 }
             }
         }
         return result.longValue();
-    }
-
-    private abstract static class WIterator implements Iterator<W> {
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public W next() {
-            throw new UnsupportedOperationException();
-        }
-
-        abstract W nextW();
-    }
-
-    private static class ArrayWIterator extends WIterator {
-        private final Object object;
-
-        private final int len;
-
-        private int cursor;
-
-        ArrayWIterator(final Object object) {
-            this.cursor = 0;
-            this.len = Array.getLength(object);
-            this.object = object;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return this.cursor < this.len;
-        }
-
-        @Override
-        public W nextW() {
-            return W.of(Array.get(this.object, this.cursor++));
-        }
-    }
-
-    private static class ObjectFieldWIterator extends WIterator {
-        private final Object object;
-
-        private final Field[] fields;
-
-        private int cursor;
-
-        public ObjectFieldWIterator(final Object object, final Class<?> clazz) {
-            this.object = object;
-            this.fields = FieldUtils.getAllFields(clazz);
-            this.cursor = 0;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return this.cursor < this.fields.length;
-        }
-
-        @Override
-        public W nextW() {
-            try {
-                return W.of(FieldUtils.readField(this.fields[this.cursor++], this.object, true));
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new Error();
-            }
-        }
     }
 
     private static boolean isBasicType(Class<?> clazz) {

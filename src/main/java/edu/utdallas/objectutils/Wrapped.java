@@ -59,7 +59,12 @@ public interface Wrapped extends Serializable {
 
     int getAddress();
 
-//    boolean coreEquals(Object core);
+    /**
+     * Check if the object wrapped by <code>this</code> is equal to the argument
+     * @param core the object to be compared
+     * @return <code>true</code> iff <code>core</code> is equal to the object wrapped by <code>this</code>.
+     */
+    boolean coreEquals(Object core);
 
     String print();
 }

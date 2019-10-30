@@ -89,8 +89,8 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
         return ObjectPrinter.print(this);
     }
 
-//    @Override
-//    protected boolean coreTypeCheck(Object core) {
-//        return core != null && core.getClass() == this.type;
-//    }
+    @Override
+    protected boolean coreTypeCheck(Object core) {
+        return core != null && core.getClass() == this.type;
+    }
 }

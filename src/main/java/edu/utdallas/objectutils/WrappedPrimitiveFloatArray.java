@@ -47,10 +47,10 @@ public class WrappedPrimitiveFloatArray extends AbstractWrappedBasicArray<float[
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof float[] && Arrays.equals((float[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof float[] && Arrays.equals((float[]) core, this.value);
+    }
 
     @Override
     public String print() {

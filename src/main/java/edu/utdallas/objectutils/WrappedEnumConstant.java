@@ -108,7 +108,7 @@ public class WrappedEnumConstant extends WrappedObject {
 
     @Override
     public String print() {
-        return this.name + ":" + super.print();
+        return String.format("ENUM<%s>=%s", this.name, super.print());
     }
 
     @Override
@@ -131,11 +131,11 @@ public class WrappedEnumConstant extends WrappedObject {
         return Objects.hashCode(this.name);
     }
 
-//    @Override
-//    protected boolean coreTypeCheck(Object core) {
-//        if (core instanceof Enum<?>) {
-//            return core.getClass() == this.type && ((Enum<?>) core).name().equals(this.name);
-//        }
-//        return false;
-//    }
+    @Override
+    protected boolean coreTypeCheck(Object core) {
+        if (core instanceof Enum<?>) {
+            return core.getClass() == this.type && ((Enum<?>) core).name().equals(this.name);
+        }
+        return false;
+    }
 }

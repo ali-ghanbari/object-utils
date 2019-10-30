@@ -47,10 +47,10 @@ public class WrappedPrimitiveLongArray extends AbstractWrappedBasicArray<long[]>
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof long[] && Arrays.equals((long[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof long[] && Arrays.equals((long[]) core, this.value);
+    }
 
     @Override
     public String print() {

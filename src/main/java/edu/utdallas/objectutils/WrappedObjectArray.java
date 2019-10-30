@@ -79,13 +79,13 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
         return ObjectPrinter.print(this);
     }
 
-//    @Override
-//    protected boolean coreTypeCheck(Object core) {
-//        if (core == null) {
-//            return false;
-//        }
-//        final Class<?> coreClass = core.getClass();
-//        return coreClass.isArray() && coreClass.getComponentType() == this.type
-//                && Array.getLength(core) == this.values.length;
-//    }
+    @Override
+    protected boolean coreTypeCheck(Object core) {
+        if (core == null) {
+            return false;
+        }
+        final Class<?> coreClass = core.getClass();
+        return coreClass.isArray() && coreClass.getComponentType() == this.type
+                && Array.getLength(core) == this.values.length;
+    }
 }

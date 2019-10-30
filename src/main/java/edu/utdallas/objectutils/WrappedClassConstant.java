@@ -20,8 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.util.Objects;
-
 public class WrappedClassConstant implements Wrapped {
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +43,7 @@ public class WrappedClassConstant implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.value);
+        return this.value.getName().hashCode();
     }
 
     @Override
@@ -78,8 +76,8 @@ public class WrappedClassConstant implements Wrapped {
         return String.format("Class<%s>", this.value.getName());
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core != null && core == this.value;
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core != null && core == this.value;
+    }
 }

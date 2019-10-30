@@ -47,10 +47,10 @@ public class WrappedPrimitiveDoubleArray extends AbstractWrappedBasicArray<doubl
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof double[] && Arrays.equals((double[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof double[] && Arrays.equals((double[]) core, this.value);
+    }
 
     @Override
     public String print() {

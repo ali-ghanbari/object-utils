@@ -247,59 +247,59 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         return workList2.isEmpty();
     }
 
-//    // checks if the type of "core" matches the type of the wrapped object or the
-//    // the type of elements of the wrapped array
-//    protected abstract boolean coreTypeCheck(Object core);
-//
-//    @Override
-//    public boolean coreEquals(final Object core) {
-//        if (core == null) {
-//            return false;
-//        }
-//        final Queue<Wrapped> workList1 = new LinkedList<>();
-//        final Queue<Object> workList2 = new LinkedList<>();
-//        final Set<Integer> visitedNodes = new HashSet<>();
-//        workList1.offer(this);
-//        workList2.offer(core);
-//        while (!workList1.isEmpty()) {
-//            final Wrapped node1 = workList1.poll();
-//            final Object node2 = workList2.poll();
-//            if (node1 == null) {
-//                // the field in wrapped object is ignored, so we ignore the
-//                // corresponding field in the provided core object
-//                continue;
-//            }
-//            if (node1 instanceof AbstractWrappedCompositeObject) {
-//                final AbstractWrappedCompositeObject wrappedObject =
-//                        ((AbstractWrappedCompositeObject) node1);
-//                if (node2 == null || !wrappedObject.coreTypeCheck(node2)) {
-//                    return false;
-//                }
-//                visitedNodes.add(wrappedObject.getAddress());
-//                final Wrapped[] wrappedValues = wrappedObject.getValues();
-//                wrappedObject.resetCursor();
-//                try {
-//                    for (final Wrapped wrappedValue : wrappedValues) {
-//                        wrappedObject.advanceCursor();
-//                        while (wrappedObject.strictlyImmutableAtCursor()) {
-//                            wrappedObject.advanceCursor();
-//                        }
-//                        final Object value = wrappedObject.getAtCursor(node2);
-//                        if (wrappedValue instanceof AbstractWrappedCompositeObject) {
-//                            if (visitedNodes.contains(wrappedValue.getAddress())) {
-//                                continue;
-//                            }
-//                        }
-//                        workList1.offer(wrappedValue);
-//                        workList2.offer(value);
-//                    }
-//                } catch (Exception e) {
-//                    return false;
-//                }
-//            } else if (!node1.coreEquals(node2)) {
-//                return false;
-//            }
-//        }
-//        return workList2.isEmpty();
-//    }
+    // checks if the type of "core" matches the type of the wrapped object or the
+    // the type of elements of the wrapped array
+    protected abstract boolean coreTypeCheck(Object core);
+
+    @Override
+    public boolean coreEquals(final Object core) {
+        if (core == null) {
+            return false;
+        }
+        final Queue<Wrapped> workList1 = new LinkedList<>();
+        final Queue<Object> workList2 = new LinkedList<>();
+        final Set<Integer> visitedNodes = new HashSet<>();
+        workList1.offer(this);
+        workList2.offer(core);
+        while (!workList1.isEmpty()) {
+            final Wrapped node1 = workList1.poll();
+            final Object node2 = workList2.poll();
+            if (node1 == null) {
+                // the field in wrapped object is ignored, so we ignore the
+                // corresponding field in the provided core object
+                continue;
+            }
+            if (node1 instanceof AbstractWrappedCompositeObject) {
+                final AbstractWrappedCompositeObject wrappedObject =
+                        ((AbstractWrappedCompositeObject) node1);
+                if (node2 == null || !wrappedObject.coreTypeCheck(node2)) {
+                    return false;
+                }
+                visitedNodes.add(wrappedObject.getAddress());
+                final Wrapped[] wrappedValues = wrappedObject.getValues();
+                wrappedObject.resetCursor();
+                try {
+                    for (final Wrapped wrappedValue : wrappedValues) {
+                        wrappedObject.advanceCursor();
+                        while (wrappedObject.strictlyImmutableAtCursor()) {
+                            wrappedObject.advanceCursor();
+                        }
+                        final Object value = wrappedObject.getAtCursor(node2);
+                        if (wrappedValue instanceof AbstractWrappedCompositeObject) {
+                            if (visitedNodes.contains(wrappedValue.getAddress())) {
+                                continue;
+                            }
+                        }
+                        workList1.offer(wrappedValue);
+                        workList2.offer(value);
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            } else if (!node1.coreEquals(node2)) {
+                return false;
+            }
+        }
+        return workList2.isEmpty();
+    }
 }

@@ -45,10 +45,10 @@ public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof Boolean[] && Arrays.equals((Boolean[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Boolean[] && Arrays.equals((Boolean[]) core, this.value);
+    }
 
     @Override
     public Boolean[] unwrap() throws Exception {

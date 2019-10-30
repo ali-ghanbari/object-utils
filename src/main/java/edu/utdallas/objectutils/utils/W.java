@@ -49,7 +49,7 @@ public class W {
         if (!(o instanceof W)) {
             return false;
         }
-        W w = (W) o;
+        final W w = (W) o;
         return this.core == w.core;
     }
 

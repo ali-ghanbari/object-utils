@@ -123,9 +123,6 @@ public final class Wrapper {
         } else if (object instanceof Class) {
             return new WrappedClassConstant((Class<?>) object);
         }
-//        } else if (object instanceof Field) {
-//            return new WrappedClassField((Field) object);
-//        }
         final Class<?> clazz = object.getClass();
         if (clazz.isArray()) {
             WrappedArray wrappedArray = null;

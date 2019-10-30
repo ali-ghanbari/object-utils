@@ -70,7 +70,7 @@ public class ObjectUtilsTest {
 	}
 
 	@Test
-	public void testDeepHashCodeBasics1() {
+	public void testDeepHashCodeBasics1() throws Exception {
 		final Object[] objects = {
 				1,
 				2.718D,
@@ -82,13 +82,14 @@ public class ObjectUtilsTest {
 			final Object object = objects[i];
 			final long expected = Objects.hashCode(object);
 			final long actual = ObjectUtils.deepHashCode(object);
+//			System.out.printf("<%d, %d>%n", expected, actual);
 			final String message = String.format("object at %d: expected <%d> but was <%d>", i, expected, actual);
 			assertEquals(message, expected, actual);
 		}
 	}
 
 	@Test
-	public void testDeepHashCodeBasics2() {
+	public void testDeepHashCodeBasics2() throws Exception {
 		final String[] parts = {
 				"h",
 				"ello",
@@ -98,17 +99,19 @@ public class ObjectUtilsTest {
 		final String string1 = parts[0] + parts[1];
 		final String string2 = parts[2] + parts[3];
 		assertNotSame(string1, string2);
+//		System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(string1), ObjectUtils.deepHashCode(string2));
 		assertEquals(ObjectUtils.deepHashCode(string1), ObjectUtils.deepHashCode(string2));
 	}
 
 	@Test
-	public void testDeepHashCodeBasics3() {
+	public void testDeepHashCodeBasics3() throws Exception {
 		final StringBuilder sb1 = new StringBuilder("bye");
 		final StringBuilder sb2 = new StringBuilder("hello");
 		sb2.delete(0, 2);
 		sb2.setCharAt(0, 'b');
 		sb2.setCharAt(1, 'y');
 		sb2.setCharAt(2, 'e');
+//		System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(sb1.toString()), ObjectUtils.deepHashCode(sb2.toString()));
 		assertEquals(ObjectUtils.deepHashCode(sb1.toString()), ObjectUtils.deepHashCode(sb2.toString()));
 	}
 
@@ -118,7 +121,8 @@ public class ObjectUtilsTest {
 	}
 
 	@Test
-	public void testDeepHashCodeEnums() {
+	public void testDeepHashCodeEnums() throws Exception {
+//		System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(Colors.GREEN), ObjectUtils.deepHashCode(Colors.GREEN));
 		assertEquals(ObjectUtils.deepHashCode(Colors.GREEN), ObjectUtils.deepHashCode(Colors.GREEN));
 		assertEquals(ObjectUtils.deepHashCode(Colors.RED), ObjectUtils.deepHashCode(Colors.RED));
 		assertNotEquals(ObjectUtils.deepHashCode(Colors.RED), ObjectUtils.deepHashCode(Colors.GREEN));
@@ -179,7 +183,7 @@ public class ObjectUtilsTest {
 	}
 
 	@Test
-	public void testDeepHashCodeCompositeObject1() {
+	public void testDeepHashCodeCompositeObject1() throws Exception {
 		final Record r1 = new Record("r1", "30");
 		final Record r2 = new Record("r2", "40");
 		final Record r3 = new Record("r2", "30");
@@ -190,6 +194,7 @@ public class ObjectUtilsTest {
 		sb.append('0');
 		sb.append('4');
 		r3.setRecordValue(sb.reverse().toString());
+//		System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(s1), ObjectUtils.deepHashCode(s2));
 		assertEquals(ObjectUtils.deepHashCode(s1), ObjectUtils.deepHashCode(s2));
 	}
 
@@ -218,7 +223,7 @@ public class ObjectUtilsTest {
 				break;
 			}
 		}
-		assertNotEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
+		assertEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
 		final List<String> l3 = new LinkedList<>();
 		l3.add("1");
 		l3.add("2");
@@ -267,6 +272,7 @@ public class ObjectUtilsTest {
 		strings2.add("sure?!");
 		for (int __ = 0; __ < 1000; __++) {
 			assertEquals(strings.hashCode(), strings2.hashCode());
+//			System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(strings), ObjectUtils.deepHashCode(strings2));
 			assertEquals(ObjectUtils.deepHashCode(strings), ObjectUtils.deepHashCode(strings2));
 		}
 	}

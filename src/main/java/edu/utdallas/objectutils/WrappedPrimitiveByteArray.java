@@ -47,10 +47,10 @@ public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]>
         return Arrays.hashCode(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof byte[] && Arrays.equals((byte[]) core, this.value);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof byte[] && Arrays.equals((byte[]) core, this.value);
+    }
 
     @Override
     public String print() {

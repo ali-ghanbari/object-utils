@@ -54,10 +54,10 @@ public class WrappedByte implements Wrapped {
         return Objects.hash(this.value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return core instanceof Byte && (this.value == (Byte) core);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return core instanceof Byte && (this.value == (Byte) core);
+    }
 
     @Override
     public String print() {

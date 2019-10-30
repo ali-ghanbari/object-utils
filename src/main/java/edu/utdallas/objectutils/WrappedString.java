@@ -54,10 +54,10 @@ public class WrappedString implements Wrapped {
         return Objects.hash(value);
     }
 
-//    @Override
-//    public boolean coreEquals(Object core) {
-//        return this.value.equals(core);
-//    }
+    @Override
+    public boolean coreEquals(Object core) {
+        return this.value.equals(core);
+    }
 
     @Override
     public String print() {

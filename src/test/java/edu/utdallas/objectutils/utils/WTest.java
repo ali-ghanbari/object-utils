@@ -28,25 +28,6 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class WTest {
-//    @Test
-//    public void test1() {
-//        final Set<W> set = new HashSet<>();
-//        final W w1 = W.of("hello");
-//        final W w2 = W.of("world");
-//        final W w3 = W.of("how");
-//        final W w4 = W.of("are you?");
-//        set.add(w1);
-//        set.add(w2);
-//        set.add(w3);
-//        set.add(w4);
-//        assertEquals(w1, "hello");
-////        assertTrue(set.contains("hello"));
-////        assertTrue(set.contains("world"));
-////        assertTrue(set.contains("how"));
-////        assertTrue(set.contains("are you?"));
-////        assertFalse(set.contains("hey!"));
-//    }
-
     @Test
     public void test1() {
         final Set<W> set = new HashSet<>();
