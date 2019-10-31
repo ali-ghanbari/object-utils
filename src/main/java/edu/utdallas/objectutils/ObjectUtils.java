@@ -21,10 +21,12 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.W;
-import org.apache.commons.lang3.mutable.MutableLong;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
+import static edu.utdallas.objectutils.Commons.getAllFieldsList;
+import static edu.utdallas.objectutils.Commons.readField;
+import static edu.utdallas.objectutils.Commons.writeField;
+
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -115,9 +117,9 @@ public final class ObjectUtils {
                         result.setValue(result.longValue() * 31L + deepHashCode(wElement, inclusionPredicate, visited));
                     }
                 } else {
-                    for (final Field field : FieldUtils.getAllFields(clazz)) {
+                    for (final Field field : getAllFieldsList(clazz)) {
                         if (inclusionPredicate.test(field)) {
-                            final W wFieldValue = W.of(FieldUtils.readField(field, object, true));
+                            final W wFieldValue = W.of(readField(field, object, true));
                             result.setValue(result.longValue() * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited));
                         }
                     }
@@ -149,15 +151,31 @@ public final class ObjectUtils {
         return WRAPPER_TYPES.contains(clazz);
     }
 
+    private static class MutableLong {
+        private long value;
+
+        MutableLong(long value) {
+            this.value = value;
+        }
+
+        long longValue() {
+            return this.value;
+        }
+
+        void setValue(long value) {
+            this.value = value;
+        }
+    }
+
 	public static <T> void shallowCopy(final T dest, final T src) throws Exception {
 		final Class<?> clazz = src.getClass();
-		final List<Field> fields = FieldUtils.getAllFieldsList(clazz);
+		final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {
                 continue;
             }
-            final Object fieldValue = FieldUtils.readField(field, src, true);
-            FieldUtils.writeField(field, dest, fieldValue, true);
+            final Object fieldValue = readField(field, src, true);
+            writeField(field, dest, fieldValue, true);
         }
 	}
 }

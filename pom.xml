@@ -55,6 +55,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -106,36 +107,36 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>2.4.3</version>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>shade</goal>
-                            </goals>
-                            <configuration>
-                                <artifactSet>
-                                    <includes>
-                                        <include>org.apache.commons:commons-lang3:*</include>
-                                    </includes>
-                                </artifactSet>
-                                <relocations>
-                                    <relocation>
-                                        <pattern>org.apache.commons.lang3</pattern>
-                                        <shadedPattern>edu.utdallas.objectutils.reloc.lang3</shadedPattern>
-                                    </relocation>
-                                </relocations>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
+<!--                <plugin>-->
+<!--                    <artifactId>maven-jar-plugin</artifactId>-->
+<!--                    <version>2.4</version>-->
+<!--                </plugin>-->
+<!--                <plugin>-->
+<!--                    <groupId>org.apache.maven.plugins</groupId>-->
+<!--                    <artifactId>maven-shade-plugin</artifactId>-->
+<!--                    <version>2.4.3</version>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <phase>package</phase>-->
+<!--                            <goals>-->
+<!--                                <goal>shade</goal>-->
+<!--                            </goals>-->
+<!--                            <configuration>-->
+<!--                                <artifactSet>-->
+<!--                                    <includes>-->
+<!--                                        <include>org.apache.commons:commons-lang3:*</include>-->
+<!--                                    </includes>-->
+<!--                                </artifactSet>-->
+<!--                                <relocations>-->
+<!--                                    <relocation>-->
+<!--                                        <pattern>org.apache.commons.lang3</pattern>-->
+<!--                                        <shadedPattern>edu.utdallas.objectutils.reloc.lang3</shadedPattern>-->
+<!--                                    </relocation>-->
+<!--                                </relocations>-->
+<!--                            </configuration>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--                </plugin>-->
             </plugins>
         </pluginManagement>
     </build>

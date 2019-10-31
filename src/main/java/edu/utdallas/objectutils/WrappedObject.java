@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.ObjectPrinter;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Field;
@@ -29,6 +28,9 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
+import static edu.utdallas.objectutils.Commons.getAllFieldsList;
+import static edu.utdallas.objectutils.Commons.readField;
+import static edu.utdallas.objectutils.Commons.writeField;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.
@@ -55,7 +57,7 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
 
     @Override
     protected void resetCursor() {
-        this.fieldsIterator = FieldUtils.getAllFieldsList(this.type).iterator();
+        this.fieldsIterator = getAllFieldsList(this.type).iterator();
     }
 
     @Override
@@ -76,12 +78,12 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
 
     @Override
     protected void setAtCursor(Object rawObject, Object value) throws Exception {
-        FieldUtils.writeField(this.fieldAtCursor, rawObject, value, true);
+        writeField(this.fieldAtCursor, rawObject, value, true);
     }
 
     @Override
     protected Object getAtCursor(Object rawObject) throws Exception {
-        return FieldUtils.readField(this.fieldAtCursor, rawObject, true);
+        return readField(this.fieldAtCursor, rawObject, true);
     }
 
     @Override
