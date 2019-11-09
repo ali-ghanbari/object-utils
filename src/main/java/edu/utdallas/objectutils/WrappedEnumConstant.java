@@ -21,11 +21,8 @@ package edu.utdallas.objectutils;
  */
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-import static edu.utdallas.objectutils.Commons.newAddress;
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
 /**
@@ -36,12 +33,6 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 public class WrappedEnumConstant extends WrappedObject {
     private static final long serialVersionUID = 1L;
 
-    private static final Map<Enum, Integer> ADDRESS_MAP;
-
-    static {
-        ADDRESS_MAP = new HashMap<>();
-    }
-
     private final String name;
 
     private transient Enum object;
@@ -49,12 +40,6 @@ public class WrappedEnumConstant extends WrappedObject {
     public WrappedEnumConstant(Enum object, Wrapped[] values) {
         super(object.getClass(), values);
         this.name = object.name();
-        Integer address = ADDRESS_MAP.get(object);
-        if (address == null) {
-            address = newAddress();
-            ADDRESS_MAP.put(object, address);
-        }
-        this.address = address;
         this.object = object;
     }
 

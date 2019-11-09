@@ -644,7 +644,6 @@ public class WrapperTest {
         assertEquals(l1, l2);
         final Wrapped w1 = Wrapper.wrapObject(l1);
         final Wrapped w2 = Wrapper.wrapObject(l2);
-        System.out.println("-------------");
         assertEquals(w1, w2);
     }
 
@@ -1138,6 +1137,7 @@ public class WrapperTest {
     }
 
     private enum BigEnum {
+        I0(2, "T", null),
         I1(1, "S1", Dummy.J1),
         I2(1, "B1", Dummy.J2),
         I3(1, "D1", new Enum[]{Dummy.J1, Dummy.J2});
@@ -1166,14 +1166,16 @@ public class WrapperTest {
 
     @Test
     public void testEnumObjects2() throws Exception {
+        final Wrapped wrappedI0 = Wrapper.wrapObject(BigEnum.I0);
         final Wrapped wrappedI1 = Wrapper.wrapObject(BigEnum.I1);
         final Wrapped wrappedI2 = Wrapper.wrapObject(BigEnum.I2);
         final Wrapped wrappedI3 = Wrapper.wrapObject(BigEnum.I3);
         assertEquals(BigEnum.I1, wrappedI1.unwrap(BigEnum.I1));
         wrappedI1.unwrap(BigEnum.I2);
-        assertEquals(wrappedI1.print(), "ENUM<I1>=BigEnum@1{0:1,1:S1,2:@3}Dummy@3{0:null}");
-        assertEquals(wrappedI2.print(), "ENUM<I2>=BigEnum@1{0:1,1:B1,2:@3}Dummy@3{0:null}");
-        assertEquals(wrappedI3.print(), "ENUM<I3>=BigEnum@1{0:1,1:D1,2:@2}OBJ_ARRAY@2{0:@3,1:@3}Dummy@3{0:null}");
+        assertEquals(wrappedI0.print(), "ENUM<I0>=BigEnum@0{0:2,1:T,2:null}");
+        assertEquals(wrappedI1.print(), "ENUM<I1>=BigEnum@0{0:1,1:S1,2:@1}Dummy@1{0:null}");
+        assertEquals(wrappedI2.print(), "ENUM<I2>=BigEnum@0{0:1,1:B1,2:@1}Dummy@1{0:null}");
+        assertEquals(wrappedI3.print(), "ENUM<I3>=BigEnum@0{0:1,1:D1,2:@1}OBJ_ARRAY@1{0:@2,1:@3}Dummy@3{0:null}Dummy@2{0:null}");
     }
 
     private enum E1 {

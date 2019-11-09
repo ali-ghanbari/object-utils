@@ -30,7 +30,7 @@ import static edu.utdallas.objectutils.Commons.newAddress;
 public abstract class AbstractWrappedReference implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    protected int address;
+    protected final int address;
 
     protected AbstractWrappedReference() {
         this.address = newAddress();

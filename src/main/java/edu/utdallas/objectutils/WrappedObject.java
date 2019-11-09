@@ -95,4 +95,6 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     protected boolean coreTypeCheck(Object core) {
         return core != null && core.getClass() == this.type;
     }
+
+
 }
