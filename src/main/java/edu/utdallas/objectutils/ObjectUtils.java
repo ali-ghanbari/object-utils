@@ -77,8 +77,7 @@ public final class ObjectUtils {
      * @throws Exception any reflection related exception
      */
     public static long deepHashCode(final Object object) throws Exception {
-        VISITED.clear();
-        return deepHashCode(W.of(object), InclusionPredicate.INCLUDE_ALL, VISITED);
+        return deepHashCode(object, InclusionPredicate.INCLUDE_ALL);
     }
 
     /**
@@ -97,53 +96,44 @@ public final class ObjectUtils {
     private static long deepHashCode(final W hashMapSafeObject,
                                      final InclusionPredicate inclusionPredicate,
                                      final Map<W, MutableLong> visited) throws Exception {
+        final Object object = hashMapSafeObject.getCore();
+        if (object == null) {
+            return 0;
+        }
+        final Class<?> clazz = object.getClass();
+        if (isWrapperType(clazz) || object instanceof String) {
+            return object.hashCode();
+        } else if (object instanceof Class) {
+            return ((Class<?>) object).getName().hashCode();
+        } else if (clazz.isEnum()) {
+            return ((Enum<?>) object).name().hashCode();
+        }
+        // composite object
         MutableLong result = visited.get(hashMapSafeObject);
         if (result != null) { // return the already computed hash code, if there is any
             return result.longValue();
         }
-        result = new MutableLong(0L);
+        result = new MutableLong(0);
         visited.put(hashMapSafeObject, result);
-        final Object object = hashMapSafeObject.getCore();
-        if (object != null) {
-            final Class<?> clazz = object.getClass();
-            if (isBasicType(clazz) || object instanceof String) {
-                result.setValue(object.hashCode());
-            } else if (object instanceof Class) {
-                result.setValue(((Class<?>) object).getName().hashCode());
-            } else if (clazz.isEnum()) {
-                result.setValue(((Enum<?>) object).name().hashCode());
-            } else {
-                result.setValue(clazz.getName().hashCode());
-                if (clazz.isArray()) {
-                    final int len = Array.getLength(object);
-                    long inner = 0;
-                    for (int i = 0; i < len; i++) {
-                        final W wElement = W.of(Array.get(object, i));
-                        // I am just adding these numbers to avoid getting different hash codes
-                        // between different runs of JVM.
-                        // This will work for things like hand-made hash-tables or Java's
-                        // HashMap and HashSet. But it still have difficulty in the case
-                        // of a hash-table made up of linked lists and has class objects
-                        // as its keys.
-                        inner += deepHashCode(wElement, inclusionPredicate, visited);
-                    }
-                    result.setValue(result.longValue() * 31L + inner);
-                } else {
-                    for (final Field field : getAllFieldsList(clazz)) {
-                        if (strictlyImmutable(field) || !inclusionPredicate.test(field)) {
-                            continue;
-                        }
-                        final W wFieldValue = W.of(readField(field, object, true));
-                        result.setValue(result.longValue() * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited));
-                    }
+        // the order of array elements and fields should not matter
+        long inner = 0;
+        if (clazz.isArray()) {
+            final int len = Array.getLength(object);
+            for (int i = 0; i < len; i++) {
+                final W wElement = W.of(Array.get(object, i));
+                inner += deepHashCode(wElement, inclusionPredicate, visited);
+            }
+        } else {
+            for (final Field field : getAllFieldsList(clazz)) {
+                if (strictlyImmutable(field) || !inclusionPredicate.test(field)) {
+                    continue;
                 }
+                final W wFieldValue = W.of(readField(field, object, true));
+                inner += deepHashCode(wFieldValue, inclusionPredicate, visited);
             }
         }
+        result.setValue(clazz.getName().hashCode() + inner);
         return result.longValue();
-    }
-
-    private static boolean isBasicType(Class<?> clazz) {
-        return  isWrapperType(clazz) || clazz.isPrimitive();
     }
 
     private static boolean isWrapperType(Class<?> clazz) {
