@@ -30,12 +30,7 @@ import static edu.utdallas.objectutils.Commons.writeField;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Basic object utilities such as computing deep hash code and
@@ -49,8 +44,17 @@ public final class ObjectUtils {
     private static final Map<W, MutableLong> VISITED;
 
     static {
-        WRAPPER_TYPES = getWrapperTypes();
         VISITED = new HashMap<>();
+        WRAPPER_TYPES = new HashSet<>();
+        WRAPPER_TYPES.add(Boolean.class);
+        WRAPPER_TYPES.add(Character.class);
+        WRAPPER_TYPES.add(Byte.class);
+        WRAPPER_TYPES.add(Short.class);
+        WRAPPER_TYPES.add(Integer.class);
+        WRAPPER_TYPES.add(Long.class);
+        WRAPPER_TYPES.add(Float.class);
+        WRAPPER_TYPES.add(Double.class);
+        WRAPPER_TYPES.add(Void.class);
     }
 
     private ObjectUtils() {
@@ -86,28 +90,28 @@ public final class ObjectUtils {
         return deepHashCode(W.of(object), inclusionPredicate, VISITED);
     }
 
-    private static long deepHashCode(final W hashSetSafeObject,
+    private static long deepHashCode(final W hashMapSafeObject,
                                      final InclusionPredicate inclusionPredicate,
                                      final Map<W, MutableLong> visited) throws Exception {
-        MutableLong result = visited.get(hashSetSafeObject);
-        if (result != null) {
+        MutableLong result = visited.get(hashMapSafeObject);
+        if (result != null) { // return the already computed hash code, if there is any
             return result.longValue();
         }
         result = new MutableLong(0L);
-        visited.put(hashSetSafeObject, result);
-        final Object object = hashSetSafeObject.getCore();
+        visited.put(hashMapSafeObject, result);
+        final Object object = hashMapSafeObject.getCore();
         if (object != null) {
             final Class<?> clazz = object.getClass();
             if (isBasicType(clazz) || object instanceof String) {
                 result.setValue(object.hashCode());
             } else if (object instanceof Class) {
-                result.setValue(((Class) object).getName().hashCode());
+                result.setValue(((Class<?>) object).getName().hashCode());
             } else if (clazz.isEnum()) {
-                result.setValue(((Enum) object).name().hashCode());
+                result.setValue(((Enum<?>) object).name().hashCode());
             } else {
                 result.setValue(clazz.getName().hashCode());
-                if (object instanceof Collection) {
-                    for (final Object o : (Collection) object) {
+                if (object instanceof Iterable) {
+                    for (final Object o : (Iterable<?>) object) {
                         result.setValue(result.longValue() + deepHashCode(W.of(o), inclusionPredicate, visited));
                     }
                 } else if (clazz.isArray()) {
@@ -118,10 +122,11 @@ public final class ObjectUtils {
                     }
                 } else {
                     for (final Field field : getAllFieldsList(clazz)) {
-                        if (inclusionPredicate.test(field)) {
-                            final W wFieldValue = W.of(readField(field, object, true));
-                            result.setValue(result.longValue() * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited));
+                        if (strictlyImmutable(field) || !inclusionPredicate.test(field)) {
+                            continue;
                         }
+                        final W wFieldValue = W.of(readField(field, object, true));
+                        result.setValue(result.longValue() * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited));
                     }
                 }
             }
@@ -131,20 +136,6 @@ public final class ObjectUtils {
 
     private static boolean isBasicType(Class<?> clazz) {
         return  isWrapperType(clazz) || clazz.isPrimitive();
-    }
-
-    private static Set<Class<?>> getWrapperTypes() {
-        Set<Class<?>> ret = new HashSet<>();
-        ret.add(Boolean.class);
-        ret.add(Character.class);
-        ret.add(Byte.class);
-        ret.add(Short.class);
-        ret.add(Integer.class);
-        ret.add(Long.class);
-        ret.add(Float.class);
-        ret.add(Double.class);
-        ret.add(Void.class);
-        return ret;
     }
 
     private static boolean isWrapperType(Class<?> clazz) {
