@@ -51,7 +51,7 @@ public class WrappedBoolean implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return this.value ? 1231 : 1237; // adopted form JDK 1.8 source code
     }
 
     @Override

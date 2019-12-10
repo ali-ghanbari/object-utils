@@ -184,7 +184,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     @Override
     public int hashCode() {
-        return this.type.hashCode();
+        return this.type.getName().hashCode();
     }
 
     @Override

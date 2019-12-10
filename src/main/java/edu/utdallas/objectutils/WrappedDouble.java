@@ -51,7 +51,9 @@ public class WrappedDouble implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        // adopted from JDK 1.8
+        final long bits = Double.doubleToLongBits(this.value);
+        return (int)(bits ^ (bits >>> 32));
     }
 
     @Override

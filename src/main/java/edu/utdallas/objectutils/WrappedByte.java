@@ -51,7 +51,7 @@ public class WrappedByte implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.value);
+        return this.value;
     }
 
     @Override

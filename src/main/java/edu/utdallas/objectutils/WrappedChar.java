@@ -51,7 +51,7 @@ public class WrappedChar implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return this.value;
     }
 
     @Override

@@ -113,7 +113,7 @@ public class WrappedEnumConstant extends WrappedObject {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.name);
+        return this.name.hashCode();
     }
 
     @Override

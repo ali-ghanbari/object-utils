@@ -65,10 +65,10 @@ public class ShallowWrapped {
                 || core instanceof Byte
                 || core instanceof Character
                 || core instanceof Short) {
-            return Objects.hash(core);
+            return Objects.hashCode(core);
         }
         if (core instanceof Class) {
-            return ((Class) core).getName().hashCode();
+            return ((Class<?>) core).getName().hashCode();
         }
         if (core instanceof int[]) {
             return Arrays.hashCode((int[]) core);
@@ -122,12 +122,12 @@ public class ShallowWrapped {
             return Arrays.hashCode((Long[]) core);
         }
         if (core instanceof Enum) {
-            return ((Enum) core).name().hashCode();
+            return ((Enum<?>) core).name().hashCode();
         }
         final Class<?> coreClass = core.getClass();
         if (coreClass.isArray()) {
-            return coreClass.getComponentType().hashCode();
+            return coreClass.getComponentType().getName().hashCode();
         }
-        return coreClass.hashCode();
+        return coreClass.getName().hashCode();
     }
 }

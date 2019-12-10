@@ -51,7 +51,7 @@ public class WrappedLong implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.value);
+        return (int)(this.value ^ (this.value >>> 32)); // adopted from JDK 1.8
     }
 
     @Override

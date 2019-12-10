@@ -51,7 +51,7 @@ public class WrappedFloat implements Wrapped {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.value);
+        return Float.floatToIntBits(this.value);
     }
 
     @Override

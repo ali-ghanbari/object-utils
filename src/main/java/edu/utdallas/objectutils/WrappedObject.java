@@ -96,5 +96,4 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
         return core != null && core.getClass() == this.type;
     }
 
-
 }
