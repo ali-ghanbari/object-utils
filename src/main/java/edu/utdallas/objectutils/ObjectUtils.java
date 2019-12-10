@@ -116,10 +116,18 @@ public final class ObjectUtils {
                 result.setValue(clazz.getName().hashCode());
                 if (clazz.isArray()) {
                     final int len = Array.getLength(object);
+                    long inner = 0;
                     for (int i = 0; i < len; i++) {
                         final W wElement = W.of(Array.get(object, i));
-                        result.setValue(result.longValue() * 31L + deepHashCode(wElement, inclusionPredicate, visited));
+                        // I am just adding these numbers to avoid getting different hash codes
+                        // between different runs of JVM.
+                        // This will work for things like hand-made hash-tables or Java's
+                        // HashMap and HashSet. But it still have difficulty in the case
+                        // of a hash-table made up of linked lists and has class objects
+                        // as its keys.
+                        inner += deepHashCode(wElement, inclusionPredicate, visited);
                     }
+                    result.setValue(result.longValue() * 31L + inner);
                 } else {
                     for (final Field field : getAllFieldsList(clazz)) {
                         if (strictlyImmutable(field) || !inclusionPredicate.test(field)) {
