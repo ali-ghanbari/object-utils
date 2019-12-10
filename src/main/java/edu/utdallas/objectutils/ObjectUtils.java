@@ -30,7 +30,11 @@ import static edu.utdallas.objectutils.Commons.writeField;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Basic object utilities such as computing deep hash code and
@@ -110,11 +114,7 @@ public final class ObjectUtils {
                 result.setValue(((Enum<?>) object).name().hashCode());
             } else {
                 result.setValue(clazz.getName().hashCode());
-                if (object instanceof Iterable) {
-                    for (final Object o : (Iterable<?>) object) {
-                        result.setValue(result.longValue() + deepHashCode(W.of(o), inclusionPredicate, visited));
-                    }
-                } else if (clazz.isArray()) {
+                if (clazz.isArray()) {
                     final int len = Array.getLength(object);
                     for (int i = 0; i < len; i++) {
                         final W wElement = W.of(Array.get(object, i));
