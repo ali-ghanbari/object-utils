@@ -21,14 +21,13 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.shallow.ShallowWrapped;
+import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.security.Key;
 import java.util.*;
 
 import static edu.utdallas.objectutils.ModificationPredicate.YES;
@@ -1460,5 +1459,133 @@ public class WrapperTest {
     public void testTemplateTypeMatch() throws Exception {
         final Wrapped wrapped = Wrapper.wrapObject(new Interchange1());
         wrapped.unwrap(new Interchange2());
+    }
+
+    private static class Prop {
+        private Object defVal;
+
+        private final Map<String, Prop> props;
+
+        public Prop() {
+            this.props = new HashMap<>();
+        }
+
+        public Object getDefVal() {
+            return defVal;
+        }
+
+        public void setDefVal(Object defVal) {
+            this.defVal = defVal;
+        }
+
+        public Prop getProp(String key) {
+            return this.props.get(key);
+        }
+
+        public void addProp(String key, Prop prop) {
+            this.props.put(key, prop);
+        }
+    }
+
+    private static class KeyClass {
+        private final Map<String, Prop> props;
+
+        public KeyClass() {
+            this.props = new HashMap<>();
+        }
+
+        public void addProp(String key, Prop prop) {
+            this.props.put(key, prop);
+        }
+
+        public static KeyClass createKey1() {
+            return new KeyClass();
+        }
+
+        public static KeyClass createKey2() {
+            KeyClass keyClass = new KeyClass();
+            Prop name = new Prop();
+            name.setDefVal("ali");
+            Prop surname = new Prop();
+            Prop zero = new Prop();
+            zero.setDefVal("0");
+            Prop one = new Prop();
+            one.setDefVal(Collections.singletonMap("!", ":"));
+            surname.addProp("1", zero);
+            surname.addProp("2", one);
+            Prop age = new Prop();
+            age.addProp("#", zero);
+            age.addProp("@", one);
+            keyClass.addProp("name", name);
+            keyClass.addProp("surname", surname);
+            keyClass.addProp("age", age);
+            return keyClass;
+        }
+    }
+
+    private static void store(String fn, final Map map) throws Exception {
+        try (final OutputStream fos = new FileOutputStream(fn);
+             final ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeInt(map.size());
+            for (final Object o : map.entrySet()) {
+                final Map.Entry entry = (Map.Entry) o;
+                oos.writeObject(entry.getKey());
+                oos.writeObject(entry.getValue());
+            }
+        }
+    }
+
+    @Test
+    @Ignore
+    public void testStorageWrapped() throws Exception {
+        final Map<Wrapped, String> map = new HashMap<>();
+        map.put(Wrapper.wrapObject(KeyClass.createKey1()), "1");
+        map.put(Wrapper.wrapObject(KeyClass.createKey2()), "2");
+        assertEquals(map.get(Wrapper.wrapObject(KeyClass.createKey1())), "1");
+        assertEquals(map.get(Wrapper.wrapObject(KeyClass.createKey2())), "2");
+        store("t1", map);
+    }
+
+    @Test
+    @Ignore
+    public void testStorageDeepHashCode() throws Exception {
+        final Map<Long, String> map = new HashMap<>();
+        map.put(ObjectUtils.deepHashCode(KeyClass.createKey1()), "1");
+        map.put(ObjectUtils.deepHashCode(KeyClass.createKey2()), "2");
+        assertEquals(map.get(ObjectUtils.deepHashCode(KeyClass.createKey1())), "1");
+        assertEquals(map.get(ObjectUtils.deepHashCode(KeyClass.createKey2())), "2");
+        store("t2", map);
+    }
+
+    private static void retrieve(String fn, final Map map) throws Exception {
+        try (final InputStream fis = new FileInputStream(fn);
+             final ObjectInputStream ois = new ObjectInputStream(fis)) {
+            final int N = ois.readInt();
+            for (int __ = 0; __ < N; __++) {
+                final Object key = ois.readObject();
+                final Object value = ois.readObject();
+                map.put(key, value);
+            }
+        }
+    }
+
+    @Test
+    @Ignore
+    public void testRetrievalWrapped() throws Exception {
+        final Map<Wrapped, String> map = new HashMap<>();
+        retrieve("t1", map);
+        assertEquals(map.get(Wrapper.wrapObject(KeyClass.createKey1())), "1");
+        assertEquals(map.get(Wrapper.wrapObject(KeyClass.createKey2())), "2");
+        (new File("t1")).delete();
+    }
+
+    @Test
+    @Ignore
+    public void testRetrievalDeepHashCode() throws Exception {
+        final Map<Long, String> map = new HashMap<>();
+        retrieve("t2", map);
+        assertEquals(map.get(ObjectUtils.deepHashCode(KeyClass.createKey1())), "1");
+        assertEquals(map.get(ObjectUtils.deepHashCode(KeyClass.createKey2())), "2");
+        (new File("t2")).delete();
     }
 }
