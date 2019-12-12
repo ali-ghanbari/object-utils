@@ -20,9 +20,14 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-
 import java.util.Arrays;
 
+/**
+ * A wrapped <code>Boolean[]</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
     public WrappedBooleanArray(Boolean[] value) {
         super(value.clone());

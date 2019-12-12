@@ -22,6 +22,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * A wrapped <code>Long[]</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedLongArray extends AbstractWrappedBasicArray<Long[]> {
     public WrappedLongArray(Long[] value) {
         super(value.clone());

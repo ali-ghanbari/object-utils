@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
-import static edu.utdallas.objectutils.Commons.getAllFieldsList;
-import static edu.utdallas.objectutils.Commons.readField;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
+import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 
 /**
  * A set of factory methods for wrapped objects.
@@ -41,6 +41,9 @@ import static edu.utdallas.objectutils.Commons.readField;
  * @author Ali Ghanbari
  */
 public final class Wrapper {
+    /* Let's save one call to expensive new operation */
+    private static final Wrapped[] EMPTY_WRAPPED_ARRAY = new Wrapped[0];
+
     /* We are using this to wrap cyclic object graphs */
     /* We consult this hash-table to find out if we have already wrapped an object */
     private static final Map<W, Wrapped> WRAPPED_OBJECTS;
@@ -189,7 +192,7 @@ public final class Wrapper {
         }
         final WrappedObject wrappedObject;
         if (object instanceof Enum) {
-            wrappedObject = new WrappedEnumConstant((Enum) object, null);
+            wrappedObject = new WrappedEnumConstant((Enum<?>) object, null);
         } else {
             wrappedObject = new WrappedObject(null, null);
         }
@@ -204,7 +207,7 @@ public final class Wrapper {
                                                         final Object object,
                                                         final InclusionPredicate inclusionPredicate)
             throws Exception {
-        Wrapped[] wrappedFieldValues = new Wrapped[0];
+        Wrapped[] wrappedFieldValues = EMPTY_WRAPPED_ARRAY;
         final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
             if (strictlyImmutable(field)) {

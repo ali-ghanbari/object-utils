@@ -22,6 +22,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * A wrapped <code>Character[]</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
     public WrappedCharArray(Character[] value) {
         super(value.clone());

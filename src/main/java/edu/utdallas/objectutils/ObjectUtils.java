@@ -21,11 +21,12 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.W;
+import org.apache.commons.lang3.mutable.MutableLong;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
-import static edu.utdallas.objectutils.Commons.getAllFieldsList;
-import static edu.utdallas.objectutils.Commons.readField;
-import static edu.utdallas.objectutils.Commons.writeField;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
+import static org.apache.commons.lang3.reflect.FieldUtils.readField;
+import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 
 
 import java.lang.reflect.Array;
@@ -71,6 +72,10 @@ public final class ObjectUtils {
      * However, it is guaranteed that <code> o1 == o2</code> iff <code>deepHashCode(o1) == deepHashCode(o2)</code>.
      * Furthermore, we expect for "most of the cases" we will have
      * <code>deepHashCode(o1) == deepHashCode(o2)</code> iff <code>o1.equals(o2)</code>.
+     *
+     * Note that you might get different hash codes for different JVM sessions if the structure of <code>object</code>
+     * depends on the JVM session. For example, a <code>HashMap</code> object within which you have added class
+     * constants <code>String.class</code>, <code>Integer.class</code>, and so on.
      *
      * @param object the object
      * @return deep hash code computed for <code>object</code>
@@ -138,22 +143,6 @@ public final class ObjectUtils {
 
     private static boolean isWrapperType(Class<?> clazz) {
         return WRAPPER_TYPES.contains(clazz);
-    }
-
-    private static class MutableLong {
-        private long value;
-
-        MutableLong(long value) {
-            this.value = value;
-        }
-
-        long longValue() {
-            return this.value;
-        }
-
-        void setValue(long value) {
-            this.value = value;
-        }
     }
 
 	public static <T> void shallowCopy(final T dest, final T src) throws Exception {

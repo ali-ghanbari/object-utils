@@ -20,6 +20,11 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+/**
+ * A wrapped <code>Class</code> constant whose hash code does not depend on JVM session.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedClassConstant implements Wrapped {
     private static final long serialVersionUID = 1L;
 

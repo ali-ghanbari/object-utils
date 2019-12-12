@@ -22,6 +22,12 @@ package edu.utdallas.objectutils;
 
 import java.util.Arrays;
 
+/**
+ * A wrapped <code>Double[]</code> value which is <code>Serializable</code>,
+ * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
+ *
+ * @author Ali Ghanbari
+ */
 public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
     public WrappedDoubleArray(Double[] value) {
         super(value.clone());

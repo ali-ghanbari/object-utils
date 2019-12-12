@@ -27,6 +27,7 @@ import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
 /**
  * Wraps an enum constant. Just like a normal object, an enum constant might have fields.
+ * Also hash code for these enums does not depend on JVM session.
  *
  * @author Ali Ghanbari
  */

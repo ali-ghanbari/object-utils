@@ -63,7 +63,10 @@ public interface Wrapped extends Serializable {
      * Check if the object wrapped by <code>this</code> is equal to the argument
      * @param core the object to be compared
      * @return <code>true</code> iff <code>core</code> is equal to the object wrapped by <code>this</code>.
+     * @deprecated It is preferable not to use this feature as it is not well tested. We stopped using this
+     * method once we found a faster alternative using our high-resolution hash code computation {@link ObjectUtils}.
      */
+    @Deprecated
     boolean coreEquals(Object core);
 
     String print();

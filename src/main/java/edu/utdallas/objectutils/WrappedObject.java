@@ -28,9 +28,9 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 import static edu.utdallas.objectutils.Commons.strictlyImmutable;
-import static edu.utdallas.objectutils.Commons.getAllFieldsList;
-import static edu.utdallas.objectutils.Commons.readField;
-import static edu.utdallas.objectutils.Commons.writeField;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
+import static org.apache.commons.lang3.reflect.FieldUtils.readField;
+import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 
 /**
  * Wraps an arbitrary object by recursively storing all of its field values.

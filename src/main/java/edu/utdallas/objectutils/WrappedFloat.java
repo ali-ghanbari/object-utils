@@ -20,8 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.util.Objects;
-
 /**
  * A wrapped <code>float</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
