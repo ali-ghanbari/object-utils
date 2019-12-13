@@ -21,9 +21,8 @@ package edu.utdallas.objectutils;
  */
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
-
-import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 
 /**
  * Wraps an enum constant. Just like a normal object, an enum constant might have fields.
@@ -36,18 +35,18 @@ public class WrappedEnumConstant extends WrappedObject {
 
     private final String name;
 
-    private transient Enum object;
+    private transient Enum<?> object;
 
-    public WrappedEnumConstant(Enum object, Wrapped[] values) {
+    public WrappedEnumConstant(Enum<?> object, Wrapped[] values) {
         super(object.getClass(), values);
         this.name = object.name();
         this.object = object;
     }
 
-    private Enum getObject() {
+    private Enum<?> getObject() {
         if (this.object == null) {
             for (final Object n : this.type.getEnumConstants()) {
-                final Enum enumObject = (Enum) n;
+                final Enum<?> enumObject = (Enum<?>) n;
                 if (this.name.equals(enumObject.name())) {
                     this.object = enumObject;
                     break;
@@ -69,11 +68,6 @@ public class WrappedEnumConstant extends WrappedObject {
     }
 
     @Override
-    public Object unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return unwrap();
-    }
-
-    @Override
     protected Object createRawObject() {
         // since there is only one instance of a given enum object constant
         // we return the only instance. we don't touch the fields of the
@@ -83,13 +77,12 @@ public class WrappedEnumConstant extends WrappedObject {
     }
 
     @Override
-    protected boolean strictlyImmutableAtCursor() {
+    protected boolean staticAtCursor() {
         final Field field = this.fieldAtCursor;
-        if (strictlyImmutable(field)) {
+        if (Modifier.isStatic(field.getModifiers())) {
             return true;
         }
-        return field.getDeclaringClass() == Enum.class
-                && field.getName().matches("name|ordinal");
+        return field.getDeclaringClass() == Enum.class && field.getName().matches("name|ordinal");
     }
 
     @Override
@@ -115,13 +108,5 @@ public class WrappedEnumConstant extends WrappedObject {
     @Override
     public int hashCode() {
         return this.name.hashCode();
-    }
-
-    @Override
-    protected boolean coreTypeCheck(Object core) {
-        if (core instanceof Enum<?>) {
-            return core.getClass() == this.type && ((Enum<?>) core).name().equals(this.name);
-        }
-        return false;
     }
 }

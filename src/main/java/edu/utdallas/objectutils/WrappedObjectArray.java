@@ -55,13 +55,8 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     }
 
     @Override
-    protected boolean strictlyImmutableAtCursor() {
+    protected boolean staticAtCursor() {
         return false;
-    }
-
-    @Override
-    protected boolean shouldMutateAtCursor(ModificationPredicate mutateStatics) {
-        return true;
     }
 
     @Override
@@ -77,15 +72,5 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     @Override
     public String print() {
         return ObjectPrinter.print(this);
-    }
-
-    @Override
-    protected boolean coreTypeCheck(Object core) {
-        if (core == null) {
-            return false;
-        }
-        final Class<?> coreClass = core.getClass();
-        return coreClass.isArray() && coreClass.getComponentType() == this.type
-                && Array.getLength(core) == this.values.length;
     }
 }

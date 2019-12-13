@@ -23,7 +23,6 @@ package edu.utdallas.objectutils;
 import edu.utdallas.objectutils.utils.W;
 import org.apache.commons.lang3.mutable.MutableLong;
 
-import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
@@ -31,6 +30,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -130,7 +130,7 @@ public final class ObjectUtils {
             }
         } else {
             for (final Field field : getAllFieldsList(clazz)) {
-                if (strictlyImmutable(field) || !inclusionPredicate.test(field)) {
+                if (Modifier.isStatic(field.getModifiers()) || !inclusionPredicate.test(field)) {
                     continue;
                 }
                 final W wFieldValue = W.of(readField(field, object, true));
@@ -149,7 +149,7 @@ public final class ObjectUtils {
 		final Class<?> clazz = src.getClass();
 		final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
-            if (strictlyImmutable(field)) {
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
             final Object fieldValue = readField(field, src, true);

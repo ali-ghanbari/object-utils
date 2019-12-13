@@ -31,8 +31,7 @@ import java.io.Serializable;
 public interface Wrapped extends Serializable {
     /**
      * Reifies wrapped object without altering any static fields.
-     * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
-     * <b>Note 2:</b> those fields that are not included in the wrapped object shall be left with their default values.
+     * <b>Note:</b> those fields that are not included in the wrapped object shall be left with their default values.
      *
      * @param <T> Type to be instantiated (JDK 1.8+ can infer this type).
      * @return Reified object
@@ -40,12 +39,9 @@ public interface Wrapped extends Serializable {
      */
     <T> T unwrap() throws Exception;
 
-    <T> T unwrap(ModificationPredicate shouldMutate) throws Exception;
-
     /**
      * Reifies a wrapped object without altering any static fields.
-     * <b>Note 1:</b> <code>static final</code> fields are ignored anyway.
-     * <b>Note 2:</b> those fields that are excluded from the wrapped object shall be left with their current values.
+     * <b>Note:</b> those fields that are excluded from the wrapped object shall be left with their current values.
      *
      * @param template The target object whose field value will be updated according to data present in the wrapped
      *                 object.
@@ -55,19 +51,7 @@ public interface Wrapped extends Serializable {
      */
     <T> T unwrap(Object template) throws Exception;
 
-    <T> T unwrap(Object template, ModificationPredicate shouldMutate) throws Exception;
-
     int getAddress();
-
-    /**
-     * Check if the object wrapped by <code>this</code> is equal to the argument
-     * @param core the object to be compared
-     * @return <code>true</code> iff <code>core</code> is equal to the object wrapped by <code>this</code>.
-     * @deprecated It is preferable not to use this feature as it is not well tested. We stopped using this
-     * method once we found a faster alternative using our high-resolution hash code computation {@link ObjectUtils}.
-     */
-    @Deprecated
-    boolean coreEquals(Object core);
 
     String print();
 }

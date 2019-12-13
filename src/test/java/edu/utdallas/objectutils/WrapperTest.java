@@ -20,19 +20,37 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import edu.utdallas.objectutils.shallow.ShallowWrapped;
-import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.security.Key;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
-import static edu.utdallas.objectutils.ModificationPredicate.YES;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ali Ghanbari
@@ -43,7 +61,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapBoolean(true);
         assertTrue((Boolean) wrapped.unwrap());
         wrapped = Wrapper.wrapBoolean(false);
-        assertFalse((Boolean) wrapped.unwrap(YES));
+        assertFalse((Boolean) wrapped.unwrap());
     }
 
     @Test
@@ -51,7 +69,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapByte((byte) 10);
         assertEquals(10, ((Byte) wrapped.unwrap()).intValue());
         wrapped = Wrapper.wrapByte((byte) 20);
-        assertEquals(20, ((Byte) wrapped.unwrap(YES)).intValue());
+        assertEquals(20, ((Byte) wrapped.unwrap()).intValue());
     }
 
     @Test
@@ -59,7 +77,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapChar('a');
         assertEquals((int) 'a', ((Character) wrapped.unwrap()).charValue());
         wrapped = Wrapper.wrapChar('b');
-        assertEquals((int) 'b', ((Character) wrapped.unwrap(YES)).charValue());
+        assertEquals((int) 'b', ((Character) wrapped.unwrap()).charValue());
     }
 
     @Test
@@ -67,7 +85,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapDouble(10.D);
         assertEquals(10.D, (Double) wrapped.unwrap(), 0.0001D);
         wrapped = Wrapper.wrapDouble(11.D);
-        assertEquals(11.D, (Double) wrapped.unwrap(YES), 0.0001D);
+        assertEquals(11.D, (Double) wrapped.unwrap(), 0.0001D);
     }
 
     @Test
@@ -75,7 +93,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapFloat(10.F);
         assertEquals(10.F, (Float) wrapped.unwrap(), 0.0001F);
         wrapped = Wrapper.wrapFloat(11.F);
-        assertEquals(11.F, (Float) wrapped.unwrap(YES), 0.0001F);
+        assertEquals(11.F, (Float) wrapped.unwrap(), 0.0001F);
     }
 
     @Test
@@ -83,7 +101,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapInt(10);
         assertEquals(10, ((Integer) wrapped.unwrap()).intValue());
         wrapped = Wrapper.wrapInt(20);
-        assertEquals(20, ((Integer) wrapped.unwrap(YES)).intValue());
+        assertEquals(20, ((Integer) wrapped.unwrap()).intValue());
     }
 
     @Test
@@ -91,7 +109,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapLong(10L);
         assertEquals(10L, ((Long) wrapped.unwrap()).longValue());
         wrapped = Wrapper.wrapLong(20L);
-        assertEquals(20L, ((Long) wrapped.unwrap(YES)).longValue());
+        assertEquals(20L, ((Long) wrapped.unwrap()).longValue());
     }
 
     @Test
@@ -99,7 +117,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapShort((short) 10);
         assertEquals(10, ((Short) wrapped.unwrap()).shortValue());
         wrapped = Wrapper.wrapShort((short) 20);
-        assertEquals(20, ((Short) wrapped.unwrap(YES)).shortValue());
+        assertEquals(20, ((Short) wrapped.unwrap()).shortValue());
     }
 
     @Test
@@ -107,7 +125,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapString("hello");
         assertEquals("hello", wrapped.unwrap());
         wrapped = Wrapper.wrapString("world");
-        assertEquals("world", wrapped.unwrap(YES));
+        assertEquals("world", wrapped.unwrap());
     }
 
     private static class A {
@@ -195,7 +213,7 @@ public class WrapperTest {
         assertEquals("HELLO!", bPrime.getExternalField());
         this.myExternalField = "WORLD!";
         wrapped = Wrapper.wrapObject(b);
-        final B bDoublePrime = wrapped.unwrap(YES);
+        final B bDoublePrime = wrapped.unwrap();
         checkRep(b);
         checkRep(bPrime);
         checkRep(bDoublePrime);
@@ -361,7 +379,7 @@ public class WrapperTest {
         Wrapped wrapped = Wrapper.wrapObject(ill);
         IntLinkedList ill2 = wrapped.unwrap();
         assertEquals("[-1,0,1]", ill2.toString());
-        IntLinkedList ill3 = wrapped.unwrap(YES);
+        IntLinkedList ill3 = wrapped.unwrap();
         assertEquals("[-1,0,1]", ill3.toString());
     }
 
@@ -415,7 +433,7 @@ public class WrapperTest {
         Cyclic cyclic2 = wrapped.unwrap();
         assertEquals(cyclic.toString(), cyclic2.toString());
         assertEquals("11,10,11", cyclic2.toString());
-        cyclic2 = wrapped.unwrap(YES);
+        cyclic2 = wrapped.unwrap();
         assertEquals(cyclic.toString(), cyclic2.toString());
         assertEquals("11,10,11", cyclic2.toString());
     }
@@ -1207,33 +1225,6 @@ public class WrapperTest {
         assertSame(((ClazzTestClass) w.unwrap()).c1, String.class);
     }
 
-    @Test
-    public void testShallowWrapping1() throws Exception {
-        final double[] darr1 = {1.2D, 2.3D, 0.23D};
-        final Wrapped wrapped = Wrapper.wrapObject(darr1);
-        final ShallowWrapped shallow = ShallowWrapped.of(darr1);
-        assertEquals(wrapped.hashCode(), shallow.hashCode());
-        assertTrue(wrapped.coreEquals(darr1));
-        assertFalse(wrapped.coreEquals(new double[] {1.2D, 3.3D, 0.23D}));
-    }
-
-    @Test
-    public void testShallowWrapping2() throws Exception {
-        final double[][] darr2D = {
-                {1.2D, 2.3D, 0.23D},
-                {1.2D, 3.3D, 0.23D}
-        };
-        final Wrapped wrapped = Wrapper.wrapObject(darr2D);
-        final ShallowWrapped shallow = ShallowWrapped.of(darr2D);
-        assertEquals(wrapped.hashCode(), shallow.hashCode());
-        assertTrue(wrapped.coreEquals(darr2D));
-        darr2D[0][0] = 10;
-        assertFalse(wrapped.coreEquals(darr2D));
-        final Wrapped wrapped2 = Wrapper.wrapObject(darr2D);
-        assertTrue(wrapped2.coreEquals(darr2D));
-        assertNotEquals(wrapped, wrapped2);
-    }
-
     private class ShallowClassTest {
         private final double[][] darr2D = {
                 {1.2D, 2.3D, 0.23D},
@@ -1242,18 +1233,6 @@ public class WrapperTest {
         private final int[] iarr = {1, 2, 3};
         private final Object[] oarr = new Object[] {this, darr2D, null, iarr, "hello"};
         private final Class<?> cf = oarr.getClass();
-    }
-
-    @Test
-    public void testShallowWrapping3() throws Exception {
-        final ShallowClassTest obj = new ShallowClassTest();
-        final Wrapped wrapped = Wrapper.wrapObject(obj);
-        final ShallowWrapped shallowWrapped = ShallowWrapped.of(obj);
-        assertEquals(wrapped.hashCode(), shallowWrapped.hashCode());
-        assertTrue(wrapped.coreEquals(obj));
-        obj.iarr[1] = 10;
-        assertFalse(wrapped.coreEquals(obj));
-        assertEquals(wrapped.hashCode(), shallowWrapped.hashCode());
     }
 
     private static class ClassA {
@@ -1304,100 +1283,6 @@ public class WrapperTest {
             result = 31 * result + Arrays.hashCode(wrappedArray);
             return result;
         }
-    }
-
-    private static class ShallowClassA {
-        private final ShallowWrapped wrappedArray;
-        private final ShallowClassB classB;
-
-        public ShallowClassA(ShallowWrapped wrappedArray, ShallowClassB classB) {
-            this.wrappedArray = wrappedArray;
-            this.classB = classB;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof ClassA)) {
-                return false;
-            }
-            final ClassA that = (ClassA) o;
-            if (!this.classB.equals(that.classB)) {
-                return false;
-            }
-            return that.wrappedArray.coreEquals(this.wrappedArray.getCore());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(wrappedArray, classB);
-        }
-    }
-
-    private static class ShallowClassB {
-        private final String[] names;
-        private final ShallowWrapped[] wrappedArray;
-
-        public ShallowClassB(String[] names, ShallowWrapped[] wrappedArray) {
-            this.names = names;
-            this.wrappedArray = wrappedArray;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof ClassB)) {
-                return false;
-            }
-            final ClassB that = (ClassB) o;
-            if (!Arrays.equals(names, that.names)) {
-                return false;
-            }
-            final Wrapped[] wrappedValues = that.wrappedArray;
-            final ShallowWrapped[] shallowWrappedValues = this.wrappedArray;
-            final int iMax = this.names.length;
-            for (int i = 0; i < iMax; i++) {
-                if (!wrappedValues[i].coreEquals(shallowWrappedValues[i].getCore())) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = Arrays.hashCode(names);
-            result = 31 * result + Arrays.hashCode(wrappedArray);
-            return result;
-        }
-    }
-
-    @Test
-    public void testShallowWrapping4() throws Exception {
-        final String[] names = new String[] {"f1", "f2"};
-        final Object[] f1Val = new Object[]{"hello", 10, true};
-        final Object[] f2Val = new Object[]{"world", 11};
-        final ClassB classB = new ClassB(names, new Wrapped[] {
-                Wrapper.wrapObject(f1Val),
-                Wrapper.wrapObject(f2Val),
-        });
-        final Object[] pVals = new Object[]{"hi", "bye!"};
-        final ClassA classA = new ClassA(Wrapper.wrapObject(pVals), classB);
-        final ShallowClassB shallowClassB = new ShallowClassB(names, new ShallowWrapped[] {
-                ShallowWrapped.of(f1Val),
-                ShallowWrapped.of(f2Val)
-        });
-        final ShallowClassA shallowClassA = new ShallowClassA(ShallowWrapped.of(pVals), shallowClassB);
-        assertEquals(shallowClassB.hashCode(), classB.hashCode());
-        assertEquals(classA.hashCode(), shallowClassA.hashCode());
-        assertEquals(shallowClassA, classA);
-        final Map<ClassA, String> map = new HashMap<>();
-        map.put(classA, "hello");
-        assertNotNull(map.get(shallowClassA));
-    }
-
-    @Test
-    public void testShallowWrapping5() throws Exception {
-        final Wrapped wrapped = Wrapper.wrapObject(1);
-        assertEquals(wrapped.hashCode(), ShallowWrapped.of(1).hashCode());
     }
 
     private enum MyEnum {

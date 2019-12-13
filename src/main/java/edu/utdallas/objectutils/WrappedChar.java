@@ -53,11 +53,6 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Character && (this.value == (Character) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedChar implements Wrapped {
     }
 
     @Override
-    public Character unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Character unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Character unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

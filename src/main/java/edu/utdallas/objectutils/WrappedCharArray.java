@@ -51,30 +51,15 @@ public class WrappedCharArray extends AbstractWrappedBasicArray<Character[]> {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Character[] && Arrays.equals((Character[]) core, this.value);
-    }
-
-    @Override
     public Character[] unwrap() throws Exception {
         return this.value.clone();
     }
 
     @Override
-    public Character[] unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
-    }
-
-    @Override
     public Character[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Character[]) template;
-    }
-
-    @Override
-    public Character[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Character[]) template;
+        final Character[] dest = (Character[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 
     @Override

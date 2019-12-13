@@ -51,30 +51,15 @@ public class WrappedPrimitiveBooleanArray extends AbstractWrappedBasicArray<bool
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof boolean[] && Arrays.equals((boolean[]) core, this.value);
-    }
-
-    @Override
     public boolean[] unwrap() throws Exception {
         return this.value.clone();
     }
 
     @Override
-    public boolean[] unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
-    }
-
-    @Override
     public boolean[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (boolean[]) template;
-    }
-
-    @Override
-    public boolean[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (boolean[]) template;
+        final boolean[] dest = (boolean[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 
     @Override

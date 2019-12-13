@@ -53,11 +53,6 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Boolean && (this.value == (Boolean) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedBoolean implements Wrapped {
     }
 
     @Override
-    public Boolean unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Boolean unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Boolean unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

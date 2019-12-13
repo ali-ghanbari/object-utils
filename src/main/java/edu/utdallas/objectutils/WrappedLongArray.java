@@ -51,30 +51,15 @@ public class WrappedLongArray extends AbstractWrappedBasicArray<Long[]> {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Long[] && Arrays.equals((Long[]) core, this.value);
-    }
-
-    @Override
     public Long[] unwrap() throws Exception {
         return this.value.clone();
     }
 
     @Override
-    public Long[] unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
-    }
-
-    @Override
     public Long[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Long[]) template;
-    }
-
-    @Override
-    public Long[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Long[]) template;
+        final Long[] dest = (Long[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 
     @Override

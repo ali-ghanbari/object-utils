@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import static edu.utdallas.objectutils.ModificationPredicate.NO;
-
 /**
  * Base class for object arrays and proper objects.
  * These objects are composite in a sense they have elements/fields that
@@ -87,24 +85,14 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     @Override
     public Object unwrap() throws Exception {
-        return unwrap(NO);
-    }
-
-    @Override
-    public Object unwrap(ModificationPredicate shouldMutate) throws Exception {
         final Object rawObject = createRawObject();
-        return unwrap(rawObject, shouldMutate);
+        return unwrap(rawObject);
     }
 
     @Override
     public Object unwrap(Object template) throws Exception {
-        return unwrap(template, NO);
-    }
-
-    @Override
-    public Object unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         UNWRAPPED_OBJECTS.clear();
-        return unwrap0(template, shouldMutate);
+        return unwrap0(template);
     }
 
     protected abstract Object createRawObject();
@@ -113,16 +101,13 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     protected abstract void advanceCursor();
 
-    protected abstract boolean strictlyImmutableAtCursor();
-
-    protected abstract boolean shouldMutateAtCursor(ModificationPredicate mutateStatics);
+    protected abstract boolean staticAtCursor(); // arrays always return false
 
     protected abstract void setAtCursor(Object rawObject, Object value) throws Exception;
 
     protected abstract Object getAtCursor(Object rawObject) throws Exception;
 
-    private Object unwrap0(final Object template,
-                           final ModificationPredicate shouldMutate) throws Exception {
+    private Object unwrap0(final Object template) throws Exception {
         // we always need a genuine template object
         if (template == null) {
             throw new IllegalArgumentException("Template object cannot be null!");
@@ -131,7 +116,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
             advanceCursor();
-            while (strictlyImmutableAtCursor()) {
+            while (staticAtCursor()) {
                 advanceCursor();
             }
             // we ignore some fields based on what the client has requested.
@@ -143,41 +128,39 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
             if (wrappedValue == null) {
                 continue;
             }
-            if (shouldMutateAtCursor(shouldMutate)) {
-                final Object value;
-                if (wrappedValue instanceof AbstractWrappedReference) {
-                    final AbstractWrappedReference wrappedReference =
-                            (AbstractWrappedReference) wrappedValue;
-                    final Object targetObject = UNWRAPPED_OBJECTS.get(wrappedReference.address);
-                    if (targetObject != null) { // reusable object?
-                        value = targetObject;
-                    } else if (wrappedReference instanceof AbstractWrappedCompositeObject) {
-                        final AbstractWrappedCompositeObject compositeObject =
-                                (AbstractWrappedCompositeObject) wrappedReference;
-                        Object originalObject = getAtCursor(template);
-                        // assert wrapped value does not represent null value
-                        if (originalObject == null) {
-                            originalObject = compositeObject.createRawObject();
-                        } else if (originalObject.getClass() != compositeObject.type) {
-                            // should we change the type of object?
-                            originalObject = compositeObject.createRawObject();
-                        }
-                        value = compositeObject.unwrap0(originalObject, shouldMutate);
-                    } else { // basic-typed array
-                        Object originalObject = getAtCursor(template);
-                        if (originalObject == null) {
-                            value = wrappedReference.unwrap(shouldMutate);
-                        } else {
-                            value = wrappedReference.unwrap(originalObject, shouldMutate);
-                        }
+            final Object value;
+            if (wrappedValue instanceof AbstractWrappedReference) {
+                final AbstractWrappedReference wrappedReference =
+                        (AbstractWrappedReference) wrappedValue;
+                final Object targetObject = UNWRAPPED_OBJECTS.get(wrappedReference.address);
+                if (targetObject != null) { // reusable object?
+                    value = targetObject;
+                } else if (wrappedReference instanceof AbstractWrappedCompositeObject) {
+                    final AbstractWrappedCompositeObject compositeObject =
+                            (AbstractWrappedCompositeObject) wrappedReference;
+                    Object originalObject = getAtCursor(template);
+                    // assert wrapped value does not represent null value
+                    if (originalObject == null) {
+                        originalObject = compositeObject.createRawObject();
+                    } else if (originalObject.getClass() != compositeObject.type) {
+                        // should we change the type of object?
+                        originalObject = compositeObject.createRawObject();
                     }
-                    UNWRAPPED_OBJECTS.put(wrappedReference.address, value);
-                } else {
-                    // if the wrapped value represents null or a primitive-typed object
-                    value = wrappedValue.unwrap(shouldMutate);
+                    value = compositeObject.unwrap0(originalObject);
+                } else { // basic-typed array
+                    Object originalObject = getAtCursor(template);
+                    if (originalObject == null) {
+                        value = wrappedReference.unwrap();
+                    } else {
+                        value = wrappedReference.unwrap(originalObject);
+                    }
                 }
-                setAtCursor(template, value);
+                UNWRAPPED_OBJECTS.put(wrappedReference.address, value);
+            } else {
+                // if the wrapped value represents null or a primitive-typed object
+                value = wrappedValue.unwrap();
             }
+            setAtCursor(template, value);
         }
         return template;
     }
@@ -241,62 +224,6 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                     workList2.offer(values2[i]);
                 }
             } else if (!node1.equals(node2)) {
-                return false;
-            }
-        }
-        return workList2.isEmpty();
-    }
-
-    // checks if the type of "core" matches the type of the wrapped object or the
-    // the type of elements of the wrapped array
-    protected abstract boolean coreTypeCheck(Object core);
-
-    @Override
-    public boolean coreEquals(final Object core) {
-        if (core == null) {
-            return false;
-        }
-        final Queue<Wrapped> workList1 = new LinkedList<>();
-        final Queue<Object> workList2 = new LinkedList<>();
-        final Set<Integer> visitedNodes = new HashSet<>();
-        workList1.offer(this);
-        workList2.offer(core);
-        while (!workList1.isEmpty()) {
-            final Wrapped node1 = workList1.poll();
-            final Object node2 = workList2.poll();
-            if (node1 == null) {
-                // the field in wrapped object is ignored, so we ignore the
-                // corresponding field in the provided core object
-                continue;
-            }
-            if (node1 instanceof AbstractWrappedCompositeObject) {
-                final AbstractWrappedCompositeObject wrappedObject =
-                        ((AbstractWrappedCompositeObject) node1);
-                if (node2 == null || !wrappedObject.coreTypeCheck(node2)) {
-                    return false;
-                }
-                visitedNodes.add(wrappedObject.getAddress());
-                final Wrapped[] wrappedValues = wrappedObject.getValues();
-                wrappedObject.resetCursor();
-                try {
-                    for (final Wrapped wrappedValue : wrappedValues) {
-                        wrappedObject.advanceCursor();
-                        while (wrappedObject.strictlyImmutableAtCursor()) {
-                            wrappedObject.advanceCursor();
-                        }
-                        final Object value = wrappedObject.getAtCursor(node2);
-                        if (wrappedValue instanceof AbstractWrappedCompositeObject) {
-                            if (visitedNodes.contains(wrappedValue.getAddress())) {
-                                continue;
-                            }
-                        }
-                        workList1.offer(wrappedValue);
-                        workList2.offer(value);
-                    }
-                } catch (Exception e) {
-                    return false;
-                }
-            } else if (!node1.coreEquals(node2)) {
                 return false;
             }
         }

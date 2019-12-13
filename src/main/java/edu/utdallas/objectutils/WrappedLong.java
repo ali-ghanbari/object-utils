@@ -53,11 +53,6 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Long && (this.value == (Long) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedLong implements Wrapped {
     }
 
     @Override
-    public Long unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Long unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Long unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

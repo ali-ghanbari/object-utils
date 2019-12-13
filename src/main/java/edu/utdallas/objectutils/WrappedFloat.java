@@ -53,11 +53,6 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Float && (this.value == (Float) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedFloat implements Wrapped {
     }
 
     @Override
-    public Float unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Float unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Float unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

@@ -25,12 +25,12 @@ import edu.utdallas.objectutils.utils.W;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 
@@ -203,6 +203,7 @@ public final class Wrapper {
         return wrappedObject;
     }
 
+
     private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz,
                                                         final Object object,
                                                         final InclusionPredicate inclusionPredicate)
@@ -210,7 +211,8 @@ public final class Wrapper {
         Wrapped[] wrappedFieldValues = EMPTY_WRAPPED_ARRAY;
         final List<Field> fields = getAllFieldsList(clazz);
         for (final Field field : fields) {
-            if (strictlyImmutable(field)) {
+            // we only care about instance fields, as we are wrapping an *object*
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
             if (field.getDeclaringClass() == Enum.class && field.getName().matches("name|ordinal")) {

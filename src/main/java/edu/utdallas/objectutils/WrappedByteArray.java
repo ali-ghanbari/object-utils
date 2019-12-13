@@ -51,30 +51,15 @@ public class WrappedByteArray extends AbstractWrappedBasicArray<Byte[]> {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Byte[] && Arrays.equals((Byte[]) core, this.value);
-    }
-
-    @Override
     public Byte[] unwrap() throws Exception {
         return this.value.clone();
     }
 
     @Override
-    public Byte[] unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
-    }
-
-    @Override
     public Byte[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Byte[]) template;
-    }
-
-    @Override
-    public Byte[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Byte[]) template;
+        final Byte[] dest = (Byte[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 
     @Override

@@ -20,8 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.util.Objects;
-
 /**
  * A wrapped <code>double</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
@@ -57,11 +55,6 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Double && (this.value == (Double) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -72,17 +65,7 @@ public class WrappedDouble implements Wrapped {
     }
 
     @Override
-    public Double unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Double unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Double unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

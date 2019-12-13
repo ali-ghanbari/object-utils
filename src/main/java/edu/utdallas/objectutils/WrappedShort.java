@@ -53,11 +53,6 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Short && (this.value == (Short) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedShort implements Wrapped {
     }
 
     @Override
-    public Short unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Short unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Short unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

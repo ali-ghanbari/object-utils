@@ -53,11 +53,6 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Byte && (this.value == (Byte) core);
-    }
-
-    @Override
     public String print() {
         return String.valueOf(this.value);
     }
@@ -68,17 +63,7 @@ public class WrappedByte implements Wrapped {
     }
 
     @Override
-    public Byte unwrap(final ModificationPredicate shouldMutate) {
-        return this.value;
-    }
-
-    @Override
     public Byte unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Byte unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 

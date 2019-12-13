@@ -51,11 +51,6 @@ public class WrappedPrimitiveDoubleArray extends AbstractWrappedBasicArray<doubl
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof double[] && Arrays.equals((double[]) core, this.value);
-    }
-
-    @Override
     public String print() {
         return Arrays.toString(this.value);
     }
@@ -66,19 +61,9 @@ public class WrappedPrimitiveDoubleArray extends AbstractWrappedBasicArray<doubl
     }
 
     @Override
-    public double[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value.clone();
-    }
-
-    @Override
     public double[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (double[]) template;
-    }
-
-    @Override
-    public double[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (double[]) template;
+        final double[] dest = (double[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 }

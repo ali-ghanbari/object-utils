@@ -57,17 +57,7 @@ public class WrappedClassConstant implements Wrapped {
     }
 
     @Override
-    public Class<?> unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value;
-    }
-
-    @Override
     public Class<?> unwrap(Object template) throws Exception {
-        return this.value;
-    }
-
-    @Override
-    public Class<?> unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return this.value;
     }
 
@@ -79,10 +69,5 @@ public class WrappedClassConstant implements Wrapped {
     @Override
     public String print() {
         return String.format("Class<%s>", this.value.getName());
-    }
-
-    @Override
-    public boolean coreEquals(Object core) {
-        return core != null && core == this.value;
     }
 }

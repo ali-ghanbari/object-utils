@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
-import static edu.utdallas.objectutils.Commons.strictlyImmutable;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
@@ -66,14 +65,8 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     }
 
     @Override
-    protected boolean strictlyImmutableAtCursor() {
-        return strictlyImmutable(this.fieldAtCursor);
-    }
-
-    @Override
-    protected boolean shouldMutateAtCursor(ModificationPredicate mutateStatics) {
-        final Field field = this.fieldAtCursor;
-        return !Modifier.isStatic(field.getModifiers()) || mutateStatics.test(field);
+    protected boolean staticAtCursor() {
+        return Modifier.isStatic(this.fieldAtCursor.getModifiers());
     }
 
     @Override
@@ -90,10 +83,4 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     public String print() {
         return ObjectPrinter.print(this);
     }
-
-    @Override
-    protected boolean coreTypeCheck(Object core) {
-        return core != null && core.getClass() == this.type;
-    }
-
 }

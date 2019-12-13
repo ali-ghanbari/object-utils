@@ -34,17 +34,7 @@ public enum WrappedNull implements Wrapped {
     }
 
     @Override
-    public <T> T unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return null;
-    }
-
-    @Override
     public <T> T unwrap(Object template) throws Exception {
-        return null;
-    }
-
-    @Override
-    public <T> T unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
         return null;
     }
 
@@ -52,12 +42,6 @@ public enum WrappedNull implements Wrapped {
     public int getAddress() {
         return 0;
     }
-
-    @Override
-    public boolean coreEquals(Object core) {
-        return core == null;
-    }
-
 
     @Override
     public String print() {

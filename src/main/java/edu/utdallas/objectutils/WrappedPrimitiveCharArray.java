@@ -51,11 +51,6 @@ public class WrappedPrimitiveCharArray extends AbstractWrappedBasicArray<char[]>
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof char[] && Arrays.equals((char[]) core, this.value);
-    }
-
-    @Override
     public String print() {
         return Arrays.toString(this.value);
     }
@@ -66,19 +61,9 @@ public class WrappedPrimitiveCharArray extends AbstractWrappedBasicArray<char[]>
     }
 
     @Override
-    public char[] unwrap(ModificationPredicate shouldMutate) {
-        return this.value.clone();
-    }
-
-    @Override
     public char[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (char[]) template;
-    }
-
-    @Override
-    public char[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (char[]) template;
+        final char[] dest = (char[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 }

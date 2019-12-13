@@ -51,30 +51,15 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
     }
 
     @Override
-    public boolean coreEquals(Object core) {
-        return core instanceof Float[] && Arrays.equals((Float[]) core, this.value);
-    }
-
-    @Override
     public Float[] unwrap() throws Exception {
         return this.value.clone();
     }
 
     @Override
-    public Float[] unwrap(ModificationPredicate shouldMutate) throws Exception {
-        return this.value.clone();
-    }
-
-    @Override
     public Float[] unwrap(Object template) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Float[]) template;
-    }
-
-    @Override
-    public Float[] unwrap(Object template, ModificationPredicate shouldMutate) throws Exception {
-        System.arraycopy(this.value, 0, template, 0, this.value.length);
-        return (Float[]) template;
+        final Float[] dest = (Float[]) template;
+        System.arraycopy(this.value, 0, dest, 0, this.value.length);
+        return dest;
     }
 
     @Override
