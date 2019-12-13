@@ -103,7 +103,7 @@ public final class ObjectUtils {
                                      final Map<W, MutableLong> visited) throws Exception {
         final Object object = hashMapSafeObject.getCore();
         if (object == null) {
-            return 0;
+            return 0L;
         }
         final Class<?> clazz = object.getClass();
         if (isWrapperType(clazz) || object instanceof String) {
@@ -118,15 +118,15 @@ public final class ObjectUtils {
         if (result != null) { // return the already computed hash code, if there is any
             return result.longValue();
         }
-        result = new MutableLong(0);
+        result = new MutableLong(0L);
         visited.put(hashMapSafeObject, result);
         // the order of array elements and fields should not matter
-        long inner = 0;
+        long inner = 0L;
         if (clazz.isArray()) {
             final int len = Array.getLength(object);
             for (int i = 0; i < len; i++) {
                 final W wElement = W.of(Array.get(object, i));
-                inner += deepHashCode(wElement, inclusionPredicate, visited);
+                inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
             }
         } else {
             for (final Field field : getAllFieldsList(clazz)) {
@@ -134,10 +134,10 @@ public final class ObjectUtils {
                     continue;
                 }
                 final W wFieldValue = W.of(readField(field, object, true));
-                inner += deepHashCode(wFieldValue, inclusionPredicate, visited);
+                inner = inner * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited);
             }
         }
-        result.setValue(clazz.getName().hashCode() + inner);
+        result.setValue(clazz.getName().hashCode() * 31L + inner);
         return result.longValue();
     }
 
