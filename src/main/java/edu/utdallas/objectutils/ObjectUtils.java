@@ -120,7 +120,6 @@ public final class ObjectUtils {
         }
         result = new MutableLong(0L);
         visited.put(hashMapSafeObject, result);
-        // the order of array elements and fields should not matter
         long inner = 0L;
         if (clazz.isArray()) {
             final int len = Array.getLength(object);
