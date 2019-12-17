@@ -41,17 +41,17 @@ public class ObjectUtilsTest {
 	private static class Person {
 		protected final String name;
 		protected final String surname;
-		
+
 		public Person(String name, String surname) {
 			this.name = name;
 			this.surname = surname;
 		}
 	}
-	
+
 	private static class Student extends Person {
 		private static int count = 0;
 		private double GPA;
-		
+
 		public Student(String name, String surname, double GPA) {
 			super(name, surname);
 			this.GPA = GPA;
@@ -62,7 +62,7 @@ public class ObjectUtilsTest {
 			return "Student [GPA=" + GPA + ", name=" + name + ", surname=" + surname + "]";
 		}
 	}
-	
+
 	@Test
 	public void testShallowCopy1() {
 		final Student s1 = new Student("a", "b", 3.D);
@@ -230,7 +230,8 @@ public class ObjectUtilsTest {
 			}
 		}
 		assertNotEquals(Wrapper.wrapObject(l1), Wrapper.wrapObject(l2));
-		assertNotEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
+		// we not directly compute hash code of elements
+		assertEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
 		final List<String> l3 = new LinkedList<>();
 		l3.add("1");
 		l3.add("2");
@@ -246,8 +247,10 @@ public class ObjectUtilsTest {
 	public void testDeepHashCodeCompositeObject3() throws Exception {
 		final Object[] objects1 = new Object[2];
 		final Object[] objects2 = new Object[2];
-		objects1[0] = objects2; objects1[1] = 1;
-		objects2[0] = objects1; objects2[1] = 1;
+		objects1[0] = objects2;
+		objects1[1] = 1;
+		objects2[0] = objects1;
+		objects2[1] = 1;
 		//  +------>(1)
 		//  |        |      Are they equal?! Yes, I guess!
 		// (1)<------+
@@ -279,7 +282,6 @@ public class ObjectUtilsTest {
 		strings2.add("sure?!");
 		for (int __ = 0; __ < 1000; __++) {
 			assertEquals(strings.hashCode(), strings2.hashCode());
-//			System.out.printf("<%d, %d>%n", ObjectUtils.deepHashCode(strings), ObjectUtils.deepHashCode(strings2));
 			assertEquals(ObjectUtils.deepHashCode(strings), ObjectUtils.deepHashCode(strings2));
 		}
 	}

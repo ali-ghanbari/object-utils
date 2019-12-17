@@ -101,17 +101,17 @@ public final class ObjectUtils {
     private static long deepHashCode(final W hashMapSafeObject,
                                      final InclusionPredicate inclusionPredicate,
                                      final Map<W, MutableLong> visited) throws Exception {
-        final Object object = hashMapSafeObject.getCore();
-        if (object == null) {
+        final Object core = hashMapSafeObject.getCore();
+        if (core == null) {
             return 0L;
         }
-        final Class<?> clazz = object.getClass();
-        if (isWrapperType(clazz) || object instanceof String) {
-            return object.hashCode();
-        } else if (object instanceof Class) {
-            return ((Class<?>) object).getName().hashCode();
+        final Class<?> clazz = core.getClass();
+        if (isWrapperType(clazz) || core instanceof String) {
+            return core.hashCode();
+        } else if (core instanceof Class) {
+            return ((Class<?>) core).getName().hashCode();
         } else if (clazz.isEnum()) {
-            return ((Enum<?>) object).name().hashCode();
+            return ((Enum<?>) core).name().hashCode();
         }
         // composite object
         MutableLong result = visited.get(hashMapSafeObject);
@@ -122,17 +122,27 @@ public final class ObjectUtils {
         visited.put(hashMapSafeObject, result);
         long inner = 0L;
         if (clazz.isArray()) {
-            final int len = Array.getLength(object);
+            final int len = Array.getLength(core);
             for (int i = 0; i < len; i++) {
-                final W wElement = W.of(Array.get(object, i));
+                final W wElement = W.of(Array.get(core, i));
                 inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
+            }
+        } else if (core instanceof Iterable) {
+            // this is to take into account cases wherein the core object is a
+            // data structure whose structure changes non-deterministically from
+            // one execution to another. note that here we do not care about the
+            // order of elements in the collection as the iteration could be
+            // unpredictable.
+            for (final Object element : (Iterable<?>) core) {
+                final W wElement = W.of(element);
+                inner += deepHashCode(wElement, inclusionPredicate, visited);
             }
         } else {
             for (final Field field : getAllFieldsList(clazz)) {
                 if (Modifier.isStatic(field.getModifiers()) || !inclusionPredicate.test(field)) {
                     continue;
                 }
-                final W wFieldValue = W.of(readField(field, object, true));
+                final W wFieldValue = W.of(readField(field, core, true));
                 inner = inner * 31L + deepHashCode(wFieldValue, inclusionPredicate, visited);
             }
         }
