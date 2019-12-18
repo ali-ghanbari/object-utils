@@ -230,8 +230,7 @@ public class ObjectUtilsTest {
 			}
 		}
 		assertNotEquals(Wrapper.wrapObject(l1), Wrapper.wrapObject(l2));
-		// we not directly compute hash code of elements
-		assertEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
+		assertNotEquals(ObjectUtils.deepHashCode(l1), ObjectUtils.deepHashCode(l2));
 		final List<String> l3 = new LinkedList<>();
 		l3.add("1");
 		l3.add("2");

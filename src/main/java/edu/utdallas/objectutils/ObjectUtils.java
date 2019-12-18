@@ -127,16 +127,6 @@ public final class ObjectUtils {
                 final W wElement = W.of(Array.get(core, i));
                 inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
             }
-        } else if (core instanceof Iterable) {
-            // this is to take into account cases wherein the core object is a
-            // data structure whose structure changes non-deterministically from
-            // one execution to another. note that here we do not care about the
-            // order of elements in the collection as the iteration could be
-            // unpredictable.
-            for (final Object element : (Iterable<?>) core) {
-                final W wElement = W.of(element);
-                inner += deepHashCode(wElement, inclusionPredicate, visited);
-            }
         } else {
             for (final Field field : getAllFieldsList(clazz)) {
                 if (Modifier.isStatic(field.getModifiers()) || !inclusionPredicate.test(field)) {
