@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.utils.OnDemandClass;
+
 /**
  * A wrapped <code>Class</code> constant whose hash code does not depend on JVM session.
  *
@@ -28,10 +30,10 @@ package edu.utdallas.objectutils;
 public class WrappedClassConstant implements Wrapped {
     private static final long serialVersionUID = 1L;
 
-    private final Class<?> value;
+    private final OnDemandClass value;
 
     public WrappedClassConstant(Class<?> value) {
-        this.value = value;
+        this.value = OnDemandClass.of(value);
     }
 
     @Override
@@ -43,22 +45,22 @@ public class WrappedClassConstant implements Wrapped {
             return false;
         }
         WrappedClassConstant that = (WrappedClassConstant) o;
-        return this.value == that.value;
+        return this.value.equals(that.value);
     }
 
     @Override
     public int hashCode() {
-        return this.value.getName().hashCode();
+        return this.value.hashCode();
     }
 
     @Override
     public Class<?> unwrap() throws Exception {
-        return this.value;
+        return this.value.retrieveClass();
     }
 
     @Override
     public Class<?> unwrap(Object template) throws Exception {
-        return this.value;
+        return this.value.retrieveClass();
     }
 
     @Override

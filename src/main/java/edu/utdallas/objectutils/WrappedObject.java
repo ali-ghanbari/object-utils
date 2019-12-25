@@ -51,12 +51,12 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
 
     @Override
     protected Object createRawObject() {
-        return ObjenesisHelper.newInstance(this.type);
+        return ObjenesisHelper.newInstance(this.type.retrieveClass());
     }
 
     @Override
     protected void resetCursor() {
-        this.fieldsIterator = getAllFieldsList(this.type).iterator();
+        this.fieldsIterator = getAllFieldsList(this.type.retrieveClass()).iterator();
     }
 
     @Override

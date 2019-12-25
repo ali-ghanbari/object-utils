@@ -28,8 +28,6 @@ import static edu.utdallas.objectutils.Commons.newAddress;
  * @author Ali Ghanbari
  */
 public abstract class AbstractWrappedReference implements Wrapped {
-    private static final long serialVersionUID = 1L;
-
     protected final int address;
 
     protected AbstractWrappedReference() {

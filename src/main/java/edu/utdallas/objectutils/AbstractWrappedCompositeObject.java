@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import edu.utdallas.objectutils.utils.OnDemandClass;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,7 +37,7 @@ import java.util.Set;
  * @author Ali Ghanbari
  */
 public abstract class AbstractWrappedCompositeObject extends AbstractWrappedReference {
-    protected Class<?> type; // array element type or the object type
+    protected OnDemandClass type; // array element type or the object type
 
     protected Wrapped[] values; // field values or array elements
 
@@ -48,10 +50,10 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         UNWRAPPED_OBJECTS = new HashMap<>();
     }
 
-    AbstractWrappedCompositeObject(Class<?> type, Wrapped[] values) {
+    protected AbstractWrappedCompositeObject(Class<?> type, Wrapped[] values) {
         super(); // obtain address
         this.values = values;
-        this.type = type;
+        this.type = type == null ? null : OnDemandClass.of(type);
     }
 
     /**
@@ -62,11 +64,11 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
      * @return Type
      */
     public Class<?> getType() {
-        return type;
+        return this.type.retrieveClass();
     }
 
     public void setType(Class<?> type) {
-        this.type = type;
+        this.type = OnDemandClass.of(type);
     }
 
     /**
@@ -142,7 +144,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                     // assert wrapped value does not represent null value
                     if (originalObject == null) {
                         originalObject = compositeObject.createRawObject();
-                    } else if (originalObject.getClass() != compositeObject.type) {
+                    } else if (originalObject.getClass() != compositeObject.type.retrieveClass()) {
                         // should we change the type of object?
                         originalObject = compositeObject.createRawObject();
                     }
@@ -167,7 +169,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     @Override
     public int hashCode() {
-        return this.type.getName().hashCode();
+        return this.type.hashCode();
     }
 
     @Override

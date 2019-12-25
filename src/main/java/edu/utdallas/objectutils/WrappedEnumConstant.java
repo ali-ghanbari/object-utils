@@ -45,7 +45,7 @@ public class WrappedEnumConstant extends WrappedObject {
 
     private Enum<?> getObject() {
         if (this.object == null) {
-            for (final Object n : this.type.getEnumConstants()) {
+            for (final Object n : this.type.retrieveClass().getEnumConstants()) {
                 final Enum<?> enumObject = (Enum<?>) n;
                 if (this.name.equals(enumObject.name())) {
                     this.object = enumObject;
@@ -71,7 +71,7 @@ public class WrappedEnumConstant extends WrappedObject {
     protected Object createRawObject() {
         // since there is only one instance of a given enum object constant
         // we return the only instance. we don't touch the fields of the
-        // object. I am not sure if we should have resent the values to
+        // object. I am not sure if we should have reset the values to
         // JVM default values or not.
         return getObject();
     }
