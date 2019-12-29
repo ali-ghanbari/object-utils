@@ -61,6 +61,9 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
             return this.value.clone();
         }
         final Float[] dest = (Float[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }

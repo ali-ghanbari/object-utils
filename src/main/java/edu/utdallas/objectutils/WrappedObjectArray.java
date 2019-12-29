@@ -40,6 +40,17 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     }
 
     @Override
+    protected Object rectifyTemplate(final Object template) {
+        if (template == null || Array.getLength(template) != this.values.length) {
+            return createRawObject();
+        }
+        if (this.type.retrieveClass() != template.getClass().getComponentType()) {
+            return null;
+        }
+        return template;
+    }
+
+    @Override
     protected Object createRawObject() {
         return Array.newInstance(this.type.retrieveClass(), this.values.length);
     }

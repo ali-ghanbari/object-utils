@@ -66,6 +66,9 @@ public class WrappedPrimitiveDoubleArray extends AbstractWrappedBasicArray<doubl
             return this.value.clone();
         }
         final double[] dest = (double[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }

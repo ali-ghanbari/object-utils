@@ -94,11 +94,18 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     @Override
     public Object unwrap(Object template) throws Exception {
         UNWRAPPED_OBJECTS.clear();
+        template = rectifyTemplate(template);
         if (template == null) {
-            template = createRawObject();
+            throw new IllegalArgumentException("failed to rectify the given template");
         }
         return unwrap0(template);
     }
+
+    // this is a newly added method. it is intended to create a raw object in case
+    // template is null. it also creates a new array in case of arrays with
+    // non-matching lengths. the method shall return null if it fails to rectify the
+    // template.
+    protected abstract Object rectifyTemplate(Object template);
 
     protected abstract Object createRawObject();
 

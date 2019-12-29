@@ -61,6 +61,9 @@ public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
             return this.value.clone();
         }
         final Double[] dest = (Double[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }

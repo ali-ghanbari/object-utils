@@ -53,6 +53,17 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     }
 
     @Override
+    protected Object rectifyTemplate(final Object template) {
+        if (template == null) {
+            return createRawObject();
+        }
+        if (this.type.retrieveClass() != template.getClass()) {
+            return null;
+        }
+        return template;
+    }
+
+    @Override
     protected Object createRawObject() {
         return ObjenesisHelper.newInstance(this.type.retrieveClass());
     }

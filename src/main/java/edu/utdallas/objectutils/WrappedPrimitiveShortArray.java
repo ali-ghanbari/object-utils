@@ -66,6 +66,9 @@ public class WrappedPrimitiveShortArray extends AbstractWrappedBasicArray<short[
             return this.value.clone();
         }
         final short[] dest = (short[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }

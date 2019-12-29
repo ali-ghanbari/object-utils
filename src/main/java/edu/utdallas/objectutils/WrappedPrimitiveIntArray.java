@@ -66,6 +66,9 @@ public class WrappedPrimitiveIntArray extends AbstractWrappedBasicArray<int[]> {
             return this.value.clone();
         }
         final int[] dest = (int[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }

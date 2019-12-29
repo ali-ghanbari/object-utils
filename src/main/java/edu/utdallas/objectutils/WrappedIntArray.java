@@ -61,6 +61,9 @@ public class WrappedIntArray extends AbstractWrappedBasicArray<Integer[]> {
             return this.value.clone();
         }
         final Integer[] dest = (Integer[]) template;
+        if (dest.length != this.value.length) {
+            return this.value.clone();
+        }
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }
