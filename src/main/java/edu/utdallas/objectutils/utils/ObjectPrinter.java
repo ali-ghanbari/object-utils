@@ -51,7 +51,7 @@ import java.util.Stack;
  * Utility for printing wrapped objects
  * This is used only for debugging purposes
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public final class ObjectPrinter {
     private static final Stack<String> OBJECT_DESCRIPTIONS = new Stack<>();

@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Represents a wrapped object which is <code>Serializable</code> and implements
  * <code>equals</code> and <code>hashCode</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public interface Wrapped extends Serializable {
     /**

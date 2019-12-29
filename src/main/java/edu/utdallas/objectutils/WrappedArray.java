@@ -23,7 +23,7 @@ package edu.utdallas.objectutils;
 /**
  * The base class for all wrapped arrays
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public interface WrappedArray extends Wrapped {
 

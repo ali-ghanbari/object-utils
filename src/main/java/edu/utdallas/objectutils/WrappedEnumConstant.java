@@ -22,13 +22,12 @@ package edu.utdallas.objectutils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Objects;
 
 /**
  * Wraps an enum constant. Just like a normal object, an enum constant might have fields.
  * Also hash code for these enums does not depend on JVM session.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedEnumConstant extends WrappedObject {
     private static final long serialVersionUID = 1L;
@@ -77,7 +76,7 @@ public class WrappedEnumConstant extends WrappedObject {
     }
 
     @Override
-    protected boolean staticAtCursor() {
+    protected boolean skippedAtCursor() {
         final Field field = this.fieldAtCursor;
         if (Modifier.isStatic(field.getModifiers())) {
             return true;
@@ -102,7 +101,7 @@ public class WrappedEnumConstant extends WrappedObject {
             return false;
         }
         final WrappedEnumConstant that = (WrappedEnumConstant) o;
-        return Objects.equals(this.name, that.name);
+        return this.name.equals(that.name);
     }
 
     @Override

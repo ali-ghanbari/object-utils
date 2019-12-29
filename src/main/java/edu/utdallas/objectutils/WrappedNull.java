@@ -23,18 +23,18 @@ package edu.utdallas.objectutils;
 /**
  * Represents a null reference
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public enum WrappedNull implements Wrapped {
     INSTANCE;
 
     @Override
-    public <T> T unwrap() throws Exception {
+    public <T> T unwrap() {
         return null;
     }
 
     @Override
-    public <T> T unwrap(Object template) throws Exception {
+    public <T> T unwrap(Object template) {
         return null;
     }
 

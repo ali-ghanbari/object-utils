@@ -20,13 +20,11 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import java.util.Objects;
-
 /**
  * A wrapped <code>String</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> method appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedString implements Wrapped {
     private static final long serialVersionUID = 1L;
@@ -46,12 +44,12 @@ public class WrappedString implements Wrapped {
             return false;
         }
         WrappedString that = (WrappedString) o;
-        return Objects.equals(value, that.value);
+        return this.value.equals(that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.value);
+        return this.value.hashCode();
     }
 
     @Override

@@ -22,23 +22,16 @@ package edu.utdallas.objectutils;
 
 
 import edu.utdallas.objectutils.utils.W;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
-import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 
 /**
  * A set of factory methods for wrapped objects.
  * Using the provided static methods, one can create wrapped objects.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public final class Wrapper {
     /* Let's save one call to expensive new operation */
@@ -106,6 +99,70 @@ public final class Wrapper {
     private static Wrapped wrap0(final W hashMapSafeObject,
                                  final InclusionPredicate inclusionPredicate) throws Exception {
         final Object object = hashMapSafeObject.getCore();
+        Wrapped temp = wrapBasicValue(object);
+        if (temp != null) {
+            WRAPPED_OBJECTS.put(hashMapSafeObject, temp);
+            return temp;
+        }
+        final CompositeObjectIterator iterator;
+        final AbstractWrappedCompositeObject wrappedObject;
+        final Class<?> clazz = object.getClass();
+        if (clazz.isArray()) {
+            temp = wrapBasicArray(object);
+            if (temp != null) {
+                WRAPPED_OBJECTS.put(hashMapSafeObject, temp);
+                return temp;
+            }
+            final Class<?> componentType = clazz.getComponentType();
+            wrappedObject = new WrappedObjectArray(componentType, null);
+            iterator = CompositeObjectIterator.forArray(object);
+        } else {
+            if (object instanceof Enum) {
+                wrappedObject = new WrappedEnumConstant((Enum<?>) object, null);
+            } else {
+                wrappedObject = new WrappedObject(clazz, null);
+            }
+            iterator = CompositeObjectIterator.forObject(object);
+        }
+        WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedObject);
+        final Wrapped[] wrappedValues = wrapValuesRecursively(iterator, inclusionPredicate);
+        wrappedObject.setValues(wrappedValues);
+        return wrappedObject;
+    }
+
+    final static Wrapped[] wrapValuesRecursively(final CompositeObjectIterator iterator,
+                                                 final InclusionPredicate inclusionPredicate) throws Exception {
+        Wrapped[] wrappedValues = EMPTY_WRAPPED_ARRAY;
+        while (iterator.hasNext()) {
+            iterator.advanceCursor();
+            if (iterator.skippedAtCursor()) {
+                continue;
+            }
+            final Wrapped wrappedValue;
+            if (iterator.includedAtCursor(inclusionPredicate)) {
+                final Object value = iterator.getAtCursor();
+                if (value == null) {
+                    wrappedValue = WrappedNull.INSTANCE;
+                } else {
+                    final W hashMapSafeValue = W.of(value);
+                    final Wrapped target = WRAPPED_OBJECTS.get(hashMapSafeValue);
+                    if (target != null) { // cycle?
+                        wrappedValue = target;
+                    } else {
+                        wrappedValue = wrap0(hashMapSafeValue, inclusionPredicate);
+                    }
+                }
+            } else {
+                // this null value is different from WrappedNull.INSTANCE
+                // null values are going to be ignored during unwrapping
+                wrappedValue = null;
+            }
+            wrappedValues = ArrayUtils.add(wrappedValues, wrappedValue);
+        }
+        return wrappedValues;
+    }
+
+    private static Wrapped wrapBasicValue(final Object object) {
         if (object instanceof Integer) {
             return new WrappedInt((Integer) object);
         } else if (object instanceof String) {
@@ -127,119 +184,45 @@ public final class Wrapper {
         } else if (object instanceof Class) {
             return new WrappedClassConstant((Class<?>) object);
         }
-        final Class<?> clazz = object.getClass();
-        if (clazz.isArray()) {
-            WrappedArray wrappedArray = null;
-            if (object instanceof int[]) {
-                wrappedArray = new WrappedPrimitiveIntArray((int[]) object);
-            } else if (object instanceof boolean[]) {
-                wrappedArray = new WrappedPrimitiveBooleanArray((boolean[]) object);
-            } else if (object instanceof byte[]) {
-                wrappedArray = new WrappedPrimitiveByteArray((byte[]) object);
-            } else if (object instanceof char[]) {
-                wrappedArray = new WrappedPrimitiveCharArray((char[]) object);
-            } else if (object instanceof short[]) {
-                wrappedArray = new WrappedPrimitiveShortArray((short[]) object);
-            } else if (object instanceof float[]) {
-                wrappedArray = new WrappedPrimitiveFloatArray((float[]) object);
-            } else if (object instanceof double[]) {
-                wrappedArray = new WrappedPrimitiveDoubleArray((double[]) object);
-            } else if (object instanceof long[]) {
-                wrappedArray = new WrappedPrimitiveLongArray((long[]) object);
-            } else if (object instanceof String[]) {
-                wrappedArray = new WrappedStringArray((String[]) object);
-            } else if (object instanceof Boolean[]) {
-                wrappedArray = new WrappedBooleanArray((Boolean[]) object);
-            } else if (object instanceof Byte[]) {
-                wrappedArray = new WrappedByteArray((Byte[]) object);
-            } else if (object instanceof Character[]) {
-                wrappedArray = new WrappedCharArray((Character[]) object);
-            } else if (object instanceof Short[]) {
-                wrappedArray = new WrappedShortArray((Short[]) object);
-            } else if (object instanceof Integer[]) {
-                wrappedArray = new WrappedIntArray((Integer[]) object);
-            } else if (object instanceof Float[]) {
-                wrappedArray = new WrappedFloatArray((Float[]) object);
-            } else if (object instanceof Double[]) {
-                wrappedArray = new WrappedDoubleArray((Double[]) object);
-            } else if (object instanceof Long[]) {
-                wrappedArray = new WrappedLongArray((Long[]) object);
-            }
-            if (wrappedArray != null) {
-                WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedArray);
-            } else {
-                final Class<?> componentType = clazz.getComponentType();
-                final int len = Array.getLength(object);
-                final Wrapped[] elements = new Wrapped[len];
-                wrappedArray = new WrappedObjectArray(componentType, elements);
-                WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedArray);
-                for (int i = 0; i < len; i++) {
-                    final Object e = Array.get(object, i);
-                    if (e == null) {
-                        elements[i] = WrappedNull.INSTANCE;
-                        continue;
-                    }
-                    final W hashMapSafeElement = W.of(e);
-                    final Wrapped target = WRAPPED_OBJECTS.get(hashMapSafeElement);
-                    if (target != null) { // cycle?
-                        elements[i] = target;
-                    } else {
-                        elements[i] = wrap0(hashMapSafeElement, inclusionPredicate);
-                    }
-                }
-            }
-            return wrappedArray;
-        }
-        final WrappedObject wrappedObject;
-        if (object instanceof Enum) {
-            wrappedObject = new WrappedEnumConstant((Enum<?>) object, null);
-        } else {
-            wrappedObject = new WrappedObject(null, null);
-        }
-        WRAPPED_OBJECTS.put(hashMapSafeObject, wrappedObject);
-        final Wrapped[] wrappedFieldValues = wrapFieldValuesRecursively(clazz, object, inclusionPredicate);
-        wrappedObject.setType(clazz);
-        wrappedObject.setValues(wrappedFieldValues);
-        return wrappedObject;
+        return null;
     }
 
-
-    private static Wrapped[] wrapFieldValuesRecursively(final Class<?> clazz,
-                                                        final Object object,
-                                                        final InclusionPredicate inclusionPredicate)
-            throws Exception {
-        Wrapped[] wrappedFieldValues = EMPTY_WRAPPED_ARRAY;
-        final List<Field> fields = getAllFieldsList(clazz);
-        for (final Field field : fields) {
-            // we only care about instance fields, as we are wrapping an *object*
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            if (field.getDeclaringClass() == Enum.class && field.getName().matches("name|ordinal")) {
-                continue;
-            }
-            final Wrapped wrappedFieldValue;
-            if (inclusionPredicate.test(field)) {
-                final Object fieldValue = readField(field, object, true);
-                if (fieldValue == null) {
-                    wrappedFieldValue = WrappedNull.INSTANCE;
-                } else {
-                    final W hashMapSafeFieldValue = W.of(fieldValue);
-                    final Wrapped target = WRAPPED_OBJECTS.get(hashMapSafeFieldValue);
-                    if (target != null) { // cycle?
-                        wrappedFieldValue = target;
-                    } else {
-                        wrappedFieldValue = wrap0(hashMapSafeFieldValue, inclusionPredicate);
-                    }
-                }
-            } else {
-                // this null value is different from WrappedNull.INSTANCE
-                // null values are going to be ignored during unwrapping
-                wrappedFieldValue = null;
-            }
-            wrappedFieldValues = Arrays.copyOf(wrappedFieldValues, 1 + wrappedFieldValues.length);
-            wrappedFieldValues[wrappedFieldValues.length - 1] = wrappedFieldValue;
+    private static Wrapped wrapBasicArray(final Object object) {
+        if (object instanceof int[]) {
+            return new WrappedPrimitiveIntArray((int[]) object);
+        } else if (object instanceof boolean[]) {
+            return new WrappedPrimitiveBooleanArray((boolean[]) object);
+        } else if (object instanceof byte[]) {
+            return new WrappedPrimitiveByteArray((byte[]) object);
+        } else if (object instanceof char[]) {
+            return new WrappedPrimitiveCharArray((char[]) object);
+        } else if (object instanceof short[]) {
+            return new WrappedPrimitiveShortArray((short[]) object);
+        } else if (object instanceof float[]) {
+            return new WrappedPrimitiveFloatArray((float[]) object);
+        } else if (object instanceof double[]) {
+            return new WrappedPrimitiveDoubleArray((double[]) object);
+        } else if (object instanceof long[]) {
+            return new WrappedPrimitiveLongArray((long[]) object);
+        } else if (object instanceof String[]) {
+            return new WrappedStringArray((String[]) object);
+        } else if (object instanceof Boolean[]) {
+            return new WrappedBooleanArray((Boolean[]) object);
+        } else if (object instanceof Byte[]) {
+            return new WrappedByteArray((Byte[]) object);
+        } else if (object instanceof Character[]) {
+            return new WrappedCharArray((Character[]) object);
+        } else if (object instanceof Short[]) {
+            return new WrappedShortArray((Short[]) object);
+        } else if (object instanceof Integer[]) {
+            return new WrappedIntArray((Integer[]) object);
+        } else if (object instanceof Float[]) {
+            return new WrappedFloatArray((Float[]) object);
+        } else if (object instanceof Double[]) {
+            return new WrappedDoubleArray((Double[]) object);
+        } else if (object instanceof Long[]) {
+            return new WrappedLongArray((Long[]) object);
         }
-        return wrappedFieldValues;
+        return null;
     }
 }

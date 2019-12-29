@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A wrapped <code>Float[]</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
     public WrappedFloatArray(Float[] value) {
@@ -57,6 +57,9 @@ public class WrappedFloatArray extends AbstractWrappedBasicArray<Float[]> {
 
     @Override
     public Float[] unwrap(Object template) throws Exception {
+        if (template == null) {
+            return this.value.clone();
+        }
         final Float[] dest = (Float[]) template;
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;

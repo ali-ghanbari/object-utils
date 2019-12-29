@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A wrapped <code>Double[]</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
     public WrappedDoubleArray(Double[] value) {
@@ -57,6 +57,9 @@ public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
 
     @Override
     public Double[] unwrap(Object template) throws Exception {
+        if (template == null) {
+            return this.value.clone();
+        }
         final Double[] dest = (Double[]) template;
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;

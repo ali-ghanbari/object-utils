@@ -24,7 +24,7 @@ package edu.utdallas.objectutils.utils;
  * Yet another wrapper class that allows us override the behavior of
  * already implemented <code>equals</code> method.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class W {
     private final Object core;

@@ -25,7 +25,7 @@ import edu.utdallas.objectutils.utils.OnDemandClass;
 /**
  * A wrapped <code>Class</code> constant whose hash code does not depend on JVM session.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedClassConstant implements Wrapped {
     private static final long serialVersionUID = 1L;

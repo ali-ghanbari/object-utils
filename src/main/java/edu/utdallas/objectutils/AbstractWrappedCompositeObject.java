@@ -34,7 +34,7 @@ import java.util.Set;
  * These objects are composite in a sense they have elements/fields that
  * might be objects in turn.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public abstract class AbstractWrappedCompositeObject extends AbstractWrappedReference {
     protected OnDemandClass type; // array element type or the object type
@@ -106,22 +106,18 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
 
     protected abstract void advanceCursor();
 
-    protected abstract boolean staticAtCursor(); // arrays always return false
+    protected abstract boolean skippedAtCursor(); // arrays always return false
 
     protected abstract void setAtCursor(Object rawObject, Object value) throws Exception;
 
     protected abstract Object getAtCursor(Object rawObject) throws Exception;
 
     private Object unwrap0(final Object template) throws Exception {
-//        // we always need a genuine template object
-//        if (template == null) {
-//            throw new IllegalArgumentException("Template object cannot be null!");
-//        }
         UNWRAPPED_OBJECTS.put(this.address, template);
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
             advanceCursor();
-            while (staticAtCursor()) {
+            while (skippedAtCursor()) {
                 advanceCursor();
             }
             // we ignore some fields based on what the client has requested.

@@ -24,7 +24,7 @@ package edu.utdallas.objectutils;
  * A wrapped <code>short</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> method appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedShort implements Wrapped {
     private static final long serialVersionUID = 1L;

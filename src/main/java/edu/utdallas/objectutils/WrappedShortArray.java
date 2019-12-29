@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A wrapped <code>Short[]</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedShortArray extends AbstractWrappedBasicArray<Short[]> {
     public WrappedShortArray(Short[] value) {
@@ -57,6 +57,9 @@ public class WrappedShortArray extends AbstractWrappedBasicArray<Short[]> {
 
     @Override
     public Short[] unwrap(Object template) throws Exception {
+        if (template == null) {
+            return this.value.clone();
+        }
         final Short[] dest = (Short[]) template;
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;

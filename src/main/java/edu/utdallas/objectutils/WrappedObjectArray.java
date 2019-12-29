@@ -28,7 +28,7 @@ import java.lang.reflect.Array;
  * Represents an array of objects or a multi-dimensional array.
  * The objects might point to the array itself or some wrapped number.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedObjectArray extends AbstractWrappedCompositeObject implements WrappedArray {
     private static final long serialVersionUID = 1L;
@@ -55,7 +55,7 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     }
 
     @Override
-    protected boolean staticAtCursor() {
+    protected boolean skippedAtCursor() {
         return false;
     }
 

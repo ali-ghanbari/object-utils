@@ -24,7 +24,7 @@ package edu.utdallas.objectutils;
  * A wrapped <code>char</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedChar implements Wrapped {
     private static final long serialVersionUID = 1L;

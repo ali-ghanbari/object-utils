@@ -26,6 +26,7 @@ import org.objenesis.ObjenesisHelper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
@@ -36,10 +37,12 @@ import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
  * This class is is <code>Serializable</code> and also implements <code>hashCode</code>
  * and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedObject extends AbstractWrappedCompositeObject {
     private static final long serialVersionUID = 1L;
+
+    private static final Pattern PATTERN = Pattern.compile("name|ordinal");
 
     protected transient Iterator<Field> fieldsIterator;
 
@@ -65,8 +68,12 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     }
 
     @Override
-    protected boolean staticAtCursor() {
-        return Modifier.isStatic(this.fieldAtCursor.getModifiers());
+    protected boolean skippedAtCursor() {
+        if (Modifier.isStatic(this.fieldAtCursor.getModifiers())) {
+            return true;
+        }
+        return this.fieldAtCursor.getDeclaringClass() == Enum.class
+                && PATTERN.matcher(this.fieldAtCursor.getName()).matches();
     }
 
     @Override

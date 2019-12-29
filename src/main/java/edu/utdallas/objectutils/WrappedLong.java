@@ -24,7 +24,7 @@ package edu.utdallas.objectutils;
  * A wrapped <code>long</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedLong implements Wrapped {
     private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class WrappedLong implements Wrapped {
 
     @Override
     public int hashCode() {
-        return (int)(this.value ^ (this.value >>> 32)); // adopted from JDK 1.8
+        return ((Long) this.value).hashCode();
     }
 
     @Override

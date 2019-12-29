@@ -23,7 +23,6 @@ package edu.utdallas.objectutils.utils;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * This class helps load class lazily, whenever they are needed.
@@ -91,11 +90,11 @@ public class OnDemandClass implements Serializable {
             return false;
         }
         OnDemandClass that = (OnDemandClass) o;
-        return Objects.equals(this.name, that.name);
+        return this.name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name);
+        return this.name.hashCode();
     }
 }

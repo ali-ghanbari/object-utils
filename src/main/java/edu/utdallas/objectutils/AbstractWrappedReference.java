@@ -25,7 +25,7 @@ import static edu.utdallas.objectutils.Commons.newAddress;
 /**
  * Base class for all non-primitive objects: arrays and proper objects
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public abstract class AbstractWrappedReference implements Wrapped {
     protected final int address;

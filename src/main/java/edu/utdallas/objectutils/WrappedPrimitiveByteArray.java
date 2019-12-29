@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A wrapped <code>byte[]</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]> {
     public WrappedPrimitiveByteArray(byte[] value) {
@@ -62,6 +62,9 @@ public class WrappedPrimitiveByteArray extends AbstractWrappedBasicArray<byte[]>
 
     @Override
     public byte[] unwrap(Object template) throws Exception {
+        if (template == null) {
+            return this.value.clone();
+        }
         final byte[] dest = (byte[]) template;
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;

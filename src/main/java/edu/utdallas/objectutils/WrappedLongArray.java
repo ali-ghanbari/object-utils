@@ -26,7 +26,7 @@ import java.util.Arrays;
  * A wrapped <code>Long[]</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedLongArray extends AbstractWrappedBasicArray<Long[]> {
     public WrappedLongArray(Long[] value) {
@@ -57,6 +57,9 @@ public class WrappedLongArray extends AbstractWrappedBasicArray<Long[]> {
 
     @Override
     public Long[] unwrap(Object template) throws Exception {
+        if (template == null) {
+            return this.value.clone();
+        }
         final Long[] dest = (Long[]) template;
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;

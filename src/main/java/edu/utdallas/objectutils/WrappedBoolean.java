@@ -24,7 +24,7 @@ package edu.utdallas.objectutils;
  * A wrapped <code>boolean</code> value which is <code>Serializable</code>,mvn
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedBoolean implements Wrapped {
     private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class WrappedBoolean implements Wrapped {
 
     @Override
     public int hashCode() {
-        return this.value ? 1231 : 1237; // adopted form JDK 1.8 source code
+        return ((Boolean) this.value).hashCode();
     }
 
     @Override

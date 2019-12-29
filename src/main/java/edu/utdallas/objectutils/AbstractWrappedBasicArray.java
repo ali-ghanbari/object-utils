@@ -25,7 +25,7 @@ package edu.utdallas.objectutils;
  * (e.g., String[], Integer[], int[], etc).
  *
  * @param <T> Element type
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public abstract class AbstractWrappedBasicArray<T> extends AbstractWrappedReference implements WrappedArray {
     protected final T value;

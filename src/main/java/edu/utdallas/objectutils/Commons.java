@@ -23,10 +23,14 @@ package edu.utdallas.objectutils;
 /**
  * Utility functions common to all modules
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 final class Commons {
     private static int addressCounter = 0;
+
+    private Commons() {
+
+    }
 
     static int newAddress() {
         return addressCounter++;

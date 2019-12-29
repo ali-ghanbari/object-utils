@@ -24,7 +24,7 @@ package edu.utdallas.objectutils;
  * A wrapped <code>double</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class WrappedDouble implements Wrapped {
     private static final long serialVersionUID = 1L;
@@ -49,9 +49,7 @@ public class WrappedDouble implements Wrapped {
 
     @Override
     public int hashCode() {
-        // adopted from JDK 1.8
-        final long bits = Double.doubleToLongBits(this.value);
-        return (int)(bits ^ (bits >>> 32));
+        return ((Double) this.value).hashCode();
     }
 
     @Override

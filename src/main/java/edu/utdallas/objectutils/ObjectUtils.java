@@ -36,12 +36,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Basic object utilities such as computing deep hash code and
  * shallow copying of arbitrary objects
  *
- * @author Ali Ghanbari
+ * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public final class ObjectUtils {
     private static final Set<Class<?>> WRAPPER_TYPES;
@@ -110,7 +111,7 @@ public final class ObjectUtils {
             return core.hashCode();
         } else if (core instanceof Class) {
             return ((Class<?>) core).getName().hashCode();
-        } else if (clazz.isEnum()) {
+        } else if (core instanceof Enum) {
             return ((Enum<?>) core).name().hashCode();
         }
         // composite object
