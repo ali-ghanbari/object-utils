@@ -94,6 +94,9 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     @Override
     public Object unwrap(Object template) throws Exception {
         UNWRAPPED_OBJECTS.clear();
+        if (template == null) {
+            template = createRawObject();
+        }
         return unwrap0(template);
     }
 
@@ -110,10 +113,10 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     protected abstract Object getAtCursor(Object rawObject) throws Exception;
 
     private Object unwrap0(final Object template) throws Exception {
-        // we always need a genuine template object
-        if (template == null) {
-            throw new IllegalArgumentException("Template object cannot be null!");
-        }
+//        // we always need a genuine template object
+//        if (template == null) {
+//            throw new IllegalArgumentException("Template object cannot be null!");
+//        }
         UNWRAPPED_OBJECTS.put(this.address, template);
         resetCursor();
         for (final Wrapped wrappedValue : this.values) {
