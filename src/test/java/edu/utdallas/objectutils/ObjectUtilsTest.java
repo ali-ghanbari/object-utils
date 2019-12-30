@@ -190,7 +190,6 @@ public class ObjectUtilsTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDeepHashCodeCompositeObject1() throws Exception {
 		final Record r1 = new Record("r1", "30");
 		final Record r2 = new Record("r2", "40");

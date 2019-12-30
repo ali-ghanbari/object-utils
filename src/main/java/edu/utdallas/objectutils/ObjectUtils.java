@@ -34,11 +34,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Basic object utilities such as computing deep hash code and
@@ -155,10 +152,8 @@ public final class ObjectUtils {
             } else {
                 final int len = Array.getLength(core);
                 for (int i = 0; i < len; i++) {
-                    final Object element = Array.get(core, i);
-                    inner = inner * 31L + (element == null ? 0 : element.getClass().getName().hashCode());
-//                    final W wElement = W.of(Array.get(core, i));
-//                    inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
+                    final W wElement = W.of(Array.get(core, i));
+                    inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
                 }
             }
         } else {
