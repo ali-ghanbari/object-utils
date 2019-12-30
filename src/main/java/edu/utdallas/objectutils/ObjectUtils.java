@@ -23,6 +23,7 @@ package edu.utdallas.objectutils;
 import edu.utdallas.objectutils.utils.W;
 import org.apache.commons.lang3.mutable.MutableLong;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
@@ -31,6 +32,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,23 +47,7 @@ import java.util.regex.Pattern;
  * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public final class ObjectUtils {
-    private static final Set<Class<?>> WRAPPER_TYPES;
-
-    private static final Map<W, MutableLong> VISITED;
-
-    static {
-        VISITED = new HashMap<>();
-        WRAPPER_TYPES = new HashSet<>();
-        WRAPPER_TYPES.add(Boolean.class);
-        WRAPPER_TYPES.add(Character.class);
-        WRAPPER_TYPES.add(Byte.class);
-        WRAPPER_TYPES.add(Short.class);
-        WRAPPER_TYPES.add(Integer.class);
-        WRAPPER_TYPES.add(Long.class);
-        WRAPPER_TYPES.add(Float.class);
-        WRAPPER_TYPES.add(Double.class);
-        WRAPPER_TYPES.add(Void.class);
-    }
+    private static final Map<W, MutableLong> VISITED = new HashMap<>();
 
     private ObjectUtils() {
 
@@ -107,11 +93,20 @@ public final class ObjectUtils {
             return 0L;
         }
         final Class<?> clazz = core.getClass();
-        if (isWrapperType(clazz) || core instanceof String) {
+        if (clazz == Boolean.class
+                || clazz == Character.class
+                || clazz == Byte.class
+                || clazz == Short.class
+                || clazz == Integer.class
+                || clazz == Long.class
+                || clazz == Float.class
+                || clazz == Double.class
+                || clazz == Void.class
+                || clazz == String.class) {
             return core.hashCode();
         } else if (core instanceof Class) {
             return ((Class<?>) core).getName().hashCode();
-        } else if (core instanceof Enum) {
+        } else if (clazz.isEnum()) {
             return ((Enum<?>) core).name().hashCode();
         }
         // composite object
@@ -123,13 +118,51 @@ public final class ObjectUtils {
         visited.put(hashMapSafeObject, result);
         long inner = 0L;
         if (clazz.isArray()) {
-            final int len = Array.getLength(core);
-            for (int i = 0; i < len; i++) {
-                final W wElement = W.of(Array.get(core, i));
-                inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
+            if (clazz == byte[].class) {
+                inner = Arrays.hashCode((byte[]) core);
+            } else if (clazz == char[].class) {
+                inner = Arrays.hashCode((char[]) core);
+            } else if (clazz == short[].class) {
+                inner = Arrays.hashCode((short[]) core);
+            } if (clazz == int[].class) {
+                inner = Arrays.hashCode((int[]) core);
+            } else if (clazz == boolean[].class) {
+                inner = Arrays.hashCode((boolean[]) core);
+            } else if (clazz == float[].class) {
+                inner = Arrays.hashCode((float[]) core);
+            } else if (clazz == long[].class) {
+                inner = Arrays.hashCode((long[]) core);
+            } else if (clazz == double[].class) {
+                inner = Arrays.hashCode((double[]) core);
+            } else if (clazz == String[].class) {
+                inner = Arrays.hashCode((String[]) core);
+            } else if (clazz == Byte[].class) {
+                inner = Arrays.hashCode((Byte[]) core);
+            } else if (clazz == Character[].class) {
+                inner = Arrays.hashCode((Character[]) core);
+            } else if (clazz == Short[].class) {
+                inner = Arrays.hashCode((Short[]) core);
+            } else if (clazz == Integer[].class) {
+                inner = Arrays.hashCode((Integer[]) core);
+            } else if (clazz == Boolean[].class) {
+                inner = Arrays.hashCode((Boolean[]) core);
+            } else if (clazz == Float[].class) {
+                inner = Arrays.hashCode((Float[]) core);
+            } else if (clazz == Long[].class) {
+                inner = Arrays.hashCode((Long[]) core);
+            } else if (clazz == Double[].class) {
+                inner = Arrays.hashCode((Double[]) core);
+            } else {
+                final int len = Array.getLength(core);
+                for (int i = 0; i < len; i++) {
+                    final Object element = Array.get(core, i);
+                    inner = inner * 31L + (element == null ? 0 : element.getClass().getName().hashCode());
+//                    final W wElement = W.of(Array.get(core, i));
+//                    inner = inner * 31L + deepHashCode(wElement, inclusionPredicate, visited);
+                }
             }
         } else {
-            for (final Field field : getAllFieldsList(clazz)) {
+            for (final Field field : getAllFields(clazz)) {
                 if (Modifier.isStatic(field.getModifiers()) || !inclusionPredicate.test(field)) {
                     continue;
                 }
@@ -139,10 +172,6 @@ public final class ObjectUtils {
         }
         result.setValue(clazz.getName().hashCode() * 31L + inner);
         return result.longValue();
-    }
-
-    private static boolean isWrapperType(Class<?> clazz) {
-        return WRAPPER_TYPES.contains(clazz);
     }
 
 	public static <T> void shallowCopy(final T dest, final T src) throws Exception {
