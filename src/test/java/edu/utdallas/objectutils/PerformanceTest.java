@@ -146,4 +146,38 @@ public class PerformanceTest {
         }
         System.out.printf("%d ms%n", System.currentTimeMillis() - start);
     }
+
+    @Test
+    public void testWrappingCodePerformance1() throws Exception {
+        final long start = System.currentTimeMillis();
+        for (int i = 0; i < 10; i++) {
+            Wrapper.wrapObject(cll).unwrap();
+        }
+        System.out.printf("%d ms%n", System.currentTimeMillis() - start);
+    }
+
+    @Test
+    public void testWrappingCodePerformance2() throws Exception {
+        final InclusionPredicate ip = new IP1();
+        final ComplexLinkedList template = null;
+        final long start = System.currentTimeMillis();
+        for (int i = 0; i < 10; i++) {
+            Wrapper.wrapObject(cll, ip).unwrap(template);
+        }
+        System.out.printf("%d ms%n", System.currentTimeMillis() - start);
+    }
+
+    @Test
+    public void testWrappingCodePerformance3() throws Exception {
+        final InclusionPredicate ip = new IP1();
+        final ComplexLinkedList template = null;
+        final int N = 100;
+        long sum = 0;
+        for (int i = 0; i < N; i++) {
+            final long start = System.currentTimeMillis();
+            Wrapper.wrapObject(cll, ip).unwrap(template);
+            sum += System.currentTimeMillis() - start;
+        }
+        System.out.printf("%f ms%n", sum / (double) N);
+    }
 }
