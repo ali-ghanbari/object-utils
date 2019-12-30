@@ -121,7 +121,7 @@ public final class ObjectUtils {
                 inner = Arrays.hashCode((char[]) core);
             } else if (clazz == short[].class) {
                 inner = Arrays.hashCode((short[]) core);
-            } if (clazz == int[].class) {
+            } else if (clazz == int[].class) {
                 inner = Arrays.hashCode((int[]) core);
             } else if (clazz == boolean[].class) {
                 inner = Arrays.hashCode((boolean[]) core);
