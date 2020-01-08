@@ -113,7 +113,7 @@ public final class ObjectUtils {
         }
         result = new MutableLong(0L);
         visited.put(hashMapSafeObject, result);
-        long inner = 0L;
+        long inner = 1L;
         if (clazz.isArray()) {
             if (clazz == byte[].class) {
                 inner = Arrays.hashCode((byte[]) core);
