@@ -78,7 +78,7 @@ public final class ObjectUtils {
     public static long deepHashCode(final Object object,
                                     final InclusionPredicate inclusionPredicate) throws Exception {
         if (object == null) {
-            return 0;
+            return 0L;
         }
         VISITED.clear();
         return deepHashCode(W.of(object), inclusionPredicate, VISITED);
