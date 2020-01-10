@@ -28,7 +28,6 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -78,6 +77,9 @@ public final class ObjectUtils {
      */
     public static long deepHashCode(final Object object,
                                     final InclusionPredicate inclusionPredicate) throws Exception {
+        if (object == null) {
+            return 0;
+        }
         VISITED.clear();
         return deepHashCode(W.of(object), inclusionPredicate, VISITED);
     }
