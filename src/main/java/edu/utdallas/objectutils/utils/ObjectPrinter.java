@@ -56,6 +56,10 @@ import java.util.Stack;
 public final class ObjectPrinter {
     private static final Stack<String> OBJECT_DESCRIPTIONS = new Stack<>();
 
+    private ObjectPrinter() {
+
+    }
+
     public static String print(final Wrapped wrapped) {
         String objectDescription = "";
         visitedAddresses.clear();
