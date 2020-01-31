@@ -25,23 +25,6 @@ import edu.utdallas.objectutils.AbstractWrappedCompositeObject;
 import edu.utdallas.objectutils.AbstractWrappedReference;
 import edu.utdallas.objectutils.Wrapped;
 import edu.utdallas.objectutils.WrappedArray;
-import edu.utdallas.objectutils.WrappedBooleanArray;
-import edu.utdallas.objectutils.WrappedByteArray;
-import edu.utdallas.objectutils.WrappedCharArray;
-import edu.utdallas.objectutils.WrappedDoubleArray;
-import edu.utdallas.objectutils.WrappedFloatArray;
-import edu.utdallas.objectutils.WrappedIntArray;
-import edu.utdallas.objectutils.WrappedLongArray;
-import edu.utdallas.objectutils.WrappedPrimitiveBooleanArray;
-import edu.utdallas.objectutils.WrappedPrimitiveByteArray;
-import edu.utdallas.objectutils.WrappedPrimitiveCharArray;
-import edu.utdallas.objectutils.WrappedPrimitiveDoubleArray;
-import edu.utdallas.objectutils.WrappedPrimitiveFloatArray;
-import edu.utdallas.objectutils.WrappedPrimitiveIntArray;
-import edu.utdallas.objectutils.WrappedPrimitiveLongArray;
-import edu.utdallas.objectutils.WrappedPrimitiveShortArray;
-import edu.utdallas.objectutils.WrappedShortArray;
-import edu.utdallas.objectutils.WrappedStringArray;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -76,48 +59,24 @@ public final class ObjectPrinter {
 
     private final static Set<Integer> visitedAddresses = new HashSet<>();
 
-    private static String getTypeName(final AbstractWrappedReference wrappedReference) {
-        if (wrappedReference instanceof AbstractWrappedCompositeObject) {
-            if (wrappedReference instanceof WrappedArray) {
-                return "OBJ_ARRAY";
-            }
-            return ((AbstractWrappedCompositeObject) wrappedReference).getType().getSimpleName();
-        } else if (wrappedReference instanceof WrappedBooleanArray) {
-            return "java.lang.Boolean[]";
-        } else if (wrappedReference instanceof WrappedByteArray) {
-            return "java.lang.Byte[]";
-        } else if (wrappedReference instanceof WrappedCharArray) {
-            return "java.lang.Character[]";
-        } else if (wrappedReference instanceof WrappedDoubleArray) {
-            return "java.lang.Double[]";
-        } else if (wrappedReference instanceof WrappedFloatArray) {
-            return "java.lang.Float[]";
-        } else if (wrappedReference instanceof WrappedIntArray) {
-            return "java.lang.Integer[]";
-        } else if (wrappedReference instanceof WrappedLongArray) {
-            return "java.lang.Long[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveBooleanArray) {
-            return "boolean[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveByteArray) {
-            return "byte[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveCharArray) {
-            return "char[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveDoubleArray) {
-            return "double[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveFloatArray) {
-            return "float[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveIntArray) {
-            return "int[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveLongArray) {
-            return "long[]";
-        } else if (wrappedReference instanceof WrappedPrimitiveShortArray) {
-            return "short[]";
-        } else if (wrappedReference instanceof WrappedShortArray) {
-            return "java.lang.Short[]";
-        } else if (wrappedReference instanceof WrappedStringArray) {
-            return "java.lang.String[]";
+    private static String simplifyTypeName(final String typeName) {
+        int index = typeName.lastIndexOf('$');
+        if (index >= 0) {
+            return typeName.substring(1 + index);
         }
-        throw new IllegalArgumentException();
+        index = typeName.lastIndexOf('.');
+        if (index >= 0) {
+            return typeName.substring(1 + index);
+        }
+        return typeName;
+    }
+
+    private static String getTypeName(final AbstractWrappedReference wrappedReference) {
+        if (wrappedReference instanceof AbstractWrappedCompositeObject
+                && wrappedReference instanceof WrappedArray) {
+            return "OBJ_ARRAY";
+        }
+        return simplifyTypeName(wrappedReference.getTypeName());
     }
 
     private static void print0(final AbstractWrappedReference wrappedReference) {

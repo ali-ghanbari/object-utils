@@ -72,4 +72,9 @@ public class WrappedByteArray extends AbstractWrappedBasicArray<Byte[]> {
     public String print() {
         return Arrays.toString(this.value);
     }
+
+    @Override
+    public String getTypeName() {
+        return "java.lang.Byte[]";
+    }
 }

@@ -72,4 +72,9 @@ public class WrappedDoubleArray extends AbstractWrappedBasicArray<Double[]> {
     public String print() {
         return Arrays.toString(this.value);
     }
+
+    @Override
+    public String getTypeName() {
+        return "java.lang.Double[]";
+    }
 }

@@ -72,4 +72,9 @@ public class WrappedPrimitiveLongArray extends AbstractWrappedBasicArray<long[]>
         System.arraycopy(this.value, 0, dest, 0, this.value.length);
         return dest;
     }
+
+    @Override
+    public String getTypeName() {
+        return "long[]";
+    }
 }

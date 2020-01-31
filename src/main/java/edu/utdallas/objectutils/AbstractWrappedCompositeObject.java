@@ -71,6 +71,11 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         this.type = OnDemandClass.of(type);
     }
 
+    @Override
+    public String getTypeName() {
+        return this.type.getName();
+    }
+
     /**
      * Returns the values of array elements, in case <code>this</code>
      * represents an object array, or field values of the object that

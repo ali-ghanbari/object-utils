@@ -72,4 +72,9 @@ public class WrappedBooleanArray extends AbstractWrappedBasicArray<Boolean[]> {
     public String print() {
         return Arrays.toString(this.value);
     }
+
+    @Override
+    public String getTypeName() {
+        return "java.lang.Boolean[]";
+    }
 }

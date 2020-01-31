@@ -38,4 +38,13 @@ public abstract class AbstractWrappedReference implements Wrapped {
     public int getAddress() {
         return this.address;
     }
+
+    /**
+     * A method useful for getting the name of the underlying type
+     * when the wrapped class is not available in the classpath.
+     *
+     * @return The name of the underlying wrapped type.
+     * @since 1.1
+     */
+    public abstract String getTypeName();
 }

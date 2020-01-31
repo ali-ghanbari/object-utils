@@ -72,4 +72,9 @@ public class WrappedStringArray extends AbstractWrappedBasicArray<String[]> {
     public String print() {
         return Arrays.toString(this.value);
     }
+
+    @Override
+    public String getTypeName() {
+        return "java.lang.String[]";
+    }
 }

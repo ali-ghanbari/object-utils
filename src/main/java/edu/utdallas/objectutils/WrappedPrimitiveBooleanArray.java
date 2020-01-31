@@ -72,4 +72,9 @@ public class WrappedPrimitiveBooleanArray extends AbstractWrappedBasicArray<bool
     public String print() {
         return Arrays.toString(this.value);
     }
+
+    @Override
+    public String getTypeName() {
+        return "boolean[]";
+    }
 }
