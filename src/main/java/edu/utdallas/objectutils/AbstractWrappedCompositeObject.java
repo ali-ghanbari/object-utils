@@ -155,9 +155,17 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                     // assert wrapped value does not represent null value
                     if (originalObject == null) {
                         originalObject = compositeObject.createRawObject();
-                    } else if (originalObject.getClass() != compositeObject.type.retrieveClass()) {
-                        // should we change the type of object?
-                        originalObject = compositeObject.createRawObject();
+                    } else {
+                        final Class<?> originalClass;
+                        if (compositeObject instanceof WrappedObjectArray) {
+                            originalClass = originalObject.getClass().getComponentType();
+                        } else {
+                            originalClass = originalObject.getClass();
+                        }
+                        if (originalClass != compositeObject.type.retrieveClass()) {
+                            // should we change the type of object?
+                            originalObject = compositeObject.createRawObject();
+                        }
                     }
                     value = compositeObject.unwrap0(originalObject);
                 } else { // basic-typed array
