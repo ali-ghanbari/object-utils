@@ -217,7 +217,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                         ((AbstractWrappedCompositeObject) node1);
                 final AbstractWrappedCompositeObject wrappedObject2 =
                         ((AbstractWrappedCompositeObject) node2);
-                if (wrappedObject1.getType() != wrappedObject2.getType()) {
+                if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
                     return false;
                 }
                 visitedNodes1.add(wrappedObject1.getAddress());
