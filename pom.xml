@@ -8,6 +8,7 @@
     <artifactId>object-utils</artifactId>
     <version>1.1-SNAPSHOT</version>
     <inceptionYear>2019</inceptionYear>
+
     <description>
         A library of utilities for serialization and wrapping of arbitrary objects to have
         correctly implemented "equals" and "hashCode" methods.
@@ -22,6 +23,7 @@
         <developer>
             <name>Ali Ghanbari</name>
             <email>ali.ghanbari@utdallas.edu</email>
+            <url>https://ali-ghanbari.github.io/</url>
             <organization>The University of Texas at Dallas</organization>
         </developer>
     </developers>
@@ -89,7 +91,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <version>1.6</version>
-
                 <configuration>
                     <verbose>false</verbose>
                     <includes>
