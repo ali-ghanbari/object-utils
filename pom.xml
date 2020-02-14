@@ -8,6 +8,8 @@
     <artifactId>object-utils</artifactId>
     <version>1.2-SNAPSHOT</version>
     <inceptionYear>2019</inceptionYear>
+    <url>https://github.com/ali-ghanbari/object-utils</url>
+    <name>Object Utilities</name>
 
     <description>
         A library of utilities for serialization and wrapping of arbitrary objects to have
