@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import java.lang.reflect.Array;
+
 /**
  * Utility functions common to all modules
  *
@@ -38,5 +40,98 @@ final class Commons {
 
     static void resetAddressCounter() {
         addressCounter = 0;
+    }
+
+    // main part of this method is adopted from Apache Commons-Text
+    static double basicArrayDistance(Object left, Object right) {
+        if (left == right) {
+            return 0D;
+        }
+        if (left == null || right == null) {
+            throw new IllegalArgumentException("Single arg cannot be null");
+        }
+        final Class<?> type = left.getClass();
+        if (type != right.getClass()) {
+            throw new IllegalArgumentException("Args must be of the same type");
+        }
+        if (type == String.class) {
+            return basicArrayDistance(((String) left).toCharArray(),
+                    ((String) right).toCharArray());
+        }
+        final Class<?> componentType = type.getComponentType();
+        if (componentType == null) {
+            throw new IllegalArgumentException("Args must be arrays");
+        }
+        int n = Array.getLength(left); // length of left
+        int m = Array.getLength(right); // length of right
+
+        if (n == 0) {
+            return m;
+        } else if (m == 0) {
+            return n;
+        }
+
+        if (n > m) {
+            // swap the input strings to consume less memory
+            final Object tmp = left;
+            left = right;
+            right = tmp;
+            n = m;
+            m = Array.getLength(right);
+        }
+
+        double[] p = new double[n + 1];
+
+        // indexes into strings left and right
+        int i; // iterates through left
+        int j; // iterates through right
+        double upperLeft;
+        double upper;
+
+        Object rightJ; // jth character of right
+        double cost; // cost
+
+        for (i = 0; i <= n; i++) {
+            p[i] = i;
+        }
+
+        for (j = 1; j <= m; j++) {
+            upperLeft = p[0];
+            rightJ = Array.get(right, j - 1);
+            p[0] = j;
+
+            for (i = 1; i <= n; i++) {
+                upper = p[i];
+                cost = getCost(Array.get(left, i - 1), rightJ);
+                // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
+                p[i] = Math.min(Math.min(p[i - 1] + 1, p[i] + 1), upperLeft + cost);
+                upperLeft = upper;
+            }
+        }
+
+        return p[n];
+    }
+
+    private static double getCost(final Object left, final Object right) {
+        if (left instanceof Number) {
+            return numberDistance((Number) left, (Number) right);
+        } else if (left instanceof Character) {
+            return charDistance((Character) left, (Character) right);
+        } else if (left instanceof Boolean) {
+            return booleanDistance((Boolean) left, (Boolean) right);
+        }
+        throw new IllegalArgumentException("Unsupported type: " + left.getClass().getName());
+    }
+
+    static <T extends Number> double numberDistance(final T left, final T right) {
+        return Math.abs(left.doubleValue() - right.doubleValue());
+    }
+
+    static double charDistance(final Character left, final Character right) {
+        return Math.abs(((int) left) - ((int) right));
+    }
+
+    static double booleanDistance(final Boolean left, final Boolean right) {
+        return left.booleanValue() == right.booleanValue() ? 0D : 1D;
     }
 }
