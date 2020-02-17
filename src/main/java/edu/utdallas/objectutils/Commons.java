@@ -54,10 +54,6 @@ final class Commons {
         if (type != right.getClass()) {
             throw new IllegalArgumentException("Args must be of the same type");
         }
-        if (type == String.class) {
-            return basicArrayDistance(((String) left).toCharArray(),
-                    ((String) right).toCharArray());
-        }
         final Class<?> componentType = type.getComponentType();
         if (componentType == null) {
             throw new IllegalArgumentException("Args must be arrays");

@@ -72,4 +72,12 @@ public class WrappedClassConstant implements Wrapped {
     public String print() {
         return String.format("Class<%s>", this.value.getName());
     }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedClassConstant) { // takes care of 'null' arg as well
+            return this.value.getName().equals(((WrappedClassConstant) wrapped).value.getName()) ? 0D : Double.POSITIVE_INFINITY;
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
 }

@@ -187,6 +187,18 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     }
 
     @Override
+    public double distance(Wrapped wrapped) {
+        if (wrapped instanceof AbstractWrappedCompositeObject) {
+            final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) wrapped;
+            if (!this.type.getName().equals(that.type.getName())) {
+                return Double.POSITIVE_INFINITY;
+            }
+            // TODO --
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
+
+    @Override
     public int hashCode() {
         return this.type.hashCode();
     }

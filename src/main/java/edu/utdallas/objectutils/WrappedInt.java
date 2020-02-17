@@ -71,4 +71,12 @@ public class WrappedInt implements Wrapped {
     public int getAddress() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedInt) { // takes care of 'null' arg as well
+            return Commons.numberDistance(this.value, ((WrappedInt) wrapped).value);
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
 }

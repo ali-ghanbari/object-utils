@@ -71,4 +71,13 @@ public class WrappedString implements Wrapped {
     public int getAddress() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedString) { // takes care of 'null' arg as well
+            return Commons.basicArrayDistance(this.value.toCharArray(),
+                    ((WrappedString) wrapped).value.toCharArray());
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
 }

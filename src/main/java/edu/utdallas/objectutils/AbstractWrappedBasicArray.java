@@ -34,4 +34,13 @@ public abstract class AbstractWrappedBasicArray<T> extends AbstractWrappedRefere
         super();
         this.value = value;
     }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof AbstractWrappedBasicArray) { // takes care of 'null' arg as well
+            return Commons.basicArrayDistance(this.value,
+                    ((AbstractWrappedBasicArray<?>) wrapped).value);
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
 }

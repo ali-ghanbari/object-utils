@@ -47,4 +47,12 @@ public enum WrappedNull implements Wrapped {
     public String print() {
         return "null";
     }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedNull) { // takes care of 'null' arg as well
+            return this == wrapped ? 0D : Double.POSITIVE_INFINITY;
+        }
+        throw new IllegalArgumentException("wrapped and this should be of the same type");
+    }
 }

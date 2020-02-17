@@ -22,11 +22,11 @@ public class CommonsTest {
         for (final String[] pair : pairs) {
             System.out.println(pair[0] + " ? " + pair[1]);
             assertEquals((double) oracle.apply(pair[0], pair[1]),
-                    Commons.basicArrayDistance(pair[0], pair[1]),
+                    Commons.basicArrayDistance(pair[0].toCharArray(), pair[1].toCharArray()),
                     1e-5);
         }
         assertTrue(oracle.apply("apple", "orange")
-                <= Commons.basicArrayDistance("apple", "orange"));
+                <= Commons.basicArrayDistance("apple".toCharArray(), "orange".toCharArray()));
     }
 
     @Test
