@@ -50,9 +50,6 @@ public enum WrappedNull implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        if (wrapped instanceof WrappedNull) { // takes care of 'null' arg as well
-            return this == wrapped ? 0D : Double.POSITIVE_INFINITY;
-        }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
+        return this == wrapped ? 0D : Double.POSITIVE_INFINITY;
     }
 }

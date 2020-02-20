@@ -78,6 +78,6 @@ public class WrappedString implements Wrapped {
             return Commons.basicArrayDistance(this.value.toCharArray(),
                     ((WrappedString) wrapped).value.toCharArray());
         }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
+        return Double.POSITIVE_INFINITY;
     }
 }

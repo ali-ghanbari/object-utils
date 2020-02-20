@@ -187,18 +187,6 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
     }
 
     @Override
-    public double distance(Wrapped wrapped) {
-        if (wrapped instanceof AbstractWrappedCompositeObject) {
-            final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) wrapped;
-            if (!this.type.getName().equals(that.type.getName())) {
-                return Double.POSITIVE_INFINITY;
-            }
-            // TODO --
-        }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
-    }
-
-    @Override
     public int hashCode() {
         return this.type.hashCode();
     }
@@ -211,7 +199,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) object;
+        final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) object;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
         final Set<Integer> visitedNodes1 = new HashSet<>();
@@ -232,7 +220,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 return false;
             }
             if (node1 instanceof AbstractWrappedCompositeObject) {
-                /* this implies node2 instanceof AbstractWrappedObject */
+                /* this implies node2 instanceof AbstractWrappedCompositeObject */
                 final AbstractWrappedCompositeObject wrappedObject1 =
                         ((AbstractWrappedCompositeObject) node1);
                 final AbstractWrappedCompositeObject wrappedObject2 =
@@ -261,5 +249,71 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
             }
         }
         return workList2.isEmpty();
+    }
+
+    @Override
+    public double distance(Wrapped wrapped) {
+        if (this == wrapped) {
+            return 0D;
+        }
+        if (wrapped == null || getClass() != wrapped.getClass()) {
+            return Double.POSITIVE_INFINITY;
+        }
+        double distance = 0D;
+        final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) wrapped;
+        final Queue<Wrapped> workList1 = new LinkedList<>();
+        final Queue<Wrapped> workList2 = new LinkedList<>();
+        final Set<Integer> visitedNodes1 = new HashSet<>();
+        workList1.offer(this);
+        workList2.offer(that);
+        while (!workList1.isEmpty()) {
+            final Wrapped node1 = workList1.poll();
+            final Wrapped node2 = workList2.poll();
+            if (node1 == null || node2 == null) {
+                if (node1 == node2) { // fields in both objects are ignored
+                    continue;
+                } else {
+                    return Double.POSITIVE_INFINITY;
+                }
+            }
+            /* assume node1 != null && node2 != null */
+            if (node1.getClass() != node2.getClass()) {
+                return Double.POSITIVE_INFINITY;
+            }
+            if (node1 instanceof AbstractWrappedCompositeObject) {
+                /* this implies node2 instanceof AbstractWrappedCompositeObject */
+                final AbstractWrappedCompositeObject wrappedObject1 =
+                        ((AbstractWrappedCompositeObject) node1);
+                final AbstractWrappedCompositeObject wrappedObject2 =
+                        ((AbstractWrappedCompositeObject) node2);
+                if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
+                    return Double.POSITIVE_INFINITY;
+                }
+                visitedNodes1.add(wrappedObject1.getAddress());
+                final Wrapped[] values1 = wrappedObject1.getValues();
+                final Wrapped[] values2 = wrappedObject2.getValues();
+                if (values1.length != values2.length) {
+                    return Double.POSITIVE_INFINITY;
+                }
+                for (int i = 0; i < values1.length; i++) {
+                    final Wrapped value = values1[i];
+                    if (value instanceof AbstractWrappedCompositeObject) {
+                        if (visitedNodes1.contains(value.getAddress())) {
+                            continue;
+                        }
+                    }
+                    workList1.offer(value);
+                    workList2.offer(values2[i]);
+                }
+            } else {
+                final double d = node1.distance(node2);
+                if (Double.isInfinite(d) || Double.isInfinite(distance)) {
+                    distance = Double.POSITIVE_INFINITY;
+                } else {
+                    distance += d;
+                }
+            }
+        }
+        return workList2.isEmpty() ? distance : Double.POSITIVE_INFINITY;
     }
 }

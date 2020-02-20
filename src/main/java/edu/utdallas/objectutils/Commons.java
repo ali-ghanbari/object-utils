@@ -48,11 +48,11 @@ final class Commons {
             return 0D;
         }
         if (left == null || right == null) {
-            throw new IllegalArgumentException("Single arg cannot be null");
+            return Double.POSITIVE_INFINITY;
         }
         final Class<?> type = left.getClass();
         if (type != right.getClass()) {
-            throw new IllegalArgumentException("Args must be of the same type");
+            return Double.POSITIVE_INFINITY;
         }
         final Class<?> componentType = type.getComponentType();
         if (componentType == null) {
@@ -108,7 +108,7 @@ final class Commons {
         return p[n];
     }
 
-    private static double getCost(final Object left, final Object right) {
+    private static <T> double getCost(final T left, final T right) {
         if (left instanceof Number) {
             return numberDistance((Number) left, (Number) right);
         } else if (left instanceof Character) {
@@ -120,7 +120,15 @@ final class Commons {
     }
 
     static <T extends Number> double numberDistance(final T left, final T right) {
-        return Math.abs(left.doubleValue() - right.doubleValue());
+        final double l = left.doubleValue();
+        final double r = right.doubleValue();
+        if (Double.isInfinite(l) || Double.isInfinite(r)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if (Double.isNaN(l) || Double.isNaN(r)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return Math.abs(l - r);
     }
 
     static double charDistance(final Character left, final Character right) {

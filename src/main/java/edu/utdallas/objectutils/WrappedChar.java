@@ -77,6 +77,6 @@ public class WrappedChar implements Wrapped {
         if (wrapped instanceof WrappedChar) { // takes care of 'null' arg as well
             return Commons.charDistance(this.value, ((WrappedChar) wrapped).value);
         }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
+        return Double.POSITIVE_INFINITY;
     }
 }

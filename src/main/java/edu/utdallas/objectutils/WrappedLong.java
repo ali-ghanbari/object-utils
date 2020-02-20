@@ -77,6 +77,6 @@ public class WrappedLong implements Wrapped {
         if (wrapped instanceof WrappedLong) { // takes care of 'null' arg as well
             return Commons.numberDistance(this.value, ((WrappedLong) wrapped).value);
         }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
+        return Double.POSITIVE_INFINITY;
     }
 }

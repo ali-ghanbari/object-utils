@@ -77,6 +77,6 @@ public class WrappedFloat implements Wrapped {
         if (wrapped instanceof WrappedFloat) { // takes care of 'null' arg as well
             return Commons.numberDistance(this.value, ((WrappedFloat) wrapped).value);
         }
-        throw new IllegalArgumentException("wrapped and this should be of the same type");
+        return Double.POSITIVE_INFINITY;
     }
 }
