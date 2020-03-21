@@ -102,4 +102,11 @@ public class DistanceTest {
         System.out.println(d);
         assertTrue(d >= 1D);
     }
+
+    @Test
+    public void testStringArr1() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new String[] {"he", "she"});
+        final Wrapped b = Wrapper.wrapObject(new String[] {"she", "he"});
+        System.out.println(a.distance(b));
+    }
 }
