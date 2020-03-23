@@ -16,7 +16,7 @@ project.
 
 ```xml
 <dependency>
-    <groupId>io.github</groupId>
+    <groupId>io.github.ali-ghanbari</groupId>
     <artifactId>object-utils</artifactId>
     <version>LATEST</version>    
 </dependency>
