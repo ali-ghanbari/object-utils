@@ -11,10 +11,7 @@
     <url>https://github.com/ali-ghanbari/object-utils</url>
     <name>Object Utilities</name>
 
-    <description>
-        A library of utilities for serialization and wrapping of arbitrary objects to have
-        correctly implemented "equals" and "hashCode" methods.
-    </description>
+    <description>A library for serializing/deserializing, hashing, and comparing arbitrary objects</description>
 
     <organization>
         <name>The University of Texas at Dallas</name>
