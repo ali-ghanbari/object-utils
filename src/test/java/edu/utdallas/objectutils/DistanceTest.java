@@ -278,4 +278,31 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(w.distance(w)));
         assertEquals(0D, w.distance(w), 1e-5D);
     }
+
+    @Test
+    public void testObject11() throws Exception {
+        final Date dob = new Date();
+        final Object[] oa1 = new Object[5];
+        oa1[0] = 1;
+        oa1[1] = new int[] {1, 2};
+        oa1[2] = "hello";
+        oa1[3] = oa1;
+        oa1[4] = new Person(10, dob, "a", "street1", (int[]) oa1[1]);
+        ///
+        final Object[] oa2 = new Object[5];
+        oa2[0] = 1;
+        oa2[1] = new int[] {1, 2};
+        oa2[2] = "hello";
+        oa2[3] = oa2;
+        oa2[4] = new Person(10, dob, "a", "street1", (int[]) oa2[1]);
+
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertFalse(Double.isInfinite(w1.distance(w1)));
+        assertFalse(Double.isInfinite(w1.distance(w2)));
+        assertFalse(Double.isInfinite(w2.distance(w2)));
+        assertEquals(0D, w1.distance(w1), 1e-5D);
+        assertEquals(0D, w2.distance(w2), 1e-5D);
+        assertEquals(0D, w1.distance(w2), 1e-5D);
+    }
 }
