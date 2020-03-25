@@ -117,6 +117,8 @@ final class Commons {
             return booleanDistance((Boolean) left, (Boolean) right);
         } else if (left instanceof String) {
             return basicArrayDistance(((String) left).toCharArray(),((String) right).toCharArray());
+        } else if (left instanceof Wrapped) {
+            return ((Wrapped) left).distance((Wrapped) right);
         }
 
         throw new IllegalArgumentException("Unsupported type: " + left.getClass().getName());

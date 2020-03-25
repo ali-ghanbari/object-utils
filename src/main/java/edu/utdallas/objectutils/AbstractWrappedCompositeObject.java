@@ -214,7 +214,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 }
                 return false;
             }
-            /* assume node1 != null && node2 != null */
+            /* assert node1 != null && node2 != null */
             if (node1.getClass() != node2.getClass()) {
                 return false;
             }
@@ -275,11 +275,17 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 }
                 return Double.POSITIVE_INFINITY;
             }
-            /* assume node1 != null && node2 != null */
+            /* assert node1 != null && node2 != null */
             if (node1.getClass() != node2.getClass()) {
                 return Double.POSITIVE_INFINITY;
             }
-            if (node1 instanceof AbstractWrappedCompositeObject) {
+            if (node1 instanceof WrappedObjectArray) {
+                final WrappedObjectArray wrappedOA1 =
+                        ((WrappedObjectArray) node1);
+                final WrappedObjectArray wrappedOA2 =
+                        ((WrappedObjectArray) node2);
+                distance += Commons.basicArrayDistance(wrappedOA1.values, wrappedOA2.values);
+            } else if (node1 instanceof AbstractWrappedCompositeObject) {
                 /* this implies node2 instanceof AbstractWrappedCompositeObject */
                 final AbstractWrappedCompositeObject wrappedObject1 =
                         ((AbstractWrappedCompositeObject) node1);
@@ -305,9 +311,9 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                     workList1.offer(value);
                     workList2.offer(values2[i]);
                 }
-            } else {
+            } else if (!Double.isInfinite(distance)) {
                 final double d = node1.distance(node2);
-                if (Double.isInfinite(d) || Double.isInfinite(distance)) {
+                if (Double.isInfinite(d)) {
                     distance = Double.POSITIVE_INFINITY;
                 } else {
                     distance += d;
