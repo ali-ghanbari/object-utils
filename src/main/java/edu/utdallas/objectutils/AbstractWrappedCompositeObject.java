@@ -263,7 +263,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) wrapped;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
-        final Set<Integer> visitedNodes1 = new HashSet<>();
+        final Set<Integer> visitedNodes = new HashSet<>();
         workList1.offer(this);
         workList2.offer(that);
         while (!workList1.isEmpty()) {
@@ -272,9 +272,8 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
             if (node1 == null || node2 == null) {
                 if (node1 == node2) { // fields in both objects are ignored
                     continue;
-                } else {
-                    return Double.POSITIVE_INFINITY;
                 }
+                return Double.POSITIVE_INFINITY;
             }
             /* assume node1 != null && node2 != null */
             if (node1.getClass() != node2.getClass()) {
@@ -289,7 +288,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
                     return Double.POSITIVE_INFINITY;
                 }
-                visitedNodes1.add(wrappedObject1.getAddress());
+                visitedNodes.add(wrappedObject1.getAddress());
                 final Wrapped[] values1 = wrappedObject1.getValues();
                 final Wrapped[] values2 = wrappedObject2.getValues();
                 if (values1.length != values2.length) {
@@ -298,7 +297,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 for (int i = 0; i < values1.length; i++) {
                     final Wrapped value = values1[i];
                     if (value instanceof AbstractWrappedCompositeObject) {
-                        if (visitedNodes1.contains(value.getAddress())) {
+                        if (visitedNodes.contains(value.getAddress())) {
                             continue;
                         }
                     }
