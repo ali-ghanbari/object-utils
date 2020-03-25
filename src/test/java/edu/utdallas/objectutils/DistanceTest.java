@@ -263,6 +263,6 @@ public class DistanceTest {
         assertEquals(0D, wl1.distance(wl1), 1e-5D);
         assertEquals(0D, wl2.distance(wl2), 1e-5D);
         assertFalse(Double.isInfinite(wl1.distance(wl2)));
-        System.out.println(wl1.distance(wl2));
+        assertEquals(0D, wl1.distance(wl2), 1e-5D);
     }
 }
