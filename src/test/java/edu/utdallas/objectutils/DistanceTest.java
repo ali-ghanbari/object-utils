@@ -246,4 +246,23 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(wl1.distance(wl2)));
         System.out.println(wl1.distance(wl2));
     }
+
+    @Test
+    public void testObject9() throws Exception {
+        final List<Person> l1 = new LinkedList<>();
+        final long currentTime = System.currentTimeMillis();
+        for (int i = 0; i < 20; i++) {
+            l1.add(new Person(i, new Date(currentTime), "a" + i, "addr" + i, new int[] {i, 1 - i, 2 + i}));
+        }
+        final List<Person> l2 = new LinkedList<>();
+        for (int i = 0; i < 20; i++) {
+            l2.add(new Person(i, new Date(currentTime), "a" + i, "addr" + i, new int[] {i, 1 - i, 2 + i}));
+        }
+        final Wrapped wl1 = Wrapper.wrapObject(l1);
+        final Wrapped wl2 = Wrapper.wrapObject(l2);
+        assertEquals(0D, wl1.distance(wl1), 1e-5D);
+        assertEquals(0D, wl2.distance(wl2), 1e-5D);
+        assertFalse(Double.isInfinite(wl1.distance(wl2)));
+        System.out.println(wl1.distance(wl2));
+    }
 }
