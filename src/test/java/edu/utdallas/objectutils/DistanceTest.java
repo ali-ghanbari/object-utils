@@ -153,4 +153,16 @@ public class DistanceTest {
         assertEquals(0D, l1.distance(l1_prime), 1e-5D);
         System.out.println(l1.distance(l2));
     }
+
+    @Test
+    public void testObject3() throws Exception {
+        final List<Person> l1 = new LinkedList<>();
+        final List<Person> l2 = new LinkedList<>();
+        final Wrapped wl1 = Wrapper.wrapObject(l1);
+        final Wrapped wl2 = Wrapper.wrapObject(l2);
+        assertEquals(0D, wl1.distance(wl1), 1e-5D);
+        assertEquals(0D, wl2.distance(wl2), 1e-5D);
+        assertFalse(Double.isInfinite(wl1.distance(wl2)));
+        System.out.println(wl1.distance(wl2));
+    }
 }
