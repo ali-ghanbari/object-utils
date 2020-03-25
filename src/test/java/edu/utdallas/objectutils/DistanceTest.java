@@ -265,4 +265,17 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(wl1.distance(wl2)));
         assertEquals(0D, wl1.distance(wl2), 1e-5D);
     }
+
+    @Test
+    public void testObject10() throws Exception {
+        final Object[] oa = new Object[5];
+        oa[0] = 1;
+        oa[1] = new int[] {1, 2};
+        oa[2] = "hello";
+        oa[3] = oa;
+        oa[4] = new Person(10, new Date(), "a", "street1", (int[]) oa[1]);
+        final Wrapped w = Wrapper.wrapObject(oa);
+        assertFalse(Double.isInfinite(w.distance(w)));
+        assertEquals(0D, w.distance(w), 1e-5D);
+    }
 }
