@@ -23,6 +23,7 @@ package edu.utdallas.objectutils;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -139,5 +140,29 @@ public class MoreWrapperTest {
         for (int i = 0; i < COUNT; i++) {
             assertEquals("s" + i, map.get(arr[i]));
         }
+    }
+
+    private static class Person {
+        private final int id;
+        private final Date dob;
+        private final String name;
+        private final String address;
+        private final int[] children_ids;
+
+        public Person(int id, Date dob, String name, String address, int[] children_ids) {
+            this.id = id;
+            this.dob = dob;
+            this.name = name;
+            this.address = address;
+            this.children_ids = children_ids;
+        }
+    }
+
+    @Test
+    public void testEqualObject1() throws Exception {
+        final long currentTime = System.currentTimeMillis();
+        Wrapped a = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[]{0, 1, 2}));
+        Wrapped a_prime = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[]{0, 1, 2}));
+        assertEquals(a, a_prime);
     }
 }

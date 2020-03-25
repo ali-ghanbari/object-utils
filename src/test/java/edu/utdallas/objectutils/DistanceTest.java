@@ -24,6 +24,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -108,5 +111,46 @@ public class DistanceTest {
         final Wrapped a = Wrapper.wrapObject(new String[] {"he", "she"});
         final Wrapped b = Wrapper.wrapObject(new String[] {"she", "he"});
         System.out.println(a.distance(b));
+    }
+
+    private static class Person {
+        private final int id;
+        private final Date dob;
+        private final String name;
+        private final String address;
+        private final int[] children_ids;
+
+        public Person(int id, Date dob, String name, String address, int[] children_ids) {
+            this.id = id;
+            this.dob = dob;
+            this.name = name;
+            this.address = address;
+            this.children_ids = children_ids;
+        }
+    }
+
+    @Test
+    public void testObject1() throws Exception {
+        final long currentTime = System.currentTimeMillis();
+        Wrapped a = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[] {0, 1, 2}));
+        Wrapped a_prime = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[] {0, 1, 2}));
+        Wrapped b = Wrapper.wrapObject(new Person(17, new Date(), "b", "addr2", new int[] {1, 11, 12, 14}));
+        Wrapped c = Wrapper.wrapObject(new Person(18, new Date(), "a", "addr1", new int[] {1, 11, 12, 14}));
+        assertFalse(Double.isInfinite(a.distance(a_prime)));
+        assertEquals(0D, a.distance(a_prime), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+        assertFalse(Double.isInfinite(a.distance(c)));
+        assertTrue(a.distance(b) > a.distance(c));
+    }
+
+    @Test
+    public void testObject2() throws Exception {
+        final Wrapped l1 = Wrapper.wrapObject(Arrays.asList(1, 2, 3));
+        final Wrapped l1_prime = Wrapper.wrapObject(Arrays.asList(1, 2, 3));
+        final Wrapped l2 = Wrapper.wrapObject(Arrays.asList(0, 1, 2, 3));
+        assertFalse(Double.isInfinite(l1.distance(l1_prime)));
+        assertFalse(Double.isInfinite(l1.distance(l2)));
+        assertEquals(0D, l1.distance(l1_prime), 1e-5D);
+        System.out.println(l1.distance(l2));
     }
 }
