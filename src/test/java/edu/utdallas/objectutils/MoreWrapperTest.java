@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class MoreWrapperTest {
     private static final int COUNT = 50;
@@ -164,5 +165,27 @@ public class MoreWrapperTest {
         Wrapped a = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[]{0, 1, 2}));
         Wrapped a_prime = Wrapper.wrapObject(new Person(10, new Date(currentTime), "a", "addr1", new int[]{0, 1, 2}));
         assertEquals(a, a_prime);
+    }
+
+    @Test
+    public void testCyclicObjectsEqual1() throws Exception {
+        final Date dob = new Date();
+        final Object[] oa2 = new Object[5];
+        final Object[] oa1 = new Object[5];
+        oa1[0] = oa2;
+        oa1[1] = new int[] {1, 2};
+        oa1[2] = "hello";
+        oa1[3] = 1;
+        oa1[4] = new Person(10, dob, "a", "street", (int[]) oa1[1]);
+        ///
+        oa2[0] = oa1;
+        oa2[1] = new int[] {1, 2};
+        oa2[2] = "hello";
+        oa2[3] = 1;
+        oa2[4] = new Person(10, dob, "a", "street", (int[]) oa2[1]);
+
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertEquals(w1, w2);
     }
 }
