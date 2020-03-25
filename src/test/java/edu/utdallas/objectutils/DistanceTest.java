@@ -305,4 +305,59 @@ public class DistanceTest {
         assertEquals(0D, w2.distance(w2), 1e-5D);
         assertEquals(0D, w1.distance(w2), 1e-5D);
     }
+
+    @Test
+    public void testObject12() throws Exception {
+        final Date dob = new Date();
+        final Object[] oa2 = new Object[5];
+        final Object[] oa1 = new Object[5];
+        oa1[0] = 1;
+        oa1[1] = new int[] {1, 2};
+        oa1[2] = "hello";
+        oa1[3] = oa2;
+        oa1[4] = new Person(10, dob, "a", "street", (int[]) oa1[1]);
+        ///
+        oa2[0] = 1;
+        oa2[1] = new int[] {1, 2};
+        oa2[2] = "hello";
+        oa2[3] = oa1;
+        oa2[4] = new Person(10, dob, "a", "street", (int[]) oa2[1]);
+
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertFalse(Double.isInfinite(w1.distance(w1)));
+        assertFalse(Double.isInfinite(w1.distance(w2)));
+        assertFalse(Double.isInfinite(w2.distance(w2)));
+        assertEquals(0D, w1.distance(w1), 1e-5D);
+        assertEquals(0D, w2.distance(w2), 1e-5D);
+        // these objects are in fact equal
+        assertEquals(0D, w1.distance(w2), 1e-5D);
+    }
+
+    @Test
+    public void testObject13() throws Exception {
+        final Date dob = new Date();
+        final Object[] oa2 = new Object[5];
+        final Object[] oa1 = new Object[5];
+        oa1[0] = 1;
+        oa1[1] = new int[] {1, 2};
+        oa1[2] = "hello";
+        oa1[3] = oa2;
+        oa1[4] = new Person(10, dob, "a", "street", (int[]) oa1[1]);
+        ///
+        oa2[0] = 1;
+        oa2[1] = new int[] {1, 2};
+        oa2[2] = "hello";
+        oa2[3] = oa1;
+        oa2[4] = new Person(10, dob, "b", "street", (int[]) oa2[1]);
+
+        final Wrapped w1 = Wrapper.wrapObject(oa1);
+        final Wrapped w2 = Wrapper.wrapObject(oa2);
+        assertFalse(Double.isInfinite(w1.distance(w1)));
+        assertFalse(Double.isInfinite(w1.distance(w2)));
+        assertFalse(Double.isInfinite(w2.distance(w2)));
+        assertEquals(0D, w1.distance(w1), 1e-5D);
+        assertEquals(0D, w2.distance(w2), 1e-5D);
+        assertNotEquals(0D, w1.distance(w2), 1e-5D);
+    }
 }
