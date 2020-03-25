@@ -360,4 +360,20 @@ public class DistanceTest {
         assertEquals(0D, w2.distance(w2), 1e-5D);
         assertNotEquals(0D, w1.distance(w2), 1e-5D);
     }
+
+    @Test
+    public void testStringArr2() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new String[] {"he", "she"});
+        final Wrapped b = Wrapper.wrapObject(new String[] {"he", "she", "they"});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
+
+    @Test
+    public void testObjectArr1() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new Object[] {"he", "she"});
+        final Wrapped b = Wrapper.wrapObject(new Object[] {"he", "she", "they"});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
 }
