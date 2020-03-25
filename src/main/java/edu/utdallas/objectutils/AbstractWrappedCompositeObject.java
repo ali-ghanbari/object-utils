@@ -291,10 +291,11 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 visitedNodes.add(wrappedObject1.getAddress());
                 final Wrapped[] values1 = wrappedObject1.getValues();
                 final Wrapped[] values2 = wrappedObject2.getValues();
-                if (values1.length != values2.length) {
+                final int len = values1.length;
+                if (len != values2.length) {
                     return Double.POSITIVE_INFINITY;
                 }
-                for (int i = 0; i < values1.length; i++) {
+                for (int i = 0; i < len; i++) {
                     final Wrapped value = values1[i];
                     if (value instanceof AbstractWrappedCompositeObject) {
                         if (visitedNodes.contains(value.getAddress())) {
