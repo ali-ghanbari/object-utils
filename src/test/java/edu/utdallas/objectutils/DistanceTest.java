@@ -411,10 +411,76 @@ public class DistanceTest {
     }
 
     @Test
-    public void testObjectArr() throws Exception {
+    public void testEmptyObjectArr() throws Exception {
         final Wrapped a = Wrapper.wrapObject(new Object[0]);
         final Wrapped b = Wrapper.wrapObject(new Object[0]);
         assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+    }
+
+    @Test
+    public void testEmptyIntArr() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new int[0]);
+        final Wrapped b = Wrapper.wrapObject(new int[0]);
+        assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+    }
+
+    @Test
+    public void testNestedObjArr() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new Object[] {new int[] {1, 2}, new double[] {1D, 2D}});
+        final Wrapped b = Wrapper.wrapObject(new Object[] {new int[] {1, 2, 3}, new double[] {1D, 2D}});
+        assertEquals(0D, a.distance(a), 1e-5D);
+        assertEquals(0D, b.distance(b), 1e-5D);
+        assertTrue(a.distance(b) > 0D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+    }
+
+    @Test
+    public void testCyclicObjArr1() throws Exception {
+        final Object[] oa1 = new Object[1];
+        final Object[] oa2 = new Object[1];
+        oa1[0] = oa1;
+        oa2[0] = oa2;
+        Wrapped a = Wrapper.wrapObject(oa1);
+        Wrapped b = Wrapper.wrapObject(oa2);
+        assertEquals(0D, a.distance(a), 1e-5D);
+        assertEquals(0D, b.distance(b), 1e-5D);
+        assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+        oa1[0] = oa2;
+        oa2[0] = oa1;
+        a = Wrapper.wrapObject(oa1);
+        b = Wrapper.wrapObject(oa2);
+        assertEquals(0D, a.distance(a), 1e-5D);
+        assertEquals(0D, b.distance(b), 1e-5D);
+        assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+    }
+
+    @Test
+    public void testCyclicObjArr2() throws Exception {
+        final Object[] oa1 = new Object[2];
+        final Object[] oa2 = new Object[2];
+        oa1[0] = oa1;
+        oa1[1] = 1;
+        oa2[0] = oa2;
+        oa2[1] = 1;
+        Wrapped a = Wrapper.wrapObject(oa1);
+        Wrapped b = Wrapper.wrapObject(oa2);
+        assertEquals(0D, a.distance(a), 1e-5D);
+        assertEquals(0D, b.distance(b), 1e-5D);
+        assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+        oa1[0] = oa2;
+        oa1[1] = 1;
+        oa2[0] = oa1;
+        oa2[1] = 2;
+        a = Wrapper.wrapObject(oa1);
+        b = Wrapper.wrapObject(oa2);
+        assertEquals(0D, a.distance(a), 1e-5D);
+        assertEquals(0D, b.distance(b), 1e-5D);
+        assertTrue(a.distance(b) > 0D);
         assertFalse(Double.isInfinite(a.distance(b)));
     }
 }
