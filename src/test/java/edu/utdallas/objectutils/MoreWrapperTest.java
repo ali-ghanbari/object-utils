@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 public class MoreWrapperTest {
@@ -187,5 +188,12 @@ public class MoreWrapperTest {
         final Wrapped w1 = Wrapper.wrapObject(oa1);
         final Wrapped w2 = Wrapper.wrapObject(oa2);
         assertEquals(w1, w2);
+    }
+
+    @Test
+    public void testStringArr2() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new String[] {"a", "b"});
+        final Wrapped b = Wrapper.wrapObject(new String[] {null, "b"});
+        assertNotEquals(a, b);
     }
 }

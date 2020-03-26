@@ -251,8 +251,9 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         return workList2.isEmpty();
     }
 
+
     @Override
-    public double distance(Wrapped wrapped) {
+    public double distance0(Wrapped wrapped) {
         if (this == wrapped) {
             return 0D;
         }
@@ -279,12 +280,11 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
             if (node1.getClass() != node2.getClass()) {
                 return Double.POSITIVE_INFINITY;
             }
+
             if (node1 instanceof WrappedObjectArray) {
-                final WrappedObjectArray wrappedOA1 =
-                        ((WrappedObjectArray) node1);
-                final WrappedObjectArray wrappedOA2 =
-                        ((WrappedObjectArray) node2);
-                distance += Commons.basicArrayDistance(wrappedOA1.values, wrappedOA2.values);
+                final WrappedObjectArray wrappedOA1 = ((WrappedObjectArray) node1);
+                final WrappedObjectArray wrappedOA2 = ((WrappedObjectArray) node2);
+                distance += Commons.arrayDistance(wrappedOA1.values, wrappedOA2.values);
             } else if (node1 instanceof AbstractWrappedCompositeObject) {
                 /* this implies node2 instanceof AbstractWrappedCompositeObject */
                 final AbstractWrappedCompositeObject wrappedObject1 =

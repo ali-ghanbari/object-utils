@@ -20,7 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -95,7 +94,9 @@ public class DistanceTest {
     public void testPrimArr6() throws Exception {
         final Wrapped a = Wrapper.wrapObject(new Object[] {"she", new int[] {1, 2}, new Object[] {Collections.singletonList(3.14D), Arrays.asList(1, 2)}});
         final Wrapped b = Wrapper.wrapObject(new Object[] {"she", new int[] {1, 2}, new Object[] {Collections.singletonList(3.14D), Collections.singletonMap('a', 'b')}});
-        assertTrue(Double.isInfinite(a.distance(b)));
+        final double d = a.distance(b);
+        assertFalse(Double.isInfinite(d));
+        assertTrue(d > 1D);
     }
 
     @Test
@@ -103,7 +104,6 @@ public class DistanceTest {
         final Wrapped a = Wrapper.wrapObject(new Object[] {"she", new int[] {1, 2}, new Object[] {Collections.singletonList(3.14D), Collections.singletonMap('a', 'c')}});
         final Wrapped b = Wrapper.wrapObject(new Object[] {"she", new int[] {1, 2}, new Object[] {Collections.singletonList(3.14D), Collections.singletonMap('a', 'b')}});
         final double d = a.distance(b);
-        System.out.println(d);
         assertTrue(d >= 1D);
     }
 
@@ -350,7 +350,7 @@ public class DistanceTest {
         oa2[1] = new int[] {1, 2};
         oa2[2] = "hello";
         oa2[3] = oa1;
-        oa2[4] = new Person(10, dob, "b", "street", (int[]) oa2[1]);
+        oa2[4] = new Person(10, dob, "a", "street", (int[]) oa2[1]);
 
         final Wrapped w1 = Wrapper.wrapObject(oa1);
         final Wrapped w2 = Wrapper.wrapObject(oa2);
@@ -359,7 +359,7 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(w2.distance(w2)));
         assertEquals(0D, w1.distance(w1), 1e-5D);
         assertEquals(0D, w2.distance(w2), 1e-5D);
-        assertNotEquals(0D, w1.distance(w2), 1e-5D);
+        assertEquals(0D, w1.distance(w2), 1e-5D);
     }
 
     @Test
@@ -373,7 +373,23 @@ public class DistanceTest {
     @Test
     public void testObjectArr1() throws Exception {
         final Wrapped a = Wrapper.wrapObject(new Object[] {"he", "she"});
-        final Wrapped b = Wrapper.wrapObject(new Object[] {"he", "she", "they"});
+        final Wrapped b = Wrapper.wrapObject(new Object[] {null, "she", "they"});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
+
+    @Test
+    public void testObjectArr2() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new String[] {null});
+        final Wrapped b = Wrapper.wrapObject(new String[] {null});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
+
+    @Test
+    public void testObjectArr3() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new String[] {"null"});
+        final Wrapped b = Wrapper.wrapObject(new String[] {null});
         assertFalse(Double.isInfinite(a.distance(b)));
         System.out.println(a.distance(b));
     }

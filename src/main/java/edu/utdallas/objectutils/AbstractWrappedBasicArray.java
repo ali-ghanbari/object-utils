@@ -36,9 +36,9 @@ public abstract class AbstractWrappedBasicArray<T> extends AbstractWrappedRefere
     }
 
     @Override
-    public double distance(final Wrapped wrapped) {
+    public double distance0(final Wrapped wrapped) {
         if (wrapped instanceof AbstractWrappedBasicArray) { // takes care of 'null' arg as well
-            return Commons.basicArrayDistance(this.value,
+            return Commons.arrayDistance(this.value,
                     ((AbstractWrappedBasicArray<?>) wrapped).value);
         }
         return Double.POSITIVE_INFINITY;

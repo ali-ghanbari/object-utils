@@ -75,7 +75,9 @@ public class WrappedString implements Wrapped {
     @Override
     public double distance(final Wrapped wrapped) {
         if (wrapped instanceof WrappedString) { // takes care of 'null' arg as well
-            return Commons.basicArrayDistance(this.value.toCharArray(),
+            // In this case, it is okay that we have not cleared the visited objects
+            // set
+            return Commons.arrayDistance(this.value.toCharArray(),
                     ((WrappedString) wrapped).value.toCharArray());
         }
         return Double.POSITIVE_INFINITY;

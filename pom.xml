@@ -63,7 +63,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.0</version>
-            <optional>true</optional>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

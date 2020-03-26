@@ -47,4 +47,12 @@ public abstract class AbstractWrappedReference implements Wrapped {
      * @since 1.1
      */
     public abstract String getTypeName();
+
+    @Override
+    public double distance(Wrapped wrapped) {
+        Commons.resetDistanceCalculator();
+        return distance0(wrapped);
+    }
+
+    protected abstract double distance0(Wrapped wrapped);
 }

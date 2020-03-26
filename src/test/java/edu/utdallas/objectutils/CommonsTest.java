@@ -42,11 +42,11 @@ public class CommonsTest {
         for (final String[] pair : pairs) {
             System.out.println(pair[0] + " ? " + pair[1]);
             assertEquals((double) oracle.apply(pair[0], pair[1]),
-                    Commons.basicArrayDistance(pair[0].toCharArray(), pair[1].toCharArray()),
+                    Commons.arrayDistance(pair[0].toCharArray(), pair[1].toCharArray()),
                     1e-5);
         }
         assertTrue(oracle.apply("apple", "orange")
-                <= Commons.basicArrayDistance("apple".toCharArray(), "orange".toCharArray()));
+                <= Commons.arrayDistance("apple".toCharArray(), "orange".toCharArray()));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class CommonsTest {
         for (int row = 0; row < len; row++) {
             System.out.println(stringPairs[row][0] + " ? " + stringPairs[row][1]);
             assertEquals((double) oracle.apply(stringPairs[row][0], stringPairs[row][1]),
-                    Commons.basicArrayDistance(boolPairs[row][0], boolPairs[row][1]),
+                    Commons.arrayDistance(boolPairs[row][0], boolPairs[row][1]),
                     1e-5);
         }
     }

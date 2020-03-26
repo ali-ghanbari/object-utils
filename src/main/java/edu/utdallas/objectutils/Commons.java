@@ -21,6 +21,8 @@ package edu.utdallas.objectutils;
  */
 
 import java.lang.reflect.Array;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utility functions common to all modules
@@ -28,7 +30,18 @@ import java.lang.reflect.Array;
  * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 final class Commons {
-    private static int addressCounter = 0;
+    // We should not use W
+    private static final Set<Wrapped> VISITED_OBJECTS;
+
+    private static final Object SELF_REF;
+
+    private static int addressCounter;
+
+    static {
+        VISITED_OBJECTS = new HashSet<>();
+        SELF_REF = new Object();
+        addressCounter = 0;
+    }
 
     private Commons() {
 
@@ -42,8 +55,11 @@ final class Commons {
         addressCounter = 0;
     }
 
-    // main part of this method is adopted from Apache Commons-Text
-    static double basicArrayDistance(Object left, Object right) {
+    static void resetDistanceCalculator() {
+        VISITED_OBJECTS.clear();
+    }
+
+    static double arrayDistance(Object left, Object right) {
         if (left == right) {
             return 0D;
         }
@@ -94,11 +110,18 @@ final class Commons {
         for (j = 1; j <= m; j++) {
             upperLeft = p[0];
             rightJ = Array.get(right, j - 1);
+            if (rightJ == right) {
+                rightJ = SELF_REF;
+            }
             p[0] = j;
 
             for (i = 1; i <= n; i++) {
                 upper = p[i];
-                cost = getCost(Array.get(left, i - 1), rightJ);
+                Object leftI = Array.get(left, i - 1);
+                if (leftI == left) {
+                    leftI = SELF_REF;
+                }
+                cost = getCost(leftI, rightJ);
                 // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
                 p[i] = Math.min(Math.min(p[i - 1] + 1, p[i] + 1), upperLeft + cost);
                 upperLeft = upper;
@@ -109,6 +132,12 @@ final class Commons {
     }
 
     private static <T> double getCost(final T left, final T right) {
+        if (left == right) {
+            return 0D;
+        }
+        if (left == SELF_REF || right == SELF_REF || left == null || right == null) {
+            return 1D; // treat null and SELF_REF as elements
+        }
         if (left instanceof Number) {
             return numberDistance((Number) left, (Number) right);
         } else if (left instanceof Character) {
@@ -116,9 +145,20 @@ final class Commons {
         } else if (left instanceof Boolean) {
             return booleanDistance((Boolean) left, (Boolean) right);
         } else if (left instanceof String) {
-            return basicArrayDistance(((String) left).toCharArray(),((String) right).toCharArray());
+            return arrayDistance(((String) left).toCharArray(),((String) right).toCharArray());
         } else if (left instanceof Wrapped) {
-            return ((Wrapped) left).distance((Wrapped) right);
+            final Wrapped wrappedLeft = (Wrapped) left;
+            final Wrapped wrappedRight = (Wrapped) right;
+            if (wrappedLeft instanceof AbstractWrappedReference) {
+                VISITED_OBJECTS.add(wrappedLeft);
+                if (wrappedRight instanceof AbstractWrappedReference) {
+                    if (VISITED_OBJECTS.contains(wrappedRight)) {
+                        return 0D;
+                    }
+                }
+                return ((AbstractWrappedReference) wrappedLeft).distance0(wrappedRight);
+            }
+            return wrappedLeft.distance(wrappedRight);
         }
 
         throw new IllegalArgumentException("Unsupported type: " + left.getClass().getName());
