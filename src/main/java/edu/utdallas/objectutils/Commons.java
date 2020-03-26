@@ -136,7 +136,7 @@ final class Commons {
             return 0D;
         }
         if (left == SELF_REF || right == SELF_REF || left == null || right == null) {
-            return 1D; // treat null and SELF_REF as elements
+            return Double.POSITIVE_INFINITY;
         }
         if (left instanceof Number) {
             return numberDistance((Number) left, (Number) right);
