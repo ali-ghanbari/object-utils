@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -482,5 +484,20 @@ public class DistanceTest {
         assertEquals(0D, b.distance(b), 1e-5D);
         assertTrue(a.distance(b) > 0D);
         assertFalse(Double.isInfinite(a.distance(b)));
+    }
+
+    @Test
+    public void testCyclicObj1() throws Exception {
+        final MutablePair<Object, Object> p1 = new MutablePair<>();
+        final MutablePair<Object, Object> p2 = new MutablePair<>();
+        p1.left = p2;
+        p1.right = p2;
+        p2.left = p1;
+        p2.right = p1;
+        final Wrapped a = Wrapper.wrapObject(p1);
+        p1.left = null;
+        p1.right = null;
+        final Wrapped b = Wrapper.wrapObject(p2);
+        assertTrue(Double.isInfinite(a.distance(b)));
     }
 }
