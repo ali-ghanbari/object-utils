@@ -393,4 +393,28 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(a.distance(b)));
         System.out.println(a.distance(b));
     }
+
+    @Test
+    public void testObjectArr4() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new Object[] {"he", 1, null, "she"});
+        final Wrapped b = Wrapper.wrapObject(new Object[] {"she", "they"});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
+
+    @Test
+    public void testObjectArr5() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new Object[] {"he", new int[] {3, 2}, null, "she"});
+        final Wrapped b = Wrapper.wrapObject(new Object[] {"she", "they", new double[] {0D}});
+        assertFalse(Double.isInfinite(a.distance(b)));
+        System.out.println(a.distance(b));
+    }
+
+    @Test
+    public void testObjectArr() throws Exception {
+        final Wrapped a = Wrapper.wrapObject(new Object[0]);
+        final Wrapped b = Wrapper.wrapObject(new Object[0]);
+        assertEquals(0D, a.distance(b), 1e-5D);
+        assertFalse(Double.isInfinite(a.distance(b)));
+    }
 }
