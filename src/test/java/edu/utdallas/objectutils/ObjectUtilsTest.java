@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
