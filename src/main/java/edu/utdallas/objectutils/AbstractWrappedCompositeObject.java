@@ -202,7 +202,8 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) object;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
-        final Set<Integer> visitedNodes = new HashSet<>();
+        final Set<Integer> visitedNodes1 = new HashSet<>();
+        final Set<Integer> visitedNodes2 = new HashSet<>();
         workList1.offer(this);
         workList2.offer(that);
         while (!workList1.isEmpty()) {
@@ -227,22 +228,28 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
                     return false;
                 }
-                visitedNodes.add(wrappedObject1.getAddress());
+                visitedNodes1.add(wrappedObject1.getAddress());
+                visitedNodes2.add(wrappedObject2.getAddress());
                 final Wrapped[] values1 = wrappedObject1.getValues();
                 final Wrapped[] values2 = wrappedObject2.getValues();
-                final int len = values1.length;
-                if (len != values2.length) {
+                if (values1.length != values2.length) {
                     return false;
                 }
-                for (int i = 0; i < len; i++) {
-                    final Wrapped value = values1[i];
+                for (final Wrapped value : values1) {
                     if (value instanceof AbstractWrappedCompositeObject) {
-                        if (visitedNodes.contains(value.getAddress())) {
+                        if (visitedNodes1.contains(value.getAddress())) {
                             continue;
                         }
                     }
                     workList1.offer(value);
-                    workList2.offer(values2[i]);
+                }
+                for (final Wrapped value : values2) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
+                        if (visitedNodes2.contains(value.getAddress())) {
+                            continue;
+                        }
+                    }
+                    workList2.offer(value);
                 }
             } else if (!node1.equals(node2)) {
                 return false;
@@ -264,7 +271,8 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) wrapped;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
-        final Set<Integer> visitedNodes = new HashSet<>();
+        final Set<Integer> visitedNodes1 = new HashSet<>();
+        final Set<Integer> visitedNodes2 = new HashSet<>();
         workList1.offer(this);
         workList2.offer(that);
         while (!workList1.isEmpty()) {
@@ -294,22 +302,28 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
                     return Double.POSITIVE_INFINITY;
                 }
-                visitedNodes.add(wrappedObject1.getAddress());
+                visitedNodes1.add(wrappedObject1.getAddress());
+                visitedNodes2.add(wrappedObject2.getAddress());
                 final Wrapped[] values1 = wrappedObject1.getValues();
                 final Wrapped[] values2 = wrappedObject2.getValues();
-                final int len = values1.length;
-                if (len != values2.length) {
+                if (values1.length != values2.length) {
                     return Double.POSITIVE_INFINITY;
                 }
-                for (int i = 0; i < len; i++) {
-                    final Wrapped value = values1[i];
+                for (final Wrapped value : values1) {
                     if (value instanceof AbstractWrappedCompositeObject) {
-                        if (visitedNodes.contains(value.getAddress())) {
+                        if (visitedNodes1.contains(value.getAddress())) {
                             continue;
                         }
                     }
                     workList1.offer(value);
-                    workList2.offer(values2[i]);
+                }
+                for (final Wrapped value : values2) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
+                        if (visitedNodes2.contains(value.getAddress())) {
+                            continue;
+                        }
+                    }
+                    workList2.offer(value);
                 }
             } else if (!Double.isInfinite(distance)) {
                 final double d = node1.distance(node2);

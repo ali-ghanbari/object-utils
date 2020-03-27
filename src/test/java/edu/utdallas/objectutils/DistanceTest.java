@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -498,6 +497,6 @@ public class DistanceTest {
         p1.left = null;
         p1.right = null;
         final Wrapped b = Wrapper.wrapObject(p2);
-        assertTrue(Double.isInfinite(a.distance(b)));
+        assertTrue(a.distance(b) > 1D);
     }
 }
