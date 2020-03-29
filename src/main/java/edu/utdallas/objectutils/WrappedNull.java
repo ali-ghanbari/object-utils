@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import static edu.utdallas.objectutils.Commons.wrappedDistance;
+
 /**
  * Represents a null reference
  *
@@ -50,6 +52,6 @@ public enum WrappedNull implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        return this == wrapped ? 0D : Double.POSITIVE_INFINITY;
+        return wrappedDistance(this, wrapped);
     }
 }

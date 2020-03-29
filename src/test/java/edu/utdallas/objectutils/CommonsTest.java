@@ -74,4 +74,40 @@ public class CommonsTest {
                     1e-5);
         }
     }
+
+    @Test
+    public void testGetCost1() throws Exception {
+        final int[] ia1 = null;
+        assertEquals(1, Commons.getCost(Wrapper.wrapObject(ia1)));
+        final int[] ia2 = {1, 2};
+        assertEquals(3, Commons.getCost(Wrapper.wrapObject(ia2)));
+        final Object[] oa1 = {ia1, ia2, new double[0], "hello"};
+        assertEquals(7, Commons.getCost(Wrapper.wrapObject(oa1)));
+        final Object[] oa2 = new Object[3];
+        oa2[0] = oa2;
+        oa2[1] = oa1;
+        assertEquals(10, Commons.getCost(Wrapper.wrapObject(oa2)));
+    }
+
+    private enum Enum1 {
+        HELLO,
+        WORLD
+    }
+
+    private enum Enum2 {
+        HELLO ("a"),
+        WORLD ("b");
+
+        final String name;
+
+        Enum2(String name) {
+            this.name = name;
+        }
+    }
+
+    @Test
+    public void testGetCost2() throws Exception {
+        assertEquals(1, Commons.getCost(Wrapper.wrapObject(Enum1.HELLO)));
+        assertEquals(2, Commons.getCost(Wrapper.wrapObject(Enum2.HELLO)));
+    }
 }

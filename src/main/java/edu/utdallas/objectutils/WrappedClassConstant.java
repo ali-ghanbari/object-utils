@@ -22,6 +22,8 @@ package edu.utdallas.objectutils;
 
 import edu.utdallas.objectutils.utils.OnDemandClass;
 
+import static edu.utdallas.objectutils.Commons.wrappedDistance;
+
 /**
  * A wrapped <code>Class</code> constant whose hash code does not depend on JVM session.
  *
@@ -75,9 +77,6 @@ public class WrappedClassConstant implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        if (wrapped instanceof WrappedClassConstant) { // takes care of 'null' arg as well
-            return this.value.getName().equals(((WrappedClassConstant) wrapped).value.getName()) ? 0D : Double.POSITIVE_INFINITY;
-        }
-        return Double.POSITIVE_INFINITY;
+        return wrappedDistance(this, wrapped);
     }
 }

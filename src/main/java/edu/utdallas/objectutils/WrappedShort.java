@@ -20,6 +20,8 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
+import static edu.utdallas.objectutils.Commons.wrappedDistance;
+
 /**
  * A wrapped <code>short</code> value which is <code>Serializable</code>,
  * and also implements <code>hashCode</code> and <code>equals</code> method appropriately.
@@ -74,9 +76,6 @@ public class WrappedShort implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        if (wrapped instanceof WrappedShort) { // takes care of 'null' arg as well
-            return Commons.numberDistance(this.value, ((WrappedShort) wrapped).value);
-        }
-        return Double.POSITIVE_INFINITY;
+        return wrappedDistance(this, wrapped);
     }
 }

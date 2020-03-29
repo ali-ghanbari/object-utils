@@ -360,6 +360,7 @@ public class DistanceTest {
         assertFalse(Double.isInfinite(w2.distance(w2)));
         assertEquals(0D, w1.distance(w1), 1e-5D);
         assertEquals(0D, w2.distance(w2), 1e-5D);
+        assertEquals(w1, w2);
         assertEquals(0D, w1.distance(w2), 1e-5D);
     }
 

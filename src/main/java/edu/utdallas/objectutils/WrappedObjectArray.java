@@ -84,4 +84,9 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     public String print() {
         return ObjectPrinter.print(this);
     }
+
+    @Override
+    public int size() {
+        return this.values.length;
+    }
 }

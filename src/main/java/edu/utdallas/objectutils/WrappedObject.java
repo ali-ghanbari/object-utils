@@ -25,11 +25,7 @@ import org.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;

@@ -26,5 +26,11 @@ package edu.utdallas.objectutils;
  * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public interface WrappedArray extends Wrapped {
-
+    /**
+     * Retrieves the size of the array represented by <code>this</code>.
+     *
+     * @return Size of the array
+     * @since 1.2
+     */
+    int size();
 }
