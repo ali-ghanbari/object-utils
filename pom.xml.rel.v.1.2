@@ -6,15 +6,12 @@
 
     <groupId>io.github.ali-ghanbari</groupId>
     <artifactId>object-utils</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <inceptionYear>2019</inceptionYear>
     <url>https://github.com/ali-ghanbari/object-utils</url>
     <name>Object Utilities</name>
 
-    <description>
-        A library of utilities for serialization and wrapping of arbitrary objects to have
-        correctly implemented "equals" and "hashCode" methods.
-    </description>
+    <description>A library for serializing/deserializing, hashing, and comparing arbitrary objects</description>
 
     <organization>
         <name>The University of Texas at Dallas</name>
@@ -55,13 +52,13 @@
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
             <version>2.6</version> <!--this is not the latest version but it is compatible with JDK 1.7-->
-	        <optional>true</optional>
+	    <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version> <!--this is not the latest version but it is compatible with JDK 1.7-->
-	        <optional>true</optional>
+	    <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -73,7 +70,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.0</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
