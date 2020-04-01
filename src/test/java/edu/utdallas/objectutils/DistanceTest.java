@@ -21,6 +21,8 @@ package edu.utdallas.objectutils;
  */
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.text.similarity.EditDistance;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -35,6 +37,8 @@ import static org.junit.Assert.*;
  * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
  */
 public class DistanceTest {
+    private static final EditDistance<Integer> LEVEN = new LevenshteinDistance();
+
     @Test
     public void testPrimArr1() throws Exception {
         final int[] a = {1, 2, 3};
@@ -47,31 +51,6 @@ public class DistanceTest {
         final double[] a = {3.14D, 2.718D, 0D};
         final double[] b = a.clone();
         assertEquals(Wrapper.wrapObject(a).distance(Wrapper.wrapObject(b)), 0, 1e-5);
-    }
-
-    @Test
-    public void testPrimArr3() throws Exception {
-        final Wrapped a = Wrapper.wrapObject(new int[]{1, 2, 3});
-        final Wrapped b = Wrapper.wrapObject(new int[]{1, 1, 3});
-
-        final double d_ab = a.distance(b);
-
-        final Wrapped c = Wrapper.wrapObject(new int[]{1, 3, 3});
-
-        final double d_ac = a.distance(c);
-
-        final Wrapped d = Wrapper.wrapObject(new int[]{1, 5, 3});
-
-        final double d_ad = a.distance(d);
-
-        final Wrapped e = Wrapper.wrapObject(new int[]{1, 5, 3, 10});
-
-        final double d_ae = a.distance(e);
-        final double d_de = d.distance(e);
-
-        assertEquals(d_ab, d_ac, 1e-5);
-        assertTrue(d_ab < d_ad);
-        assertTrue(d_de < d_ae);
     }
 
     @Test
@@ -97,7 +76,7 @@ public class DistanceTest {
         final Wrapped b = Wrapper.wrapObject(new Object[] {"she", new int[] {1, 2}, new Object[] {Collections.singletonList(3.14D), Collections.singletonMap('a', 'b')}});
         final double d = a.distance(b);
         assertFalse(Double.isInfinite(d));
-        assertTrue(d > 1D);
+        assertEquals((double) LEVEN.apply("ab", "ac"), d, 1e-5D);
     }
 
     @Test

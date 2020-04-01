@@ -22,6 +22,8 @@ package edu.utdallas.objectutils;
 
 import java.lang.reflect.Array;
 
+import static edu.utdallas.objectutils.Commons.arrayDistance;
+
 /**
  * Base class for all basic-typed one-dimensional arrays
  * (e.g., String[], Integer[], int[], etc).
@@ -40,5 +42,19 @@ public abstract class AbstractWrappedBasicArray<T> extends AbstractWrappedRefere
     @Override
     public int size() {
         return Array.getLength(this.value);
+    }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof AbstractWrappedBasicArray) {
+            final AbstractWrappedBasicArray<?> that =
+                    (AbstractWrappedBasicArray<?>) wrapped;
+            if (this.value.getClass() != that.value.getClass()) {
+                return Double.POSITIVE_INFINITY;
+            }
+            return arrayDistance(this.value, that.value);
+        }
+        return Double.POSITIVE_INFINITY;
+
     }
 }

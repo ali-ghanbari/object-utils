@@ -20,7 +20,7 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import static edu.utdallas.objectutils.Commons.wrappedDistance;
+import static edu.utdallas.objectutils.Commons.arrayDistance;
 
 /**
  * A wrapped <code>String</code> value which is <code>Serializable</code>,
@@ -76,6 +76,10 @@ public class WrappedString implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        return wrappedDistance(this, wrapped);
+        if (wrapped instanceof WrappedString) {
+            return arrayDistance(this.value.toCharArray(),
+                    ((WrappedString) wrapped).value.toCharArray());
+        }
+        return Double.POSITIVE_INFINITY;
     }
 }

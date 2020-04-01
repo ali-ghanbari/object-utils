@@ -199,14 +199,13 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        final AbstractWrappedCompositeObject that = (AbstractWrappedCompositeObject) object;
         final Queue<Wrapped> workList1 = new LinkedList<>();
         final Queue<Wrapped> workList2 = new LinkedList<>();
         final Set<Integer> visitedNodes1 = new HashSet<>();
         final Set<Integer> visitedNodes2 = new HashSet<>();
         workList1.offer(this);
-        workList2.offer(that);
-        while (!workList1.isEmpty()) {
+        workList2.offer((Wrapped) object);
+        while (!workList1.isEmpty() && workList1.size() == workList2.size()) {
             final Wrapped node1 = workList1.poll();
             final Wrapped node2 = workList2.poll();
             if (node1 == null || node2 == null) {
@@ -225,7 +224,7 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                         ((AbstractWrappedCompositeObject) node1);
                 final AbstractWrappedCompositeObject wrappedObject2 =
                         ((AbstractWrappedCompositeObject) node2);
-                if (!wrappedObject1.getTypeName().equals(wrappedObject2.getTypeName())) {
+                if (!wrappedObject1.type.equals(wrappedObject2.type)) {
                     return false;
                 }
                 visitedNodes1.add(wrappedObject1.getAddress());
@@ -255,6 +254,6 @@ public abstract class AbstractWrappedCompositeObject extends AbstractWrappedRefe
                 return false;
             }
         }
-        return workList2.isEmpty();
+        return workList1.size() == workList2.size();
     }
 }

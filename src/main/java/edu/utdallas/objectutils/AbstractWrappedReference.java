@@ -20,7 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import static edu.utdallas.objectutils.Commons.wrappedDistance;
 import static edu.utdallas.objectutils.Commons.newAddress;
 
 /**
@@ -48,9 +47,4 @@ public abstract class AbstractWrappedReference implements Wrapped {
      * @since 1.1
      */
     public abstract String getTypeName();
-
-    @Override
-    public double distance(final Wrapped wrapped) {
-        return wrappedDistance(this, wrapped);
-    }
 }

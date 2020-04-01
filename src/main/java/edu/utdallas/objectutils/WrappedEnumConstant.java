@@ -22,6 +22,7 @@ package edu.utdallas.objectutils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 
 /**
  * Wraps an enum constant. Just like a normal object, an enum constant might have fields.
@@ -107,5 +108,15 @@ public class WrappedEnumConstant extends WrappedObject {
     @Override
     public int hashCode() {
         return this.name.hashCode();
+    }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedEnumConstant) {
+            final WrappedEnumConstant that = (WrappedEnumConstant) wrapped;
+            return Objects.equals(this.name, that.name)
+                    && Objects.equals(this.type, that.type) ? 0D : 1D;
+        }
+        return Double.POSITIVE_INFINITY;
     }
 }

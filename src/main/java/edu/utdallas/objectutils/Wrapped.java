@@ -56,10 +56,12 @@ public interface Wrapped extends Serializable {
     String print();
 
     /**
-     * Levenshtein distance extended to objects with fine-grained cost calculation.
-     * @param wrapped The distance between <code>this</code> and <code>wrapped</code> shall
-     *                be returned
-     * @return he distance between <code>this</code> and <code>wrapped</code>
+     * A versatile distance calculation: (1) Levenshtein distance for arrays;
+     * (2) equal/not-equal, 0/1 distance calculation for primitive-typed objects;
+     * (3) field-by distance calculation for objects.
+     *
+     * @param wrapped The target object
+     * @return The distance between <code>this</code> and <code>wrapped</code>
      * @since 1.2
      */
     double distance(Wrapped wrapped);

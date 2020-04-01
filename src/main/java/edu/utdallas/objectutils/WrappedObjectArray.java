@@ -23,6 +23,9 @@ package edu.utdallas.objectutils;
 import edu.utdallas.objectutils.utils.ObjectPrinter;
 
 import java.lang.reflect.Array;
+import java.util.Objects;
+
+import static edu.utdallas.objectutils.Commons.arrayDistance;
 
 /**
  * Represents an array of objects or a multi-dimensional array.
@@ -88,5 +91,16 @@ public class WrappedObjectArray extends AbstractWrappedCompositeObject implement
     @Override
     public int size() {
         return this.values.length;
+    }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        if (wrapped instanceof WrappedObjectArray) {
+            final WrappedObjectArray that = (WrappedObjectArray) wrapped;
+            if (Objects.equals(this.type, that.type)) {
+                return arrayDistance(this.values, that.values);
+            }
+        }
+        return Double.POSITIVE_INFINITY;
     }
 }

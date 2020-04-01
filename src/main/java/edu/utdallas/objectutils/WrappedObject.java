@@ -25,7 +25,11 @@ import org.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
@@ -100,5 +104,69 @@ public class WrappedObject extends AbstractWrappedCompositeObject {
     @Override
     public String print() {
         return ObjectPrinter.print(this);
+    }
+
+    @Override
+    public double distance(final Wrapped wrapped) {
+        // field-by-field distance calculation
+        if (!(wrapped instanceof WrappedObject)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        double dist = 0D; // the value to be returned
+        final Queue<Wrapped> workList1 = new LinkedList<>();
+        final Queue<Wrapped> workList2 = new LinkedList<>();
+        final Set<Integer> visitedNodes1 = new HashSet<>();
+        final Set<Integer> visitedNodes2 = new HashSet<>();
+        workList1.offer(this);
+        workList2.offer(wrapped);
+        while (!workList1.isEmpty() && workList1.size() == workList2.size()) {
+            final Wrapped node1 = workList1.poll();
+            final Wrapped node2 = workList2.poll();
+            if (node1 == null || node2 == null) {
+                if (node1 == node2) { // fields in both objects are ignored
+                    continue;
+                }
+                return Double.POSITIVE_INFINITY;
+            }
+            /* assert node1 != null && node2 != null */
+            if (node1.getClass() != node2.getClass()) {
+                return Double.POSITIVE_INFINITY;
+            }
+            if (node1 instanceof WrappedObject) {
+                /* this implies node2 instanceof AbstractWrappedCompositeObject */
+                final WrappedObject wrappedObject1 = ((WrappedObject) node1);
+                final WrappedObject wrappedObject2 = ((WrappedObject) node2);
+                if (!wrappedObject1.type.equals(wrappedObject2.type)) {
+                    return Double.POSITIVE_INFINITY;
+                }
+                visitedNodes1.add(wrappedObject1.getAddress());
+                visitedNodes2.add(wrappedObject2.getAddress());
+                final Wrapped[] values1 = wrappedObject1.getValues();
+                final Wrapped[] values2 = wrappedObject2.getValues();
+                // assert values1.length == values2.length
+                for (final Wrapped value : values1) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
+                        if (visitedNodes1.contains(value.getAddress())) {
+                            continue;
+                        }
+                    }
+                    workList1.offer(value);
+                }
+                for (final Wrapped value : values2) {
+                    if (value instanceof AbstractWrappedCompositeObject) {
+                        if (visitedNodes2.contains(value.getAddress())) {
+                            continue;
+                        }
+                    }
+                    workList2.offer(value);
+                }
+            } else {
+                dist += node1.distance(node2);
+            }
+            if (Double.isInfinite(dist)) {
+                return dist;
+            }
+        }
+        return workList1.size() == workList2.size() ? dist : Double.POSITIVE_INFINITY;
     }
 }

@@ -20,8 +20,6 @@ package edu.utdallas.objectutils;
  * #L%
  */
 
-import static edu.utdallas.objectutils.Commons.wrappedDistance;
-
 /**
  * A wrapped <code>boolean</code> value which is <code>Serializable</code>,mvn
  * and also implements <code>hashCode</code> and <code>equals</code> methods appropriately.
@@ -76,6 +74,9 @@ public class WrappedBoolean implements Wrapped {
 
     @Override
     public double distance(final Wrapped wrapped) {
-        return wrappedDistance(this, wrapped);
+        if (wrapped instanceof WrappedBoolean) {
+            return this.value == ((WrappedBoolean) wrapped).value ? 0D : 1D;
+        }
+        return Double.POSITIVE_INFINITY;
     }
 }
