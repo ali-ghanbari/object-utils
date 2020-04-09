@@ -27,6 +27,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -92,21 +93,13 @@ public final class ObjectUtils {
             return 0L;
         }
         final Class<?> clazz = core.getClass();
-        if (clazz == Boolean.class
-                || clazz == Character.class
-                || clazz == Byte.class
-                || clazz == Short.class
-                || clazz == Integer.class
-                || clazz == Long.class
-                || clazz == Float.class
-                || clazz == Double.class
-                || clazz == Void.class
-                || clazz == String.class) {
+        if (isPrimitiveWrapper(clazz) || clazz == String.class) {
             return core.hashCode();
         } else if (core instanceof Class) {
             return ((Class<?>) core).getName().hashCode();
         } else if (clazz.isEnum()) {
-            return ((Enum<?>) core).name().hashCode();
+            final String className = clazz.getName();
+            return 31L * className.hashCode() + ((Enum<?>) core).name().hashCode();
         }
         // composite object
         MutableLong result = visited.get(hashMapSafeObject);
