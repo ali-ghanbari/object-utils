@@ -24,11 +24,17 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -289,5 +295,134 @@ public class ObjectUtilsTest {
 	public void testDeepHashCodeCompositeObject5() throws Exception {
 		assertNotEquals(ObjectUtils.deepHashCode(String.class), ObjectUtils.deepHashCode(Integer.class));
 		assertEquals(ObjectUtils.deepHashCode(String.class), ObjectUtils.deepHashCode(String.class));
+	}
+
+	private static Object[] generateAVeryComplexObject() {
+		final Object[] objects = new Object[8];
+		final StringBuilder sb = new StringBuilder("ali");
+		final List<Integer> list1 = new ArrayList<>();
+		final Set<String> set1 = new HashSet<>();
+		final Map<Integer, Double> map = new LinkedHashMap<>();
+		for (int i = 0; i < 1000; i++) {
+			sb.append('.').append(i).append(';');
+			list1.add(i);
+			set1.add(sb.toString());
+			map.put(i, Math.sin(i));
+		}
+		objects[0] = sb.toString();
+		final Object da = objects[1] = new double[] {
+				0D,
+				Math.log(3.14D) * sb.length(),
+				Math.log1p(2.718D) * sb.length(),
+				Math.sinh(sb.length()) * Math.sinh(22D),
+				Math.cosh(sb.length()) + Math.cosh(sb.length())
+		};
+		objects[2] = new Object[] {null, String.class, objects, da, sb, sb.getClass()};
+		objects[3] = objects;
+		objects[4] = null;
+		final Record r1 = new Record("r1", "30");
+		final Record r2 = new Record("r2", "40");
+		final Record r3 = new Record("r2", "30");
+		final Student2 s1 = new Student2("Ali", 28, r1, r2);
+		final Object[] c = new Object[1];
+		c[0] = c;
+		final Student2 s2 = new Student2("TheOtherStudent", 28, r1, r3);
+		objects[5] = new Object[] {c, Colors.GREEN, s1, s2, list1, set1, map, c};
+		objects[6] = Collections.singletonMap(0, objects);
+		final Hashtable<Integer, Object> ht = new Hashtable<>();
+		final List<Object> list2 = new LinkedList<>();
+		list2.add(s1); list2.add(s2);
+		list2.add(r1); list2.add(r2);
+		list2.add(c); list2.add(map);
+		ht.put(0, list2); list2.add(ht);
+		ht.put(list1.getClass().hashCode(), "hello");
+		ht.put(list2.getClass().hashCode(), "world");
+		ht.put(ht.getClass().hashCode(), "how");
+		objects[7] = new Object[] {ht, list2};
+		return objects;
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject1() throws Exception {
+		final Object i1 = generateAVeryComplexObject();
+		final Object i2 = generateAVeryComplexObject();
+		assertNotSame(i1, i2);
+		assertEquals(Wrapper.wrapObject(i1), Wrapper.wrapObject(i2));
+		assertEquals(ObjectUtils.deepHashCode(i1), ObjectUtils.deepHashCode(i2));
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject2() throws Exception {
+		final Object i1 = generateAVeryComplexObject();
+		final Object i2 = generateAVeryComplexObject();
+		assertNotSame(i1, i2);
+		final Wrapped w1 = Wrapper.wrapObject(i1);
+		final Wrapped w2 = Wrapper.wrapObject(i2);
+		assertEquals(w1, w2);
+		assertEquals(ObjectUtils.deepHashCode(i1), ObjectUtils.deepHashCode(i2));
+		assertEquals(ObjectUtils.deepHashCode(w1.unwrap()), ObjectUtils.deepHashCode(w2.unwrap()));
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject3() throws Exception {
+		final Object[] i = {
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject(),
+				generateAVeryComplexObject()
+		};
+		final long start = System.currentTimeMillis();
+		for (int ignored = 0; ignored < 5; ignored++) {
+			ObjectUtils.deepHashCode(i);
+		}
+		System.out.println("----5x8 complex objects----");
+		System.out.println(System.currentTimeMillis() - start + " ms");
+		System.out.println("---------------------------");
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject4() throws Exception {
+		final InclusionPredicate ip1 = new InclusionPredicate() {
+			@Override
+			public boolean test(Field field) {
+				final String fieldName = field.getName().toLowerCase();
+				return Math.max(fieldName.indexOf('r'), fieldName.indexOf('a')) >= 0;
+			}
+		};
+		Object i1 = generateAVeryComplexObject();
+		Object i2 = generateAVeryComplexObject();
+		assertNotSame(i1, i2);
+		final Wrapped w1 = Wrapper.wrapObject(i1, ip1);
+		final Wrapped w2 = Wrapper.wrapObject(i2, ip1);
+		assertEquals(w1, w2);
+		assertEquals(ObjectUtils.deepHashCode(i1, ip1), ObjectUtils.deepHashCode(i2, ip1));
+		i1 = generateAVeryComplexObject();
+		i2 = generateAVeryComplexObject();
+		assertEquals(ObjectUtils.deepHashCode(w1.unwrap(i1)), ObjectUtils.deepHashCode(w2.unwrap(i2)));
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject5() throws Exception {
+		final InclusionPredicate ip1 = new InclusionPredicate() {
+			@Override
+			public boolean test(Field field) {
+				final String fieldName = field.getName().toLowerCase();
+				return Math.max(fieldName.indexOf('r'), fieldName.indexOf('a')) >= 0 || fieldName.length() > 5;
+			}
+		};
+		Object i1 = generateAVeryComplexObject();
+		Object i2 = generateAVeryComplexObject();
+		assertNotSame(i1, i2);
+		final Wrapped w1 = Wrapper.wrapObject(i1, ip1);
+		final Wrapped w2 = Wrapper.wrapObject(i2, ip1);
+		assertEquals(w1, w2);
+		assertEquals(ObjectUtils.deepHashCode(i1, ip1), ObjectUtils.deepHashCode(i2, ip1));
+		i1 = generateAVeryComplexObject();
+		i2 = generateAVeryComplexObject();
+		assertEquals(ObjectUtils.deepHashCode(w1.unwrap(i1)), ObjectUtils.deepHashCode(w2.unwrap(i2)));
 	}
 }

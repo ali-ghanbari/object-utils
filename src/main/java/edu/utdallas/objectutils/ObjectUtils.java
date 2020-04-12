@@ -21,6 +21,7 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.W;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
@@ -99,7 +100,7 @@ public final class ObjectUtils {
             return ((Class<?>) core).getName().hashCode();
         } else if (clazz.isEnum()) {
             final String className = clazz.getName();
-            return 31L * className.hashCode() + ((Enum<?>) core).name().hashCode();
+            return 31L * className.hashCode() + ((Enum<?>) core).ordinal();
         }
         // composite object
         MutableLong result = visited.get(hashMapSafeObject);
