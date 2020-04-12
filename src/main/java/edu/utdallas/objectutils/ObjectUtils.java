@@ -21,7 +21,6 @@ package edu.utdallas.objectutils;
  */
 
 import edu.utdallas.objectutils.utils.W;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
