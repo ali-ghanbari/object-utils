@@ -23,11 +23,17 @@ package edu.utdallas.objectutils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
@@ -390,5 +396,41 @@ public class ObjectUtilsTest {
 		i1 = generateAVeryComplexObject();
 		i2 = generateAVeryComplexObject();
 		assertEquals(ObjectUtils.deepHashCode(w1.unwrap(i1)), ObjectUtils.deepHashCode(w2.unwrap(i2)));
+	}
+
+	@Test
+	public void testDeepHashCodeComplexObject7() throws Exception {
+		Object i1 = generateAVeryComplexObject();
+		Object i2 = generateAVeryComplexObject();
+		assertNotSame(i1, i2);
+		Wrapped w1 = Wrapper.wrapObject(i1, ip2);
+		Wrapped w2 = Wrapper.wrapObject(i2, ip2);
+		Map<Wrapped, Wrapped> m = new HashMap<>();
+		byte[] bytes;
+		try (final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			 final ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+			oos.writeObject(w1);
+			oos.writeObject(w2);
+			m.put(w1, w2);
+			m.put(w2, w1);
+			oos.writeObject(m);
+			oos.flush();
+			bytes = baos.toByteArray();
+		}
+		try (final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+			 final ObjectInputStream ois = new ObjectInputStream(bais)) {
+			w1 = (Wrapped) ois.readObject();
+			w2 = (Wrapped) ois.readObject();
+			m = (Map) ois.readObject();
+		}
+		assertEquals(w1, w2);
+		assertEquals(m.get(w1), w2);
+		assertEquals(m.get(w2), w1);
+		i1 = generateAVeryComplexObject();
+		i2 = generateAVeryComplexObject();
+		w1.unwrap(i1);
+		w1.unwrap(i2);
+		assertEquals(ObjectUtils.deepHashCode(i1, ip2),
+				ObjectUtils.deepHashCode(i2, ip2));
 	}
 }

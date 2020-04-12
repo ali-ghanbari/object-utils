@@ -22,6 +22,8 @@ package edu.utdallas.objectutils;
 
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static edu.utdallas.objectutils.CommonUtils.*;
+
 
 public class MoreWrapperTest {
     private static final int COUNT = 50;
@@ -194,5 +198,17 @@ public class MoreWrapperTest {
         final Wrapped a = Wrapper.wrapObject(new String[] {"a", "b"});
         final Wrapped b = Wrapper.wrapObject(new String[] {null, "b"});
         assertNotEquals(a, b);
+    }
+
+    // FAILS ON JDK 11
+    @Test
+    public void testStackOverflowWhenSerializingWrappedComplexObj() throws Exception {
+        Object i1 = generateAVeryComplexObject();
+        Wrapped w1 = Wrapper.wrapObject(i1);
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             final ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(w1);
+            oos.flush();
+        }
     }
 }
