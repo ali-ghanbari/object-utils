@@ -119,7 +119,7 @@ Compared to Google Protobuf, Google GSON, XStream, and Azrael,
  Compared to Apache Commons Lang, the deep hashcode functionality
  provided by `object-utils` is faster.
  
- ## Credit
+ ## Credits
  This library is written by [Ali Ghanbari](https://ali-ghanbari.github.io/)
  and is being used in several research projects directly/indirectly related
  to his Ph.D. dissertation.
