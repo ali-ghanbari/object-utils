@@ -33,7 +33,7 @@ MyClass ref1 = new MyClass(/*...*/);
 // ref1 holds the reference to an object of type MyClass
 Wrapped w1 = Wrapper.wrapObject(ref1);
 ```
-Easy! Now, you can treat `w` as an object that can be turned
+Quite easy, right? Now, you can treat `w` as an object that can be turned
 into sequence of bytes and you can invoke `equals` and `hashCode`
 methods on it (so it can be used in hash tables).
 
