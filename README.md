@@ -1,4 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.ali-ghanbari/object-utils.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.ali-ghanbari%22%20AND%20a:%22object-utils%22)
+[![Downloads](https://img.shields.io/github/downloads/io.github.ali-ghanbari/comby/object-utils.svg?color=orange)](Downloads)
 
 # Object Utilities Library
 
