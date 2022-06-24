@@ -1,5 +1,25 @@
 package edu.iastate.objectutils;
 
+/*
+ * #%L
+ * Object Utilities
+ * %%
+ * Copyright (C) 2019 - 2022 Iowa State University
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -27,8 +47,6 @@ public final class ObjectUtils {
 
     private final Map<W<?>, Proxy> proxyCache;
 
-    private final Map<W<?>, String> printerCache;
-
     private ObjectUtils(final Predicate<Field> included,
                         final int maxDepth,
                         final int maxInheritanceDepth) {
@@ -38,7 +56,6 @@ public final class ObjectUtils {
         this.lhsVisited = new HashMap<>();
         this.rhsVisited = new HashMap<>();
         this.proxyCache = new HashMap<>();
-        this.printerCache = new HashMap<>();
     }
 
     public static ObjectUtils build() {
@@ -141,6 +158,9 @@ public final class ObjectUtils {
                             return false;
                         }
                     }
+                    unvisit(this.lhsVisited, lhsW);
+                    unvisit(this.rhsVisited, rhsW);
+                    return true;
                 }
             }
         }
@@ -183,20 +203,26 @@ public final class ObjectUtils {
             return proxy;
         }
 
-        if (isJDKClass(clazz)) {
-            if (obj instanceof Iterable) {
-                if (obj instanceof HashSet) {
-                    return makeNonDetIterableProxy(objW, (Iterable<?>) obj, depth);
-                }
-                return makeDetIterableProxy(clazz, objW, (Iterable<?>) obj, depth);
-            } else if (obj instanceof Map) {
-                if (obj instanceof HashMap || obj instanceof Hashtable) {
-                    return makeNonDetIterableProxy(objW, ((Map<?, ?>) obj).entrySet(), depth);
-                }
-                return makeDetIterableProxy(clazz, objW, ((Map<?, ?>) obj).entrySet(), depth);
+        if (obj instanceof Iterable) {
+            final Proxy proxy;
+            if (obj instanceof HashSet) {
+                proxy = makeNonDetIterableProxy(objW, (Iterable<?>) obj, depth);
+            } else {
+                proxy = makeDetIterableProxy(clazz, objW, (Iterable<?>) obj, depth);
             }
-            this.proxyCache.put(objW, EOG.V);
-            return EOG.V;
+            this.proxyCache.put(objW, proxy);
+            return proxy;
+        }
+
+        if (obj instanceof Map) {
+            final Proxy proxy;
+            if (obj instanceof HashMap || obj instanceof Hashtable) {
+                proxy = makeNonDetIterableProxy(objW, ((Map<?, ?>) obj).entrySet(), depth);
+            } else {
+                proxy = makeDetIterableProxy(clazz, objW, ((Map<?, ?>) obj).entrySet(), depth);
+            }
+            this.proxyCache.put(objW, proxy);
+            return proxy;
         }
 
         if (clazz.isArray()) {
@@ -304,52 +330,5 @@ public final class ObjectUtils {
             return ((Double[]) array).clone();
         }
         return ((Void[]) array).clone();
-    }
-
-    private String print0(final W<Proxy> proxyW) {
-        final String result = this.printerCache.get(proxyW);
-
-        if (result != null) {
-            return result;
-        }
-
-        visit(this.lhsVisited, lhsW);
-        visit(this.rhsVisited, rhsW);
-
-        if (lhs instanceof NonDetIterableProxy) {
-            final List<Proxy> lhsElements = ((NonDetIterableProxy) lhs).elements;
-            final List<Proxy> rhsElements = ((NonDetIterableProxy) rhs).elements;
-            final int size = lhsElements.size();
-            if (size == rhsElements.size()) {
-                for (int i = 0; i < size; i++) {
-                    if (!deepEquals0(new W<>(lhsElements.get(i)), new W<>(rhsElements.get(i)))) {
-                        unvisit(this.lhsVisited, lhsW);
-                        unvisit(this.rhsVisited, rhsW);
-                        return false;
-                    }
-                }
-                unvisit(this.lhsVisited, lhsW);
-                unvisit(this.rhsVisited, rhsW);
-                return true;
-            }
-        } else if (lhs instanceof AbstractCompositeObjectProxy) {
-            final AbstractCompositeObjectProxy lhsObj = (AbstractCompositeObjectProxy) lhs;
-            final AbstractCompositeObjectProxy rhsObj = (AbstractCompositeObjectProxy) rhs;
-            if (lhsObj.typeName.equals(rhsObj.typeName)) {
-                final int size = lhsObj.values.size();
-                if (size == rhsObj.values.size()) {
-                    for (int i = 0; i < size; i++) {
-                        if (!deepEquals0(new W<>(lhsObj.values.get(i)), new W<>(rhsObj.values.get(i)))) {
-                            unvisit(this.lhsVisited, lhsW);
-                            unvisit(this.rhsVisited, rhsW);
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        unvisit(this.lhsVisited, lhsW);
-        unvisit(this.rhsVisited, rhsW);
-        return false;
     }
 }

@@ -40,7 +40,7 @@ public class SerializationWrapperTest {
     public void testMakeSerializable2() {
         final ObjectUtils ou = ObjectUtils.build();
         Object[] oa1 = new Object[0];
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             final StringBuilder sb = new StringBuilder();
             sb.append("#");
             sb.append(i);
@@ -52,7 +52,7 @@ public class SerializationWrapperTest {
             }
         }
         Object[] oa2 = new Object[0];
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             final StringBuilder sb = new StringBuilder();
             sb.append("#");
             sb.append(i);

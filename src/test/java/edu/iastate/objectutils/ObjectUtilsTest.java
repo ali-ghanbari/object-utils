@@ -15,10 +15,10 @@ public class ObjectUtilsTest {
         final ObjectUtils ou = ObjectUtils.build();
         final B obj1 = new C1(1.31, 10, "hello");
         final B obj2 = new C1(1.31, 10, "hello");
-        assertTrue(ou.deepEquals(obj1, obj2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(obj1), ou.makeSerializable(obj2)));
         final B obj3 = new C1(1.31, 10, "hello fresh");
-        assertFalse(ou.deepEquals(obj1, obj3));
-        assertFalse(ou.deepEquals(obj2, obj3));
+        assertFalse(ou.deepEquals(ou.makeSerializable(obj1), ou.makeSerializable(obj3)));
+        assertFalse(ou.deepEquals(ou.makeSerializable(obj2), ou.makeSerializable(obj3)));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class ObjectUtilsTest {
         strings2.add("you?");
         strings2.add("R U sure?!");
         strings2.add("everything");
-        assertTrue(ou.deepEquals(strings1, strings2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(strings1), ou.makeSerializable(strings2)));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ObjectUtilsTest {
         objects1[1] = 1;
         objects2[0] = objects1;
         objects2[1] = 1;
-        assertTrue(ou.deepEquals(objects1, objects2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(objects1), ou.makeSerializable(objects2)));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ObjectUtilsTest {
         objects1[1] = 1;
         objects2[0] = objects1;
         objects2[1] = 1;
-        assertTrue(ou.deepEquals(objects1, objects2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(objects1), ou.makeSerializable(objects2)));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ObjectUtilsTest {
         final ObjectUtils ou = ObjectUtils.build();
         final Student s1 = new Student("a", "b", 3.D);
         final Student s2 = new Student("c", "d", 4.D);
-        assertFalse(ou.deepEquals(s1, s2));
+        assertFalse(ou.deepEquals(ou.makeSerializable(s1), ou.makeSerializable(s2)));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ObjectUtilsTest {
                 40.21F,
                 null
         };
-        assertTrue(ou.deepEquals(objects1, objects1));
+        assertTrue(ou.deepEquals(ou.makeSerializable(objects1), ou.makeSerializable(objects1)));
         final Object[] objects2 = {
                 1,
                 2.718D,
@@ -97,39 +97,9 @@ public class ObjectUtilsTest {
                 40.21F,
                 null
         };
-        assertTrue(ou.deepEquals(objects1, objects2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(objects1), ou.makeSerializable(objects2)));
         objects2[objects2.length - 1] = objects2;
-        assertFalse(ou.deepEquals(objects1, objects2));
-    }
-
-    @Test
-    public void testDeepEquals7() {
-        final ObjectUtils ou = ObjectUtils.build();
-        Object[] oa1 = new Object[0];
-        for (int i = 0; i < 100; i++) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("#");
-            sb.append(i);
-            oa1 = Arrays.copyOf(oa1, oa1.length + 1);
-            if ((oa1.length - 1) % 2 == 0) {
-                oa1[oa1.length - 1] = sb.toString();
-            } else {
-                oa1[oa1.length - 1] = oa1;
-            }
-        }
-        Object[] oa2 = new Object[0];
-        for (int i = 0; i < 100; i++) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("#");
-            sb.append(i);
-            oa2 = Arrays.copyOf(oa2, oa2.length + 1);
-            if ((oa2.length - 1) % 2 == 0) {
-                oa2[oa2.length - 1] = sb.toString();
-            } else {
-                oa2[oa2.length - 1] = oa2;
-            }
-        }
-        assertTrue(ou.deepEquals(oa1, oa2));
+        assertFalse(ou.deepEquals(ou.makeSerializable(objects1), ou.makeSerializable(objects2)));
     }
 
     @Test
@@ -139,9 +109,9 @@ public class ObjectUtilsTest {
         final B obj2 = new C1(1.32, 10, "hello");
         assertFalse(ou.deepEquals(obj1, obj2));
         ou = ou.withMaxInheritanceDepth(1);
-        assertTrue(ou.deepEquals(obj1, obj2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(obj1), ou.makeSerializable(obj2)));
         ou = ObjectUtils.build().include(field -> !field.getName().equals("f"));
-        assertTrue(ou.deepEquals(obj1, obj2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(obj1), ou.makeSerializable(obj2)));
     }
 
     @Test
@@ -149,16 +119,23 @@ public class ObjectUtilsTest {
         ObjectUtils ou = ObjectUtils.build();
         final Object[] o1 = {"hello", new int[] {1, 2}, new Object[] {new int[] {1, 2}}, 1};
         final Object[] o2 = {"hello", new int[] {1, 2}, new Object[] {new int[] {1, 3}}, 1};
-        assertFalse(ou.deepEquals(o1, o2));
+        assertFalse(ou.deepEquals(ou.makeSerializable(o1), ou.makeSerializable(o2)));
         ou = ou.withMaxDepth(2);
-        assertTrue(ou.deepEquals(o1, o2));
+        assertTrue(ou.deepEquals(ou.makeSerializable(o1), ou.makeSerializable(o2)));
     }
 
     @Test
     public void testDeepEquals10() {
         ObjectUtils ou = ObjectUtils.build();
-        assertFalse(ou.deepEquals(System.in, System.out));
-        assertFalse(ou.deepEquals(System.in, null));
-        assertTrue(ou.deepEquals(null, null));
+        assertFalse(ou.deepEquals(ou.makeSerializable(System.in), ou.makeSerializable(System.out)));
+        assertFalse(ou.deepEquals(ou.makeSerializable(System.in), ou.makeSerializable(null)));
+        assertTrue(ou.deepEquals(ou.makeSerializable(null), ou.makeSerializable(null)));
+    }
+
+    @Test
+    public void testDeepEquals11() {
+        ObjectUtils ou = ObjectUtils.build();
+        assertFalse(ou.deepEquals(ou.makeSerializable(int.class), ou.makeSerializable(String.class)));
+        assertTrue(ou.deepEquals(ou.makeSerializable(Boolean.class), ou.makeSerializable(Boolean.class)));
     }
 }
