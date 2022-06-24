@@ -6,24 +6,24 @@
 
     <groupId>io.github.ali-ghanbari</groupId>
     <artifactId>object-utils</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <inceptionYear>2019</inceptionYear>
     <url>https://github.com/ali-ghanbari/object-utils</url>
     <name>Object Utilities</name>
 
-    <description>A library for serializing/deserializing, hashing, and comparing arbitrary objects</description>
+    <description>A library for serializing, hashing, and comparing arbitrary objects</description>
 
     <organization>
-        <name>The University of Texas at Dallas</name>
-        <url>http://www.utdallas.edu/</url>
+        <name>Iowa State University</name>
+        <url>https://www.iastate.edu/</url>
     </organization>
 
     <developers>
         <developer>
             <name>Ali Ghanbari</name>
-            <email>ali.ghanbari@utdallas.edu</email>
+            <email>alig@iastate.edu</email>
             <url>https://ali-ghanbari.github.io/</url>
-            <organization>The University of Texas at Dallas</organization>
+            <organization>Iowa State University</organization>
         </developer>
     </developers>
 
@@ -38,31 +38,32 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <license.licenseName>apache_v2</license.licenseName>
+        <java.source>8</java.source>
+        <java.target>8</java.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
-            <version>2.6</version> <!--this is not the latest version but it is compatible with JDK 1.7-->
-	    <optional>true</optional>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.8.1</version> <!--this is not the latest version but it is compatible with JDK 1.7-->
+            <version>3.12.0</version>
 	    <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.0</version>
+            <version>1.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -74,8 +75,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${java.source}</source>
+                    <target>${java.target}</target>
                 </configuration>
             </plugin>
             <plugin>
