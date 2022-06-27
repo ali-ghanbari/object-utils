@@ -34,6 +34,7 @@ import java.util.function.Predicate;
 
 import static edu.iastate.objectutils.Utils.isJDKClass;
 import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper;
 
 public final class ObjectUtils {
     private final Predicate<Field> included;
@@ -91,15 +92,22 @@ public final class ObjectUtils {
     }
 
     private void visit(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
-        registry.compute(item, (__, v) -> v == null ? 1 : (v + 1));
+        registry.put(item, 1 + registry.getOrDefault(item, 0));
     }
 
     private boolean hasVisited(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
         return registry.containsKey(item);
     }
 
-    private void unvisit(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
-        registry.compute(item, (__, v) -> v == 1 ? null : (v - 1));
+    private void leave(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
+        final Integer count = registry.get(item);
+        if (count != null) {
+            if (count > 1) {
+                registry.put(item, count - 1);
+            } else {
+                registry.remove(item);
+            }
+        }
     }
 
     public boolean deepEquals0(final W<Proxy> lhsW, final W<Proxy> rhsW) {
@@ -136,13 +144,13 @@ public final class ObjectUtils {
             if (size == rhsElements.size()) {
                 for (int i = 0; i < size; i++) {
                     if (!deepEquals0(new W<>(lhsElements.get(i)), new W<>(rhsElements.get(i)))) {
-                        unvisit(this.lhsVisited, lhsW);
-                        unvisit(this.rhsVisited, rhsW);
+                        leave(this.lhsVisited, lhsW);
+                        leave(this.rhsVisited, rhsW);
                         return false;
                     }
                 }
-                unvisit(this.lhsVisited, lhsW);
-                unvisit(this.rhsVisited, rhsW);
+                leave(this.lhsVisited, lhsW);
+                leave(this.rhsVisited, rhsW);
                 return true;
             }
         } else if (lhs instanceof AbstractCompositeObjectProxy) {
@@ -153,19 +161,19 @@ public final class ObjectUtils {
                 if (size == rhsObj.values.size()) {
                     for (int i = 0; i < size; i++) {
                         if (!deepEquals0(new W<>(lhsObj.values.get(i)), new W<>(rhsObj.values.get(i)))) {
-                            unvisit(this.lhsVisited, lhsW);
-                            unvisit(this.rhsVisited, rhsW);
+                            leave(this.lhsVisited, lhsW);
+                            leave(this.rhsVisited, rhsW);
                             return false;
                         }
                     }
-                    unvisit(this.lhsVisited, lhsW);
-                    unvisit(this.rhsVisited, rhsW);
+                    leave(this.lhsVisited, lhsW);
+                    leave(this.rhsVisited, rhsW);
                     return true;
                 }
             }
         }
-        unvisit(this.lhsVisited, lhsW);
-        unvisit(this.rhsVisited, rhsW);
+        leave(this.lhsVisited, lhsW);
+        leave(this.rhsVisited, rhsW);
         return false;
     }
 
@@ -227,8 +235,12 @@ public final class ObjectUtils {
 
         if (clazz.isArray()) {
             final Proxy proxy;
-            if (isPrimitiveOrWrapper(clazz.getComponentType())) {
-                proxy = new PrimitiveOrWrapperArrayProxy(cloneArray(obj));
+            final Class<?> componentType = clazz.getComponentType();
+            if (componentType.isPrimitive()) {
+                proxy = new PrimitiveOrWrapperArrayProxy(clonePrimitiveArray(obj));
+                this.proxyCache.put(objW, proxy);
+            } else if (isPrimitiveWrapper(componentType)) {
+                proxy = new PrimitiveOrWrapperArrayProxy(clonePrimitiveWrapperArray(obj));
                 this.proxyCache.put(objW, proxy);
             } else {
                 final int length = Array.getLength(obj);
@@ -295,7 +307,7 @@ public final class ObjectUtils {
         return proxy;
     }
 
-    private static Object cloneArray(final Object array) {
+    private static Object clonePrimitiveArray(final Object array) {
         if (array instanceof int[]) {
             return ((int[]) array).clone();
         } else if (array instanceof long[]) {
@@ -312,7 +324,12 @@ public final class ObjectUtils {
             return ((float[]) array).clone();
         } else if (array instanceof double[]) {
             return ((double[]) array).clone();
-        } else if (array instanceof Integer[]) {
+        }
+        throw new IllegalArgumentException("Not a primitive-typed array");
+    }
+
+    private static Object clonePrimitiveWrapperArray(final Object array) {
+        if (array instanceof Integer[]) {
             return ((Integer[]) array).clone();
         } else if (array instanceof Long[]) {
             return ((Long[]) array).clone();
@@ -328,7 +345,9 @@ public final class ObjectUtils {
             return ((Float[]) array).clone();
         } else if (array instanceof Double[]) {
             return ((Double[]) array).clone();
+        } else if (array instanceof Void[]) {
+            return ((Void[]) array).clone();
         }
-        return ((Void[]) array).clone();
+        throw new IllegalArgumentException("Not a primitive wrapper array");
     }
 }

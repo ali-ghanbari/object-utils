@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -137,5 +138,25 @@ public class ObjectUtilsTest {
         ObjectUtils ou = ObjectUtils.build();
         assertFalse(ou.deepEquals(ou.makeSerializable(int.class), ou.makeSerializable(String.class)));
         assertTrue(ou.deepEquals(ou.makeSerializable(Boolean.class), ou.makeSerializable(Boolean.class)));
+    }
+
+    private static class Node {
+        Node load;
+
+        Node next;
+
+        public Node(Node next) {
+            this.next = next;
+        }
+    }
+
+    @Test
+    public void testDeepEquals12() {
+        ObjectUtils ou = ObjectUtils.build();
+        Node l1 = new Node(new Node(new Node(null)));
+        l1.next.load = l1;
+        Node l2 = new Node(new Node(new Node(null)));
+        l2.next.next.load = l2;
+        assertFalse(ou.deepEquals(ou.makeSerializable(l1), ou.makeSerializable(l2)));
     }
 }
