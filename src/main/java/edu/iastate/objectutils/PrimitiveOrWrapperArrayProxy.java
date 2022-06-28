@@ -54,17 +54,4 @@ class PrimitiveOrWrapperArrayProxy implements TerminalProxy {
         }
         return true;
     }
-
-//    @Override
-//    public String print() {
-//        final StringBuilder sb = new StringBuilder();
-//        final int length = Array.getLength(this.array);
-//        for (int i = 0; i < length; i++) {
-//            if (i > 0) {
-//                sb.append(',');
-//            }
-//            sb.append(Array.get(this.array, i));
-//        }
-//        return "[" + sb + "]";
-//    }
 }

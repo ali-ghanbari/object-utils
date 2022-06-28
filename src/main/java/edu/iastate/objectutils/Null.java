@@ -20,6 +20,6 @@ package edu.iastate.objectutils;
  * #L%
  */
 
-enum EOG implements TerminalProxy {
+enum Null implements TerminalProxy {
     V
 }

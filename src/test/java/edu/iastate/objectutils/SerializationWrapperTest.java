@@ -1,5 +1,26 @@
 package edu.iastate.objectutils;
 
+/*
+ * #%L
+ * Object Utilities
+ * %%
+ * Copyright (C) 2019 - 2022 Iowa State University
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -40,7 +61,7 @@ public class SerializationWrapperTest {
     public void testMakeSerializable2() {
         final ObjectUtils ou = ObjectUtils.build();
         Object[] oa1 = new Object[0];
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             final StringBuilder sb = new StringBuilder();
             sb.append("#");
             sb.append(i);
@@ -52,7 +73,7 @@ public class SerializationWrapperTest {
             }
         }
         Object[] oa2 = new Object[0];
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             final StringBuilder sb = new StringBuilder();
             sb.append("#");
             sb.append(i);
@@ -67,6 +88,7 @@ public class SerializationWrapperTest {
     }
 
     @Test
+    @Ignore
     public void testMakeSerializable3() {
         final ObjectUtils ou = ObjectUtils.build();
 

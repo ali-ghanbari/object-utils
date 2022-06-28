@@ -30,9 +30,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
-import static edu.iastate.objectutils.Utils.isJDKClass;
 import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
 import static org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper;
 
@@ -42,9 +43,10 @@ public final class ObjectUtils {
     private final int maxDepth;
 
     private final int maxInheritanceDepth;
-    private final Map<W<Proxy>, Integer> lhsVisited;
 
-    private final Map<W<Proxy>, Integer> rhsVisited;
+    private final Set<W<Proxy>> lhsVisited;
+
+    private final Set<W<Proxy>> rhsVisited;
 
     private final Map<W<?>, Proxy> proxyCache;
 
@@ -54,8 +56,8 @@ public final class ObjectUtils {
         this.included = included;
         this.maxDepth = maxDepth;
         this.maxInheritanceDepth = maxInheritanceDepth;
-        this.lhsVisited = new HashMap<>();
-        this.rhsVisited = new HashMap<>();
+        this.lhsVisited = new HashSet<>();
+        this.rhsVisited = new HashSet<>();
         this.proxyCache = new HashMap<>();
     }
 
@@ -76,38 +78,15 @@ public final class ObjectUtils {
     }
 
     public boolean deepEquals(final Object lhs, final Object rhs) {
-        if (lhs == null && rhs == null) {
-            return true;
-        }
         if (!(lhs instanceof Proxy) || !(rhs instanceof Proxy)) {
             return false;
         }
         if (lhs == rhs) {
             return true;
         }
-        if (this.lhsVisited.size() > 0 || this.rhsVisited.size() > 0) {
-            throw new IllegalStateException();
-        }
+        this.lhsVisited.clear();
+        this.rhsVisited.clear();
         return deepEquals0(new W<>((Proxy) lhs), new W<>((Proxy) rhs));
-    }
-
-    private void visit(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
-        registry.put(item, 1 + registry.getOrDefault(item, 0));
-    }
-
-    private boolean hasVisited(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
-        return registry.containsKey(item);
-    }
-
-    private void leave(final Map<W<Proxy>, Integer> registry, final W<Proxy> item) {
-        final Integer count = registry.get(item);
-        if (count != null) {
-            if (count > 1) {
-                registry.put(item, count - 1);
-            } else {
-                registry.remove(item);
-            }
-        }
     }
 
     public boolean deepEquals0(final W<Proxy> lhsW, final W<Proxy> rhsW) {
@@ -126,34 +105,18 @@ public final class ObjectUtils {
             return lhs.equals(rhs);
         }
 
-        if (hasVisited(this.lhsVisited, lhsW)) {
-            return hasVisited(this.rhsVisited, rhsW);
+        if (this.lhsVisited.contains(lhsW)) {
+            return this.rhsVisited.contains(rhsW);
         } else {
-            if (hasVisited(this.rhsVisited, rhsW)) {
+            if (this.rhsVisited.contains(rhsW)) {
                 return false;
             }
         }
 
-        visit(this.lhsVisited, lhsW);
-        visit(this.rhsVisited, rhsW);
+        this.lhsVisited.add(lhsW);
+        this.rhsVisited.add(rhsW);
 
-        if (lhs instanceof NonDetIterableProxy) {
-            final List<Proxy> lhsElements = ((NonDetIterableProxy) lhs).elements;
-            final List<Proxy> rhsElements = ((NonDetIterableProxy) rhs).elements;
-            final int size = lhsElements.size();
-            if (size == rhsElements.size()) {
-                for (int i = 0; i < size; i++) {
-                    if (!deepEquals0(new W<>(lhsElements.get(i)), new W<>(rhsElements.get(i)))) {
-                        leave(this.lhsVisited, lhsW);
-                        leave(this.rhsVisited, rhsW);
-                        return false;
-                    }
-                }
-                leave(this.lhsVisited, lhsW);
-                leave(this.rhsVisited, rhsW);
-                return true;
-            }
-        } else if (lhs instanceof AbstractCompositeObjectProxy) {
+        if (lhs instanceof AbstractCompositeObjectProxy) {
             final AbstractCompositeObjectProxy lhsObj = (AbstractCompositeObjectProxy) lhs;
             final AbstractCompositeObjectProxy rhsObj = (AbstractCompositeObjectProxy) rhs;
             if (lhsObj.typeName.equals(rhsObj.typeName)) {
@@ -161,19 +124,13 @@ public final class ObjectUtils {
                 if (size == rhsObj.values.size()) {
                     for (int i = 0; i < size; i++) {
                         if (!deepEquals0(new W<>(lhsObj.values.get(i)), new W<>(rhsObj.values.get(i)))) {
-                            leave(this.lhsVisited, lhsW);
-                            leave(this.rhsVisited, rhsW);
                             return false;
                         }
                     }
-                    leave(this.lhsVisited, lhsW);
-                    leave(this.rhsVisited, rhsW);
                     return true;
                 }
             }
         }
-        leave(this.lhsVisited, lhsW);
-        leave(this.rhsVisited, rhsW);
         return false;
     }
 
@@ -188,7 +145,7 @@ public final class ObjectUtils {
 
     private Proxy makeSerializable0(final W<?> objW, final int depth) throws IllegalAccessException {
         if (depth >= this.maxDepth) {
-            return EOG.V;
+            return Skipped.V;
         }
 
         final Proxy result = this.proxyCache.get(objW);
@@ -200,8 +157,8 @@ public final class ObjectUtils {
         final Object obj = objW.value;
 
         if (obj == null) {
-            this.proxyCache.put(objW, EOG.V);
-            return EOG.V;
+            this.proxyCache.put(objW, Null.V);
+            return Null.V;
         }
         Class<?> clazz = obj.getClass();
 
@@ -211,26 +168,9 @@ public final class ObjectUtils {
             return proxy;
         }
 
-        if (obj instanceof Iterable) {
-            final Proxy proxy;
-            if (obj instanceof HashSet) {
-                proxy = makeNonDetIterableProxy(objW, (Iterable<?>) obj, depth);
-            } else {
-                proxy = makeDetIterableProxy(clazz, objW, (Iterable<?>) obj, depth);
-            }
-            this.proxyCache.put(objW, proxy);
-            return proxy;
-        }
-
-        if (obj instanceof Map) {
-            final Proxy proxy;
-            if (obj instanceof HashMap || obj instanceof Hashtable) {
-                proxy = makeNonDetIterableProxy(objW, ((Map<?, ?>) obj).entrySet(), depth);
-            } else {
-                proxy = makeDetIterableProxy(clazz, objW, ((Map<?, ?>) obj).entrySet(), depth);
-            }
-            this.proxyCache.put(objW, proxy);
-            return proxy;
+        if (obj instanceof HashSet || obj instanceof HashMap || obj instanceof Hashtable) {
+            this.proxyCache.put(objW, Skipped.V);
+            return Skipped.V;
         }
 
         if (clazz.isArray()) {
@@ -282,31 +222,6 @@ public final class ObjectUtils {
         return proxy;
     }
 
-    private Proxy makeNonDetIterableProxy(final W<?> objW,
-                                          final Iterable<?> iterable,
-                                          final int depth) throws IllegalAccessException {
-        final List<Proxy> elements = new ArrayList<>();
-        final NonDetIterableProxy proxy = new NonDetIterableProxy(elements);
-        this.proxyCache.put(objW, proxy);
-        for (final Object element : iterable) {
-            elements.add(makeSerializable0(new W<>(element), depth + 1));
-        }
-        return proxy;
-    }
-
-    private Proxy makeDetIterableProxy(final Class<?> clazz,
-                                       final W<?> objW,
-                                       final Iterable<?> iterable,
-                                       final int depth) throws IllegalAccessException {
-        final List<Proxy> elements = new ArrayList<>();
-        final ObjectProxy proxy = new ObjectProxy(clazz, elements);
-        this.proxyCache.put(objW, proxy);
-        for (final Object element : iterable) {
-            elements.add(makeSerializable0(new W<>(element), depth + 1));
-        }
-        return proxy;
-    }
-
     private static Object clonePrimitiveArray(final Object array) {
         if (array instanceof int[]) {
             return ((int[]) array).clone();
@@ -349,5 +264,95 @@ public final class ObjectUtils {
             return ((Void[]) array).clone();
         }
         throw new IllegalArgumentException("Not a primitive wrapper array");
+    }
+
+    public double extendedHammingDistance(final Object lhs, final Object rhs) {
+        this.lhsVisited.clear();
+        this.rhsVisited.clear();
+        return extendedHammingDistance0(new W<>((Proxy) lhs), new W<>((Proxy) rhs));
+    }
+
+    private double extendedHammingDistance0(final W<Proxy> lhsW, final W<Proxy> rhsW) {
+        final Proxy lhs = lhsW.value;
+        final Proxy rhs = rhsW.value;
+
+        if (lhs == rhs) {
+            return 0D;
+        }
+
+        if (lhs.getClass() != rhs.getClass()) {
+            return 1D;
+        }
+
+        if (lhs instanceof Skipped || lhs instanceof Null) {
+            return 0D;
+        }
+
+        if (lhs instanceof PrimitiveOrWrapperProxy) {
+            final PrimitiveOrWrapperProxy lhsObj = (PrimitiveOrWrapperProxy) lhs;
+            final PrimitiveOrWrapperProxy rhsObj = (PrimitiveOrWrapperProxy) rhs;
+            if (lhsObj.obj.equals(rhsObj.obj)) {
+                return 0D;
+            }
+            return 1D;
+        }
+
+        if (lhs instanceof PrimitiveOrWrapperArrayProxy) {
+            final Object lhsArray = ((PrimitiveOrWrapperArrayProxy) lhs).array;
+            final Object rhsArray = ((PrimitiveOrWrapperArrayProxy) rhs).array;
+            if (lhsArray.getClass().getComponentType() != rhsArray.getClass().getComponentType()) {
+                return 1D;
+            }
+            final int length = Array.getLength(lhsArray);
+            if (length != Array.getLength(rhsArray)) {
+                return 1D;
+            }
+            double distance = 0D;
+            for (int i = 0; i < length; i++) {
+                if (!Objects.equals(Array.get(lhsArray, i), Array.get(rhsArray, i))) {
+                    distance += 1D;
+                }
+            }
+            return distance;
+        }
+
+        if (lhs instanceof EnumProxy) {
+            final EnumProxy lhsEnum = (EnumProxy) lhs;
+            final EnumProxy rhsEnum = (EnumProxy) rhs;
+            if (lhsEnum.typeName.equals(rhsEnum.typeName) && lhsEnum.constName.equals(rhsEnum.constName)) {
+                return 0D;
+            }
+            return 1D;
+        }
+
+        if (this.lhsVisited.contains(lhsW)) {
+            return this.rhsVisited.contains(rhsW) ? 0D : 1D;
+        } else {
+            if (this.rhsVisited.contains(rhsW)) {
+                return 1D;
+            }
+        }
+
+        this.lhsVisited.add(lhsW);
+        this.rhsVisited.add(rhsW);
+
+        if (lhs instanceof AbstractCompositeObjectProxy) {
+            final AbstractCompositeObjectProxy lhsObj = (AbstractCompositeObjectProxy) lhs;
+            final AbstractCompositeObjectProxy rhsObj = (AbstractCompositeObjectProxy) rhs;
+            if (!lhsObj.typeName.equals(rhsObj.typeName)) {
+                return 1D;
+            }
+            final int size = lhsObj.values.size();
+            if (size != rhsObj.values.size()) {
+                return 1D;
+            }
+            double distance = 0D;
+            for (int i = 0; i < size; i++) {
+                distance += extendedHammingDistance0(new W<>(lhsObj.values.get(i)), new W<>(rhsObj.values.get(i)));
+            }
+            return distance;
+        }
+
+        throw new IllegalArgumentException();
     }
 }

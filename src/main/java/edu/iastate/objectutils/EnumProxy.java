@@ -44,9 +44,4 @@ class EnumProxy implements TerminalProxy {
         return this.typeName.equals(that.typeName)
                 && this.constName.equals(that.constName);
     }
-
-//    @Override
-//    public String print() {
-//        return String.format("enum{%s:%s}", this.constName, this.typeName);
-//    }
 }

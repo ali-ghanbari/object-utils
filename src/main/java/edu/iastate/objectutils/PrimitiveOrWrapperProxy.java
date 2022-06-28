@@ -40,9 +40,4 @@ class PrimitiveOrWrapperProxy implements TerminalProxy {
         final PrimitiveOrWrapperProxy that = (PrimitiveOrWrapperProxy) o;
         return this.obj.equals(that.obj);
     }
-
-//    @Override
-//    public String print() {
-//        return obj.toString();
-//    }
 }
